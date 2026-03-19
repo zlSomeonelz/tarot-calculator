@@ -22,6 +22,8 @@
                 <button id="view-spread" class="mode-btn active" onclick="switchMode('spread')">포 카드</button>
                 <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계의 컵</button>
                 <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
+                <button id="view-celtic" class="mode-btn" onclick="switchMode('celtic')">켈틱 크로스</button>
+                <button id="view-hexa" class="mode-btn" onclick="switchMode('hexa')">헥사그램</button>
             </nav>
             <div id="top-interpretation" class="hidden fade-in"></div>
         </header>
@@ -30,6 +32,23 @@
             <!-- 1. 포 카드 -->
             <section id="spread-board" class="hidden">
                 <div class="board-wrapper">
+                    <!-- Standard Golden Overlay -->
+                    <div class="spread-bg-overlay">
+                        <svg viewBox="0 0 656 180" width="656" height="180"
+                            style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                            <defs>
+                                <filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur stdDeviation="3" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <line x1="70" y1="90" x2="586" y2="90" stroke-opacity="0.3" stroke-dasharray="10 5" />
+                            <circle cx="70" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                            <circle cx="242" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                            <circle cx="414" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                            <circle cx="586" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                        </svg>
+                    </div>
                     <div class="board-slots-4">
                         <div id="slot-0" class="slot active" onclick="activateSlot(0)" onmouseenter="showInterpretationOnTop(0, 'spread')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">과거 <br><small>PAST</small></div>
@@ -262,12 +281,7 @@
                             <div class="slot-hint">굴레를 끊어낼 관용</div>
                         </div>
 
-                        <!-- Da'ath -->
-                        <div id="tslot-10" class="slot sef-grey sef-dashed pos-center-daath" onclick="activateSlot(10, 'tree')" onmouseenter="showInterpretationOnTop(10, 'tree')" onmouseleave="clearTopInterpretation()">
-                            <div class="slot-header"><small>지식 (Da'ath)</small></div>
-                            <div class="slot-content">선택</div>
-                            <div class="slot-hint">건너야 할 심연</div>
-                        </div>
+
 
                         <!-- Middle -->
                         <div id="tslot-3" class="slot sef-blue pos-right-4" onclick="activateSlot(3, 'tree')" onmouseenter="showInterpretationOnTop(3, 'tree')" onmouseleave="clearTopInterpretation()">
@@ -315,6 +329,190 @@
                 <div class="board-actions">
                     <button class="btn-main-gold" onclick="analyzeFullSpread(10)">전체 분석 리포트</button>
                     <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                </div>
+            </section>
+
+            <!-- 4. 켈틱 크로스 (10카드) -->
+            <section id="celtic-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="celtic-container">
+                        <!-- Decorative SVG Background -->
+                        <div class="celtic-bg-overlay">
+                            <svg viewBox="0 0 776 800" width="776" height="800"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="2.5" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <!-- Connections for Cross (L Area) centers: X: 70, 234, 398. Y: 90, 294, 498 -->
+                                <line x1="234" y1="90" x2="234" y2="498" /> <!-- Vertical Cross -->
+                                <line x1="70" y1="294" x2="398" y2="294" /> <!-- Horizontal Cross -->
+                                <circle cx="234" cy="294" r="140" fill="none" stroke-opacity="0.3" stroke-dasharray="8 4" /> <!-- Magic Circle -->
+                                
+                                <!-- Core to Staff connectors (Mid Y294) to Staff X706 -->
+                                <line x1="398" y1="294" x2="706" y2="294" opacity="0.3" stroke-dasharray="10 5" />
+
+                                <!-- Staff connectors (R Area) X: 706. Y: 90, 294, 498, 702 -->
+                                <line x1="706" y1="90" x2="706" y2="702" /> <!-- Vertical Staff -->
+
+                                <!-- Star Nodes (Centered precisely) -->
+                                <circle cx="234" cy="90" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" /> <!-- Slot 3 (Top) -->
+                                <circle cx="70" cy="294" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" />  <!-- Slot 5 (Left) -->
+                                <circle cx="234" cy="294" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" /> <!-- Slot 1/2 (Center) -->
+                                <circle cx="398" cy="294" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" /> <!-- Slot 6 (Right) -->
+                                <circle cx="234" cy="498" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" /> <!-- Slot 4 (Bottom) -->
+                                
+                                <circle cx="706" cy="90" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" />  <!-- Slot 10 (Outcome) -->
+                                <circle cx="706" cy="294" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" /> <!-- Slot 9 -->
+                                <circle cx="706" cy="498" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" /> <!-- Slot 8 -->
+                                <circle cx="706" cy="702" r="3.5" fill="#d4af37" filter="url(#celtic-star-glow)" /> <!-- Slot 7 -->
+                            </svg>
+                        </div>
+                        
+                        <!-- 10 Slots (Absolutely positioned) -->
+                        <div id="cslot-0" class="slot celtic-pos-1" onclick="activateSlot(0, 'celtic')" onmouseenter="showInterpretationOnTop(0, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1. 현재<br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">현재의 상황과 주제</div>
+                        </div>
+                        <div id="cslot-1" class="slot celtic-pos-2" onclick="activateSlot(1, 'celtic')" onmouseenter="showInterpretationOnTop(1, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2. 장애물<br><small>CHALLENGE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">가로막는 것 또는 도움</div>
+                        </div>
+                        <div id="cslot-2" class="slot celtic-pos-3" onclick="activateSlot(2, 'celtic')" onmouseenter="showInterpretationOnTop(2, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3. 목표/의식<br><small>GOAL / CONSCIOUS</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">원하는 것 또는 의식적인 생각</div>
+                        </div>
+                        <div id="cslot-3" class="slot celtic-pos-4" onclick="activateSlot(3, 'celtic')" onmouseenter="showInterpretationOnTop(3, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4. 잠재의식<br><small>SUBCONSCIOUS</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">무의식과 과거의 기반</div>
+                        </div>
+                        <div id="cslot-4" class="slot celtic-pos-5" onclick="activateSlot(4, 'celtic')" onmouseenter="showInterpretationOnTop(4, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5. 과거<br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">막 지나온 과거의 영향</div>
+                        </div>
+                        <div id="cslot-5" class="slot celtic-pos-6" onclick="activateSlot(5, 'celtic')" onmouseenter="showInterpretationOnTop(5, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6. 미래<br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">앞으로 나타날 즉각적인 영향</div>
+                        </div>
+                        <div id="cslot-6" class="slot celtic-pos-7" onclick="activateSlot(6, 'celtic')" onmouseenter="showInterpretationOnTop(6, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7. 본인 태도<br><small>SELF</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">자신을 바라보는 태도</div>
+                        </div>
+                        <div id="cslot-7" class="slot celtic-pos-8" onclick="activateSlot(7, 'celtic')" onmouseenter="showInterpretationOnTop(7, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">8. 외부 환경<br><small>ENVIRONMENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">타인과 환경의 영향</div>
+                        </div>
+                        <div id="cslot-8" class="slot celtic-pos-9" onclick="activateSlot(8, 'celtic')" onmouseenter="showInterpretationOnTop(8, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">9. 희망/공포<br><small>HOPES / FEARS</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">지닌 생각과 느낌</div>
+                        </div>
+                        <div id="cslot-9" class="slot celtic-pos-10" onclick="activateSlot(9, 'celtic')" onmouseenter="showInterpretationOnTop(9, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">10. 최종 결과<br><small>OUTCOME</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">상황의 마지막 결론</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-actions">
+                    <button class="btn-main-gold" onclick="analyzeFullSpread(10, 'celtic')">켈틱 분석 리포트</button>
+                    <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                </div>
+            </section>
+
+            <!-- 5. 헥사그램 (7카드) -->
+            <section id="hexa-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="hexa-container">
+                        <!-- Decorative SVG Background -->
+                        <div class="hexa-bg-overlay">
+                            <svg viewBox="0 0 900 900" width="900" height="900"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="hexa-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="2.5" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <!-- Hexagram Triangles -->
+                                <!-- Upward: 450,130 -> 727,610 -> 173,610 -> 450,130 -->
+                                <polygon points="450,130 727,610 173,610" fill="none" />
+                                <!-- Downward: 450,770 -> 173,290 -> 727,290 -> 450,770 -->
+                                <polygon points="450,770 173,290 727,290" fill="none" />
+                                
+                                <!-- Central Connections -->
+                                <line x1="450" y1="130" x2="450" y2="770" opacity="0.2" stroke-dasharray="6 6"/>
+                                <line x1="173" y1="290" x2="727" y2="610" opacity="0.2" stroke-dasharray="6 6"/>
+                                <line x1="173" y1="610" x2="727" y2="290" opacity="0.2" stroke-dasharray="6 6"/>
+                                
+                                <!-- Magic Circles -->
+                                <circle cx="450" cy="450" r="320" fill="none" stroke-opacity="0.3" stroke-dasharray="10 5" />
+                                <circle cx="450" cy="450" r="140" fill="none" stroke-opacity="0.2" />
+
+                                <!-- Star Nodes -->
+                                <circle cx="450" cy="130" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" /> <!-- 1 Top -->
+                                <circle cx="727" cy="610" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" /> <!-- 2 BRight -->
+                                <circle cx="173" cy="610" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" /> <!-- 3 BLeft -->
+                                <circle cx="450" cy="770" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" /> <!-- 4 Bot -->
+                                <circle cx="173" cy="290" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" /> <!-- 5 TLeft -->
+                                <circle cx="727" cy="290" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" /> <!-- 6 TRight -->
+                                <circle cx="450" cy="450" r="5" fill="#d4af37" filter="url(#hexa-star-glow)" /> <!-- 7 Center -->
+                            </svg>
+                        </div>
+                        
+                        <!-- 7 Slots (Absolutely positioned) -->
+                        <div id="hslot-0" class="slot hexa-pos-1" onclick="activateSlot(0, 'hexa')" onmouseenter="showInterpretationOnTop(0, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1. 과거<br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">과거의 영향과 원인</div>
+                        </div>
+                        <div id="hslot-1" class="slot hexa-pos-2" onclick="activateSlot(1, 'hexa')" onmouseenter="showInterpretationOnTop(1, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2. 현재<br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">인지하는 현재 상황</div>
+                        </div>
+                        <div id="hslot-2" class="slot hexa-pos-3" onclick="activateSlot(2, 'hexa')" onmouseenter="showInterpretationOnTop(2, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3. 미래<br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">나타날 가시적 결과</div>
+                        </div>
+                        <div id="hslot-3" class="slot hexa-pos-4" onclick="activateSlot(3, 'hexa')" onmouseenter="showInterpretationOnTop(3, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4. 무의식<br><small>HIDDEN</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">숨겨진 욕망과 무의식</div>
+                        </div>
+                        <div id="hslot-4" class="slot hexa-pos-5" onclick="activateSlot(4, 'hexa')" onmouseenter="showInterpretationOnTop(4, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5. 환경<br><small>ENVIRONMENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">주변의 영향과 타인</div>
+                        </div>
+                        <div id="hslot-5" class="slot hexa-pos-6" onclick="activateSlot(5, 'hexa')" onmouseenter="showInterpretationOnTop(5, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6. 조언<br><small>ADVICE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">문제 해결을 위한 지침</div>
+                        </div>
+                        <div id="hslot-6" class="slot hexa-pos-7" onclick="activateSlot(6, 'hexa')" onmouseenter="showInterpretationOnTop(6, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7. 최종 결과<br><small>OUTCOME</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">모든 흐름의 최종 결론</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-actions">
+                    <button class="btn-main-gold" onclick="analyzeFullSpread(7, 'hexa')">헥사그램 분석 리포트</button>
+                    <button class="btn-outline" onclick="clearBoard(7)">초기화</button>
                 </div>
             </section>
 

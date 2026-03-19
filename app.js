@@ -2,8 +2,10 @@ let currentFilter = 'all';
 let currentMode = 'spread';
 let activeSlotIndex = 0;
 let placedCards4 = [null, null, null, null];
-let placedCardsTree = new Array(11).fill(null);
+let placedCardsTree = new Array(10).fill(null);
 let placedCardsRelation = new Array(12).fill(null);
+let placedCardsCeltic = new Array(10).fill(null);
+let placedCardsHexa = new Array(7).fill(null);
 
 document.addEventListener('DOMContentLoaded', () => {
     setupGrid(tarotDataKo);
@@ -37,17 +39,19 @@ function switchMode(mode) {
     document.getElementById('spread-board').classList.toggle('hidden', mode !== 'spread');
     document.getElementById('tree-board').classList.toggle('hidden', mode !== 'tree');
     document.getElementById('relation-board').classList.toggle('hidden', mode !== 'relation');
+    document.getElementById('celtic-board').classList.toggle('hidden', mode !== 'celtic');
+    document.getElementById('hexa-board').classList.toggle('hidden', mode !== 'hexa');
 
     // UI Tab Sync (Check for null to prevent errors)
-    const btns = ['view-spread', 'view-relation', 'view-tree'];
-    const modes = ['spread', 'relation', 'tree'];
+    const btns = ['view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa'];
+    const modes = ['spread', 'relation', 'tree', 'celtic', 'hexa'];
 
     btns.forEach((id, i) => {
         const btn = document.getElementById(id);
         if (btn) btn.classList.toggle('active', mode === modes[i]);
     });
 
-    if (mode === 'spread' || mode === 'tree' || mode === 'relation') {
+    if (mode === 'spread' || mode === 'tree' || mode === 'relation' || mode === 'celtic' || mode === 'hexa') {
         // Just set the active index and highlight, don't trigger search
         activeSlotIndex = 0;
         const slots = document.querySelectorAll('.slot');
@@ -55,6 +59,8 @@ function switchMode(mode) {
         let prefix = 'slot';
         if (mode === 'tree') prefix = 'tslot';
         if (mode === 'relation') prefix = 'rslot';
+        if (mode === 'celtic') prefix = 'cslot';
+        if (mode === 'hexa') prefix = 'hslot';
         const target = document.getElementById(`${prefix}-0`);
         if (target) target.classList.add('active');
     }
@@ -65,6 +71,8 @@ function activateSlot(index, mode = currentMode) {
     let prefix = 'slot';
     if (mode === 'tree') prefix = 'tslot';
     if (mode === 'relation') prefix = 'rslot';
+    if (mode === 'celtic') prefix = 'cslot';
+    if (mode === 'hexa') prefix = 'hslot';
 
     const slots = document.querySelectorAll('.slot');
     slots.forEach(slot => slot.classList.remove('active'));
@@ -146,9 +154,13 @@ function selectQuickCard(cardName) {
 function placeCardInSlot(card) {
     let cards, prefix, max;
     if (currentMode === 'tree') {
-        cards = placedCardsTree; prefix = 'tslot'; max = 11;
+        cards = placedCardsTree; prefix = 'tslot'; max = 10;
     } else if (currentMode === 'relation') {
         cards = placedCardsRelation; prefix = 'rslot'; max = 12;
+    } else if (currentMode === 'celtic') {
+        cards = placedCardsCeltic; prefix = 'cslot'; max = 10;
+    } else if (currentMode === 'hexa') {
+        cards = placedCardsHexa; prefix = 'hslot'; max = 7;
     } else {
         cards = placedCards4; prefix = 'slot'; max = 4;
     }
@@ -178,10 +190,11 @@ function analyzeFullSpread(count) {
     let cards, info, allIndices;
     let isTree = false;
     let isRelation = false;
+    let isCeltic = false;
 
-    if (count === 11 || count === 10) {
+    if (count === 10 && currentMode === 'tree') {
         cards = placedCardsTree; isTree = true;
-        allIndices = [0, 1, 2, 10, 4, 3, 5, 7, 6, 8, 9];
+        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         info = [
             { t: '1. 케테르 (Kether)', a: '설계팀', m: '남아있는 영혼, 순수한 설계' },
             { t: '2. 호크마 (Chokmah)', a: '기록팀', m: '닿을 수 있는 영원' },
@@ -192,8 +205,7 @@ function analyzeFullSpread(count) {
             { t: '7. 네짜흐 (Netzach)', a: '안전팀', m: '삶을 이어갈 용기' },
             { t: '8. 호드 (Hod)', a: '교육팀', m: '나아질 수 있는 희망' },
             { t: '9. 예소드 (Yesod)', a: '정보팀', m: '분별할 수 있는 이성' },
-            { t: '10. 말쿠트 (Malkuth)', a: '지휘팀', m: '똑바로 설 수 있는 의지' },
-            { t: '지식 (Da\'ath)', a: '심연', m: '건너야 할 심연' }
+            { t: '10. 말쿠트 (Malkuth)', a: '지휘팀', m: '똑바로 설 수 있는 의지' }
         ];
     } else if (count === 12) {
         cards = placedCardsRelation; isRelation = true;
@@ -211,6 +223,33 @@ function analyzeFullSpread(count) {
             { t: '10. 상대의 속마음', m: '상대방의 진심과 무의식' },
             { t: '11. 결과 (RESULT)', m: '내려진 결론' },
             { t: '12. 미래 (FUTURE)', m: '관계의 최종 전망' }
+        ];
+    } else if (count === 10 && currentMode === 'celtic') {
+        cards = placedCardsCeltic; isCeltic = true;
+        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        info = [
+            { t: '1. 현재 (PRESENT)', m: '현재의 상황과 중심 주제' },
+            { t: '2. 장애물 (CHALLENGE)', m: '방해하는 힘 또는 도움' },
+            { t: '3. 목표 (GOAL)', m: '최고의 잠재력과 목표' },
+            { t: '4. 잠재의식 (BASIS)', m: '기반과 무의식적인 힘' },
+            { t: '5. 최근 과거 (PAST)', m: '지나온 최근의 영향력' },
+            { t: '6. 가까운 미래 (FUTURE)', m: '앞으로 올 즉각적인 운의 흐름' },
+            { t: '7. 본인의 태도 (SELF)', m: '상황을 보는 스스로의 시각' },
+            { t: '8. 외부 환경 (ENV)', m: '주변 사람과 환경의 영향' },
+            { t: '9. 희망/공포 (H/F)', m: '지닌 미련이나 두려움' },
+            { t: '10. 결과 (OUTCOME)', m: '상황의 마지막 결론' }
+        ];
+    } else if (count === 7 && currentMode === 'hexa') {
+        cards = placedCardsHexa;
+        allIndices = [0, 1, 2, 3, 4, 5, 6];
+        info = [
+            { t: '1. 과거 (PAST)', m: '과거의 영향과 원인' },
+            { t: '2. 현재 (PRESENT)', m: '인지하는 현재 상황' },
+            { t: '3. 미래 (FUTURE)', m: '나타날 가시적 결과' },
+            { t: '4. 무의식 (HIDDEN)', m: '숨겨진 욕망과 기반' },
+            { t: '5. 환경 (ENV)', m: '주변의 영향과 타인' },
+            { t: '6. 조언 (ADVICE)', m: '문제 해결을 위한 지침' },
+            { t: '7. 결과 (OUTCOME)', m: '모든 흐름의 최종 결론' }
         ];
     } else {
         cards = placedCards4;
@@ -361,8 +400,12 @@ function clearBoard(count) {
     let cards, prefix, boardId;
     if (count === 12) {
         cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board';
-    } else if (count >= 10) {
+    } else if (count === 10 && currentMode === 'tree') {
         cards = placedCardsTree; prefix = 'tslot'; boardId = 'tree-board';
+    } else if (count === 10 && currentMode === 'celtic') {
+        cards = placedCardsCeltic; prefix = 'cslot'; boardId = 'celtic-board';
+    } else if (count === 7 && currentMode === 'hexa') {
+        cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board';
     } else {
         cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
     }
@@ -471,6 +514,8 @@ function showInterpretationOnTop(index, mode) {
     let cards;
     if (mode === 'tree') cards = placedCardsTree;
     else if (mode === 'relation') cards = placedCardsRelation;
+    else if (mode === 'celtic') cards = placedCardsCeltic;
+    else if (mode === 'hexa') cards = placedCardsHexa;
     else cards = placedCards4;
 
     const card = cards[index];

@@ -436,22 +436,114 @@ section {
     height: 180px; /* Standardized Tree size */
 }
 
-.relation-container .board-actions {
-    grid-column: 1 / -1;
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid rgba(255,255,255,0.1);
+/* --- Celtic Cross Spread (10 Cards) --- */
+.celtic-container {
+    position: relative;
+    width: 776px;
+    height: 800px;
+    margin: 3rem auto;
 }
+
+.celtic-bg-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 776px; height: 800px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85; /* Increased for golden glow visibility */
+}
+
+/* Absolute Positioning for 10 Slots */
+.celtic-pos-1, .celtic-pos-2, .celtic-pos-3, .celtic-pos-4, .celtic-pos-5, 
+.celtic-pos-6, .celtic-pos-7, .celtic-pos-8, .celtic-pos-9, .celtic-pos-10 {
+    position: absolute !important;
+    width: 140px; height: 180px; /* Enforce rigid size */
+}
+
+/* 1. Present (Center) */
+.celtic-pos-1 { left: 164px; top: 204px; z-index: 10; }
+
+/* 2. Challenge (Crossed) */
+.celtic-pos-2 {
+    left: 164px; top: 204px;
+    transform: rotate(90deg) !important;
+    z-index: 20 !important;
+}
+.celtic-pos-2:hover { transform: rotate(90deg) scale(1.08) !important; }
+
+/* The Cross extensions */
+.celtic-pos-3 { left: 164px; top: 0px; }   /* 3. Goal (Top) */
+.celtic-pos-4 { left: 164px; top: 408px; } /* 4. Basis (Bottom) */
+.celtic-pos-5 { left: 0px; top: 204px; }   /* 5. Past (Left) */
+.celtic-pos-6 { left: 328px; top: 204px; } /* 6. Future (Right) */
+
+/* The Staff Column (Right side) */
+.celtic-pos-10 { left: 636px; top: 0px; }   /* 10. Outcome */
+.celtic-pos-9 { left: 636px; top: 204px; }  /* 9. Hopes */
+.celtic-pos-8 { left: 636px; top: 408px; }  /* 8. Env */
+.celtic-pos-7 { left: 636px; top: 612px; }  /* 7. Self */
+
+/* --- Hexagram Spread (7 Cards) --- */
+.hexa-container {
+    position: relative;
+    width: 900px;
+    height: 900px;
+    margin: 3rem auto;
+}
+
+.hexa-bg-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 900px; height: 900px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85; /* Increased for golden glow visibility */
+}
+
+.hexa-pos-1, .hexa-pos-2, .hexa-pos-3, .hexa-pos-4, .hexa-pos-5, .hexa-pos-6, .hexa-pos-7 {
+    position: absolute !important;
+    width: 140px; height: 180px;
+    z-index: 10;
+}
+
+/* Center = cx: 450, cy: 450 => left: 380, top: 360 */
+.hexa-pos-7 { left: 380px; top: 360px; z-index: 20; } /* Center (Outcome) */
+
+/* Upward Triangle: 1(Top), 2(BRight), 3(BLeft) */
+.hexa-pos-1 { left: 380px; top: 40px; }  /* Top: cx=450, cy=130 */
+.hexa-pos-2 { left: 657px; top: 520px; } /* B-Right: cx=727, cy=610 */
+.hexa-pos-3 { left: 103px; top: 520px; } /* B-Left: cx=173, cy=610 */
+
+/* Downward Triangle: 4(Bottom), 5(TLeft), 6(TRight) */
+.hexa-pos-4 { left: 380px; top: 680px; } /* Bottom: cx=450, cy=770 */
+.hexa-pos-5 { left: 103px; top: 200px; } /* T-Left: cx=173, cy=290 */
+.hexa-pos-6 { left: 657px; top: 200px; } /* T-Right: cx=727, cy=290 */
 
 /* Hide obsolete side-labels in relation mode */
 #relation-board .side-label { display: none; }
+#celtic-board .side-label { display: none; }
+#hexa-board .side-label { display: none; }
 .board-wrapper {
     background: rgba(0, 0, 0, 0.65);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 3rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    position: relative; /* For overlays */
     margin: 2rem auto;
     max-width: 1100px; /* Wider for 880px spread + labels */
+}
+
+/* --- Four Card Spread Golden Overlay --- */
+.spread-bg-overlay {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 656px; height: 180px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.6;
 }
 
 .board-slots-4 {
