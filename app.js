@@ -84,7 +84,9 @@ function placeCardInSlot(card) {
             <div class="title">${korName}</div>
         </div>
     `;
-    slotEl.setAttribute('data-meaning', card.description);
+    const tooltip = slotEl.querySelector('.slot-tooltip');
+    if (tooltip) tooltip.innerText = card.description;
+    slotEl.setAttribute('data-active', 'true');
     
     let nextIndex = activeSlotIndex + 1;
     if (nextIndex < max) {

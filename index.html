@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Black Tarot Answer - True Black Studio</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <div id="noise-overlay"></div>
     <div id="app-container">
@@ -27,10 +31,22 @@
             <section id="spread-board" class="hidden">
                 <div class="board-wrapper">
                     <div class="board-slots-4">
-                        <div id="slot-0" class="slot active" onclick="activateSlot(0)"><div class="slot-header">과거 <br><small>PAST</small></div><div class="slot-content">선택</div></div>
-                        <div id="slot-1" class="slot" onclick="activateSlot(1)"><div class="slot-header">현재 <br><small>PRESENT</small></div><div class="slot-content">선택</div></div>
-                        <div id="slot-2" class="slot" onclick="activateSlot(2)"><div class="slot-header">미래 <br><small>FUTURE</small></div><div class="slot-content">선택</div></div>
-                        <div id="slot-3" class="slot highlight" onclick="activateSlot(3)"><div class="slot-header">해결책 <br><small>SOLUTION</small></div><div class="slot-content">선택</div></div>
+                        <div id="slot-0" class="slot active" onclick="activateSlot(0)">
+                            <div class="slot-header">과거 <br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
+                        <div id="slot-1" class="slot" onclick="activateSlot(1)">
+                            <div class="slot-header">현재 <br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
+                        <div id="slot-2" class="slot" onclick="activateSlot(2)">
+                            <div class="slot-header">미래 <br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
+                        <div id="slot-3" class="slot highlight" onclick="activateSlot(3)">
+                            <div class="slot-header">해결책 <br><small>SOLUTION</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
                     </div>
                     <div class="board-actions">
                         <button class="btn-main-gold" onclick="analyzeFullSpread(4)">전체 분석 리포트</button>
@@ -42,27 +58,105 @@
             <!-- 2. 관계 분석 (컵 오브 릴레이션쉽 - 12장) -->
             <section id="relation-board" class="hidden">
                 <div class="relation-container">
+                    <div class="relation-bg-overlay">
+                        <svg viewBox="0 0 880 1300" width="880" height="1300" style="stroke:rgba(212,175,55,0.5); stroke-width:3; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                            <!-- Spine (Col 3: X440): 12(75) -> 11(245) -> 5(585) -> 6(755) -> 4(925) -> 3(1095) -->
+                            <line x1="440" y1="75" x2="440" y2="245" />
+                            <line x1="440" y1="245" x2="440" y2="585" />
+                            <line x1="440" y1="585" x2="440" y2="755" />
+                            <line x1="440" y1="755" x2="440" y2="925" />
+                            <line x1="440" y1="925" x2="440" y2="1095" />
+                            
+                            <!-- THE CUP ARC (Y follows Parabolic Curve): 9-7-5-8-10 -->
+                            <line x1="80" y1="205" x2="260" y2="395" />
+                            <line x1="260" y1="395" x2="440" y2="585" />
+                            <line x1="440" y1="585" x2="620" y2="395" />
+                            <line x1="620" y1="395" x2="800" y2="205" />
+                            
+                            <!-- Connection to Result (11) at Y245 -->
+                            <line x1="260" y1="395" x2="440" y2="245" /> 
+                            <line x1="620" y1="395" x2="440" y2="245" />
+                            <line x1="80" y1="205" x2="440" y2="245" />
+                            <line x1="800" y1="205" x2="440" y2="245" />
+
+                            <!-- Base Layer (Reason 3 Sides): [1(260) - 3(440) - 2(620)] at Y1095 -->
+                            <line x1="260" y1="1095" x2="440" y2="1095" />
+                            <line x1="620" y1="1095" x2="440" y2="1095" />
+                        </svg>
+                    </div>
                     <div class="relation-grid">
-                        <!-- Left Side: My Energy -->
-                        <div class="side-label me-side">ME <small>나의 에너지</small></div>
-                        <div id="rslot-0" class="slot sef-white pos-me-1" onclick="activateSlot(0, 'relation')"><div class="slot-header">1. 나 <br><small>MY STATE</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-6" class="slot sef-white pos-me-2" onclick="activateSlot(6, 'relation')"><div class="slot-header">7. 나의 겉모습 <br><small>SURFACE</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-8" class="slot sef-gold pos-me-3" onclick="activateSlot(8, 'relation')"><div class="slot-header">9. 나의 속마음 <br><small>INNER MIND</small></div><div class="slot-content">선택</div></div>
-
-                        <!-- Right Side: Partner's Energy -->
-                        <div class="side-label partner-side">PARTNER <small>상대의 에너지</small></div>
-                        <div id="rslot-1" class="slot sef-white pos-you-1" onclick="activateSlot(1, 'relation')"><div class="slot-header">2. 상대 <br><small>PARTNER'S STATE</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-7" class="slot sef-white pos-you-2" onclick="activateSlot(7, 'relation')"><div class="slot-header">8. 상대의 겉모습 <br><small>SURFACE</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-9" class="slot sef-gold pos-you-3" onclick="activateSlot(9, 'relation')"><div class="slot-header">10. 상대의 속마음 <br><small>INNER MIND</small></div><div class="slot-content">선택</div></div>
-
-                        <!-- Center: The Connection -->
-                        <div class="side-label bond-side">CONNECTION <small>관계의 흐름</small></div>
-                        <div id="rslot-2" class="slot sef-violet pos-bond-1" onclick="activateSlot(2, 'relation')"><div class="slot-header">3. 만남 <br><small>REASON</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-3" class="slot sef-grey pos-bond-2" onclick="activateSlot(3, 'relation')"><div class="slot-header">4. 기초/과거 <br><small>FOUNDATION</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-4" class="slot sef-blue pos-bond-3" onclick="activateSlot(4, 'relation')"><div class="slot-header">5. 현재 <br><small>PRESENT</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-5" class="slot sef-red pos-bond-4" onclick="activateSlot(5, 'relation')"><div class="slot-header">6. 장애물 <br><small>OBSTACLE</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-10" class="slot sef-green pos-bond-5" onclick="activateSlot(10, 'relation')"><div class="slot-header">11. 결과 <br><small>RESULT</small></div><div class="slot-content">선택</div></div>
-                        <div id="rslot-11" class="slot sef-gold pos-bond-6" onclick="activateSlot(11, 'relation')"><div class="slot-header">12. 미래 <br><small>FUTURE</small></div><div class="slot-content">선택</div></div>
+                        <!-- 1. 나 (MY STATE) -->
+                        <div id="rslot-0" class="slot sef-white pos-me-1" onclick="activateSlot(0, 'relation')">
+                            <div class="slot-header">1. 나 <br><small>MY STATE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 2. 상대 (PARTNER'S STATE) -->
+                        <div id="rslot-1" class="slot sef-white pos-you-1" onclick="activateSlot(1, 'relation')">
+                            <div class="slot-header">2. 상대 <br><small>PARTNER'S STATE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 3. 만남의 이유 (REASON) -->
+                        <div id="rslot-2" class="slot sef-purple pos-bond-1" onclick="activateSlot(2, 'relation')">
+                            <div class="slot-header">3. 만남 <br><small>REASON</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 4. 기초/과거 (FOUNDATION) -->
+                        <div id="rslot-3" class="slot sef-white pos-bond-2" onclick="activateSlot(3, 'relation')">
+                            <div class="slot-header">4. 기초/과거 <br><small>FOUNDATION</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 5. 현재 (PRESENT) -->
+                        <div id="rslot-4" class="slot sef-blue pos-bond-3" onclick="activateSlot(4, 'relation')">
+                            <div class="slot-header">5. 현재 <br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 6. 장애물 (OBSTACLE) -->
+                        <div id="rslot-5" class="slot sef-red pos-bond-4" onclick="activateSlot(5, 'relation')">
+                            <div class="slot-header">6. 장애물 <br><small>OBSTACLE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 7. 나의 겉모습 (SURFACE) -->
+                        <div id="rslot-6" class="slot sef-white pos-me-2" onclick="activateSlot(6, 'relation')">
+                            <div class="slot-header">7. 나의 겉모습 <br><small>SURFACE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 8. 상대의 겉모습 (SURFACE) -->
+                        <div id="rslot-7" class="slot sef-white pos-you-2" onclick="activateSlot(7, 'relation')">
+                            <div class="slot-header">8. 상대의 겉모습 <br><small>SURFACE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 9. 나의 속마음 (INNER MIND) -->
+                        <div id="rslot-8" class="slot sef-gold pos-me-3" onclick="activateSlot(8, 'relation')">
+                            <div class="slot-header">9. 나의 속마음 <br><small>INNER MIND</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 10. 상대의 속마음 (INNER MIND) -->
+                        <div id="rslot-9" class="slot sef-gold pos-you-3" onclick="activateSlot(9, 'relation')">
+                            <div class="slot-header">10. 상대의 속마음 <br><small>INNER MIND</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 11. 결과 (RESULT) -->
+                        <div id="rslot-10" class="slot sef-green pos-bond-5" onclick="activateSlot(10, 'relation')">
+                            <div class="slot-header">11. 결과 <br><small>RESULT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
+                        <!-- 12. 미래 (FUTURE) -->
+                        <div id="rslot-11" class="slot sef-gold pos-bond-6" onclick="activateSlot(11, 'relation')">
+                            <div class="slot-header">12. 미래 <br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-tooltip"></div>
+                        </div>
                     </div>
                     <div class="board-actions">
                         <button class="btn-main-gold" onclick="analyzeFullSpread(12)">관계 분석 리포트</button>
@@ -75,43 +169,44 @@
             <section id="tree-board" class="hidden">
                 <div class="tree-container">
                     <div class="tree-bg-overlay">
-                        <svg viewBox="0 0 680 1200" width="680" height="1200" style="stroke:rgba(212,175,55,0.4); stroke-width:2.5; filter: drop-shadow(0 0 8px rgba(212,175,55,0.3));">
+                        <svg viewBox="0 0 680 1200" width="680" height="1200"
+                            style="stroke:rgba(212,175,55,0.5); stroke-width:3; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
                             <!-- Kether(340,85) to Binah(110,145) & Chokmah(570,145) -->
                             <line x1="340" y1="85" x2="110" y2="145" />
                             <line x1="340" y1="85" x2="570" y2="145" />
                             <line x1="110" y1="145" x2="570" y2="145" />
-                            
+
                             <!-- Binah(110,145) to Geburah(110,385) & Tiphareth(340,505) -->
                             <line x1="110" y1="145" x2="110" y2="385" />
                             <line x1="110" y1="145" x2="340" y2="505" />
-                            
+
                             <!-- Chokmah(570,145) to Chesed(570,385) & Tiphareth(340,505) -->
                             <line x1="570" y1="145" x2="570" y2="385" />
                             <line x1="570" y1="145" x2="340" y2="505" />
-                            
+
                             <!-- Geburah(110,385) to Chesed(570,385) & Tiphareth(340,505) & Hod(110,625) -->
                             <line x1="110" y1="385" x2="570" y2="385" />
                             <line x1="110" y1="385" x2="340" y2="505" />
                             <line x1="110" y1="385" x2="110" y2="625" />
-                            
+
                             <!-- Chesed(570,385) to Tiphareth(340,505) & Netzach(570,625) -->
                             <line x1="570" y1="385" x2="340" y2="505" />
                             <line x1="570" y1="385" x2="570" y2="625" />
-                            
+
                             <!-- Tiphareth(340,505) to Hod(110,625) & Netzach(570,625) & Yesod(340,745) -->
                             <line x1="340" y1="505" x2="110" y2="625" />
                             <line x1="340" y1="505" x2="570" y2="625" />
                             <line x1="340" y1="505" x2="340" y2="745" />
-                            
+
                             <!-- Hod(110,625) to Netzach(570,625) & Yesod(340,745) & Malkuth(340,985) -->
                             <line x1="110" y1="625" x2="570" y2="625" />
                             <line x1="110" y1="625" x2="340" y2="745" />
                             <line x1="110" y1="625" x2="340" y2="985" />
-                            
+
                             <!-- Netzach(570,625) to Yesod(340,745) & Malkuth(340,985) -->
                             <line x1="570" y1="625" x2="340" y2="745" />
                             <line x1="570" y1="625" x2="340" y2="985" />
-                            
+
                             <!-- Yesod(340,745) to Malkuth(340,985) -->
                             <line x1="340" y1="745" x2="340" y2="985" />
                         </svg>
@@ -224,20 +319,26 @@
                 <div id="cards-grid" class="cards-grid"></div>
             </section>
         </main>
-        <footer><p>© 2026 BLACK TAROT ANSWER. THE STARS ARE WITHIN YOU.</p></footer>
+        <footer>
+            <p>© 2026 BLACK TAROT ANSWER. THE STARS ARE WITHIN YOU.</p>
+        </footer>
     </div>
 
     <!-- 모달 -->
     <div id="modal-overlay" class="hidden" onclick="closeAllModals()">
         <div id="interpretation" class="modal-content glass-dark" onclick="event.stopPropagation()">
-            <div class="modal-header"><span id="card-suit-tag" class="tag-gold">Major</span><button onclick="closeInterpretation()" class="close-icon">✕</button></div>
+            <div class="modal-header"><span id="card-suit-tag" class="tag-gold">Major</span><button
+                    onclick="closeInterpretation()" class="close-icon">✕</button></div>
             <h2 id="card-name" class="title-xl">Card Name</h2>
             <div id="keywords-list" class="keywords-wrap"></div>
             <div class="divider"></div>
             <p id="card-desc" class="desc-readable"></p>
         </div>
         <div id="full-analysis" class="modal-content full-analysis glass-solid" onclick="event.stopPropagation()">
-            <div class="modal-header"><h2 class="title-lg">세피로트의 나무 통합 분석</h2><button onclick="closeFullAnalysis()" class="close-icon">✕</button></div>
+            <div class="modal-header">
+                <h2 class="title-lg">세피로트의 나무 통합 분석</h2><button onclick="closeFullAnalysis()"
+                    class="close-icon">✕</button>
+            </div>
             <div id="analysis-results" class="analysis-scroll"></div>
         </div>
     </div>
@@ -245,4 +346,5 @@
     <script src="data_ko.js"></script>
     <script src="app.js"></script>
 </body>
+
 </html>
