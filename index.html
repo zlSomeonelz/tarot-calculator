@@ -19,11 +19,11 @@
         <header>
             <div class="logo">SOMEONE'S TAROT CALCULATOR</div>
             <nav class="mode-tabs">
-                <button id="view-search" class="mode-btn active" onclick="switchMode('search')">도감</button>
-                <button id="view-spread" class="mode-btn" onclick="switchMode('spread')">포 카드</button>
-                <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계 분석</button>
+                <button id="view-spread" class="mode-btn active" onclick="switchMode('spread')">포 카드</button>
+                <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계의 컵</button>
                 <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
             </nav>
+            <div id="top-interpretation" class="hidden fade-in"></div>
         </header>
 
         <main>
@@ -31,19 +31,19 @@
             <section id="spread-board" class="hidden">
                 <div class="board-wrapper">
                     <div class="board-slots-4">
-                        <div id="slot-0" class="slot active" onclick="activateSlot(0)">
+                        <div id="slot-0" class="slot active" onclick="activateSlot(0)" onmouseenter="showInterpretationOnTop(0, 'spread')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">과거 <br><small>PAST</small></div>
                             <div class="slot-content">선택</div>
                         </div>
-                        <div id="slot-1" class="slot" onclick="activateSlot(1)">
+                        <div id="slot-1" class="slot" onclick="activateSlot(1)" onmouseenter="showInterpretationOnTop(1, 'spread')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">현재 <br><small>PRESENT</small></div>
                             <div class="slot-content">선택</div>
                         </div>
-                        <div id="slot-2" class="slot" onclick="activateSlot(2)">
+                        <div id="slot-2" class="slot" onclick="activateSlot(2)" onmouseenter="showInterpretationOnTop(2, 'spread')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">미래 <br><small>FUTURE</small></div>
                             <div class="slot-content">선택</div>
                         </div>
-                        <div id="slot-3" class="slot highlight" onclick="activateSlot(3)">
+                        <div id="slot-3" class="slot highlight" onclick="activateSlot(3)" onmouseenter="showInterpretationOnTop(3, 'spread')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">해결책 <br><small>SOLUTION</small></div>
                             <div class="slot-content">선택</div>
                         </div>
@@ -59,7 +59,8 @@
             <section id="relation-board" class="hidden">
                 <div class="relation-container">
                     <div class="relation-bg-overlay">
-                        <svg viewBox="0 0 880 1300" width="880" height="1300" style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                        <svg viewBox="0 0 880 1300" width="880" height="1300"
+                            style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
                             <defs>
                                 <filter id="star-glow" x="-50%" y="-50%" width="200%" height="200%">
                                     <feGaussianBlur stdDeviation="3" result="blur" />
@@ -72,15 +73,15 @@
                             <line x1="440" y1="585" x2="440" y2="755" />
                             <line x1="440" y1="755" x2="440" y2="925" />
                             <line x1="440" y1="925" x2="440" y2="1095" />
-                            
+
                             <!-- THE CUP ARC (Y follows Parabolic Curve): 9-7-5-8-10 -->
                             <line x1="80" y1="205" x2="260" y2="395" />
                             <line x1="260" y1="395" x2="440" y2="585" />
                             <line x1="440" y1="585" x2="620" y2="395" />
                             <line x1="620" y1="395" x2="800" y2="205" />
-                            
+
                             <!-- Connection to Result (11) at Y245 -->
-                            <line x1="260" y1="395" x2="440" y2="245" /> 
+                            <line x1="260" y1="395" x2="440" y2="245" />
                             <line x1="620" y1="395" x2="440" y2="245" />
                             <line x1="80" y1="205" x2="440" y2="245" />
                             <line x1="800" y1="205" x2="440" y2="245" />
@@ -106,80 +107,57 @@
                     </div>
                     <div class="relation-grid">
                         <!-- 1. 나 (MY STATE) -->
-                        <div id="rslot-0" class="slot sef-white pos-me-1" onclick="activateSlot(0, 'relation')">
+                        <div id="rslot-0" class="slot sef-white pos-me-1" onclick="activateSlot(0, 'relation')" onmouseenter="showInterpretationOnTop(0, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">1. 나 <br><small>MY STATE</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 2. 상대 (PARTNER'S STATE) -->
-                        <div id="rslot-1" class="slot sef-white pos-you-1" onclick="activateSlot(1, 'relation')">
+                        <div id="rslot-1" class="slot sef-white pos-you-1" onclick="activateSlot(1, 'relation')" onmouseenter="showInterpretationOnTop(1, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">2. 상대 <br><small>PARTNER'S STATE</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 3. 만남의 이유 (REASON) -->
-                        <div id="rslot-2" class="slot sef-purple pos-bond-1" onclick="activateSlot(2, 'relation')">
+                        <div id="rslot-2" class="slot sef-purple pos-bond-1" onclick="activateSlot(2, 'relation')" onmouseenter="showInterpretationOnTop(2, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">3. 만남 <br><small>REASON</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 4. 기초/과거 (FOUNDATION) -->
-                        <div id="rslot-3" class="slot sef-white pos-bond-2" onclick="activateSlot(3, 'relation')">
+                        <div id="rslot-3" class="slot sef-white pos-bond-2" onclick="activateSlot(3, 'relation')" onmouseenter="showInterpretationOnTop(3, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">4. 기초/과거 <br><small>FOUNDATION</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 5. 현재 (PRESENT) -->
-                        <div id="rslot-4" class="slot sef-blue pos-bond-3" onclick="activateSlot(4, 'relation')">
+                        <div id="rslot-4" class="slot sef-blue pos-bond-3" onclick="activateSlot(4, 'relation')" onmouseenter="showInterpretationOnTop(4, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">5. 현재 <br><small>PRESENT</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 6. 장애물 (OBSTACLE) -->
-                        <div id="rslot-5" class="slot sef-red pos-bond-4" onclick="activateSlot(5, 'relation')">
+                        <div id="rslot-5" class="slot sef-red pos-bond-4" onclick="activateSlot(5, 'relation')" onmouseenter="showInterpretationOnTop(5, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">6. 장애물 <br><small>OBSTACLE</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 7. 나의 겉모습 (SURFACE) -->
-                        <div id="rslot-6" class="slot sef-white pos-me-2" onclick="activateSlot(6, 'relation')">
+                        <div id="rslot-6" class="slot sef-white pos-me-2" onclick="activateSlot(6, 'relation')" onmouseenter="showInterpretationOnTop(6, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">7. 나의 겉모습 <br><small>SURFACE</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 8. 상대의 겉모습 (SURFACE) -->
-                        <div id="rslot-7" class="slot sef-white pos-you-2" onclick="activateSlot(7, 'relation')">
+                        <div id="rslot-7" class="slot sef-white pos-you-2" onclick="activateSlot(7, 'relation')" onmouseenter="showInterpretationOnTop(7, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">8. 상대의 겉모습 <br><small>SURFACE</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 9. 나의 속마음 (INNER MIND) -->
-                        <div id="rslot-8" class="slot sef-gold pos-me-3" onclick="activateSlot(8, 'relation')">
+                        <div id="rslot-8" class="slot sef-gold pos-me-3" onclick="activateSlot(8, 'relation')" onmouseenter="showInterpretationOnTop(8, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">9. 나의 속마음 <br><small>INNER MIND</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 10. 상대의 속마음 (INNER MIND) -->
-                        <div id="rslot-9" class="slot sef-gold pos-you-3" onclick="activateSlot(9, 'relation')">
+                        <div id="rslot-9" class="slot sef-gold pos-you-3" onclick="activateSlot(9, 'relation')" onmouseenter="showInterpretationOnTop(9, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">10. 상대의 속마음 <br><small>INNER MIND</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 11. 결과 (RESULT) -->
-                        <div id="rslot-10" class="slot sef-green pos-bond-5" onclick="activateSlot(10, 'relation')">
+                        <div id="rslot-10" class="slot sef-green pos-bond-5" onclick="activateSlot(10, 'relation')" onmouseenter="showInterpretationOnTop(10, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">11. 결과 <br><small>RESULT</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
-                        <!-- 12. 미래 (FUTURE) -->
-                        <div id="rslot-11" class="slot sef-gold pos-bond-6" onclick="activateSlot(11, 'relation')">
+                        <div id="rslot-11" class="slot sef-gold pos-bond-6" onclick="activateSlot(11, 'relation')" onmouseenter="showInterpretationOnTop(11, 'relation')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">12. 미래 <br><small>FUTURE</small></div>
                             <div class="slot-content">선택</div>
-                            <div class="slot-tooltip"></div>
                         </div>
                     </div>
                     <div class="board-actions">
-                        <button class="btn-main-gold" onclick="analyzeFullSpread(12)">관계 분석 리포트</button>
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(12)">관계의 컵 분석 리포트</button>
                         <button class="btn-outline" onclick="clearBoard(12)">초기화</button>
                     </div>
                 </div>
@@ -268,65 +246,65 @@
                     <!-- Interactive Slots Grid -->
                     <div class="tree-grid-refined">
                         <!-- Upper -->
-                        <div id="tslot-0" class="slot active sef-white pos-center-1" onclick="activateSlot(0, 'tree')">
+                        <div id="tslot-0" class="slot active sef-white pos-center-1" onclick="activateSlot(0, 'tree')" onmouseenter="showInterpretationOnTop(0, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">1. 케테르<br><small>설계팀 (Architecture)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">남아있는 영혼</div>
                         </div>
-                        <div id="tslot-1" class="slot sef-grey pos-right-2" onclick="activateSlot(1, 'tree')">
+                        <div id="tslot-1" class="slot sef-grey pos-right-2" onclick="activateSlot(1, 'tree')" onmouseenter="showInterpretationOnTop(1, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">2. 호크마<br><small>기록팀 (Records)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">닿을 수 있는 영원</div>
                         </div>
-                        <div id="tslot-2" class="slot sef-black pos-left-2" onclick="activateSlot(2, 'tree')">
+                        <div id="tslot-2" class="slot sef-black pos-left-2" onclick="activateSlot(2, 'tree')" onmouseenter="showInterpretationOnTop(2, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">3. 비나<br><small>추출팀 (Extraction)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">굴레를 끊어낼 관용</div>
                         </div>
 
                         <!-- Da'ath -->
-                        <div id="tslot-10" class="slot sef-grey pos-center-daath" onclick="activateSlot(10, 'tree')">
+                        <div id="tslot-10" class="slot sef-grey sef-dashed pos-center-daath" onclick="activateSlot(10, 'tree')" onmouseenter="showInterpretationOnTop(10, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header"><small>지식 (Da'ath)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">건너야 할 심연</div>
                         </div>
 
                         <!-- Middle -->
-                        <div id="tslot-3" class="slot sef-blue pos-right-4" onclick="activateSlot(3, 'tree')">
+                        <div id="tslot-3" class="slot sef-blue pos-right-4" onclick="activateSlot(3, 'tree')" onmouseenter="showInterpretationOnTop(3, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">4. 헤세드<br><small>복지팀 (Welfare)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">믿음에 보답하는 마음</div>
                         </div>
-                        <div id="tslot-4" class="slot sef-red pos-left-4" onclick="activateSlot(4, 'tree')">
+                        <div id="tslot-4" class="slot sef-red pos-left-4" onclick="activateSlot(4, 'tree')" onmouseenter="showInterpretationOnTop(4, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">5. 게부라<br><small>징계팀 (Disciplinary)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">굴복하지 않는 용기</div>
                         </div>
-                        <div id="tslot-5" class="slot sef-gold pos-center-5" onclick="activateSlot(5, 'tree')">
+                        <div id="tslot-5" class="slot sef-gold pos-center-5" onclick="activateSlot(5, 'tree')" onmouseenter="showInterpretationOnTop(5, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">6. 티페레트<br><small>중앙본부 (Central)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">존재에 대한 확신</div>
                         </div>
 
                         <!-- Lower -->
-                        <div id="tslot-6" class="slot sef-green pos-right-7" onclick="activateSlot(6, 'tree')">
+                        <div id="tslot-6" class="slot sef-green pos-right-7" onclick="activateSlot(6, 'tree')" onmouseenter="showInterpretationOnTop(6, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">7. 네짜흐<br><small>안전팀 (Safety)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">삶을 이어갈 용기</div>
                         </div>
-                        <div id="tslot-7" class="slot sef-orange pos-left-7" onclick="activateSlot(7, 'tree')">
+                        <div id="tslot-7" class="slot sef-orange pos-left-7" onclick="activateSlot(7, 'tree')" onmouseenter="showInterpretationOnTop(7, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">8. 호드<br><small>교육팀 (Training)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">더 나은 존재가 될 희망</div>
                         </div>
-                        <div id="tslot-8" class="slot sef-violet pos-center-8" onclick="activateSlot(8, 'tree')">
+                        <div id="tslot-8" class="slot sef-violet pos-center-8" onclick="activateSlot(8, 'tree')" onmouseenter="showInterpretationOnTop(8, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">9. 예소드<br><small>정보팀 (Information)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">분별할 수 있는 이성</div>
                         </div>
 
                         <!-- Bottom -->
-                        <div id="tslot-9" class="slot sef-earth pos-center-10" onclick="activateSlot(9, 'tree')">
+                        <div id="tslot-9" class="slot sef-earth pos-center-10" onclick="activateSlot(9, 'tree')" onmouseenter="showInterpretationOnTop(9, 'tree')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">10. 말쿠트<br><small>지휘팀 (Control)</small></div>
                             <div class="slot-content">선택</div>
                             <div class="slot-hint">똑바로 설 수 있는 의지</div>
@@ -362,6 +340,20 @@
         </footer>
     </div>
 
+    <!-- Quick-Search Overlay -->
+    <div id="quick-search-overlay" class="hidden" onclick="closeQuickSearch()">
+        <div class="qs-modal glass-solid" onclick="event.stopPropagation()">
+            <div class="qs-header">
+                <span class="qs-title">✧ FIND CARD ✧</span>
+                <button onclick="closeQuickSearch()" class="close-icon small">✕</button>
+            </div>
+            <div class="qs-input-wrap">
+                <input type="text" id="qs-input" placeholder="카드 이름을 검색하세요..." oninput="filterQuickSearch()" autofocus>
+            </div>
+            <div id="qs-results" class="qs-list"></div>
+        </div>
+    </div>
+
     <!-- 모달 -->
     <div id="modal-overlay" class="hidden" onclick="closeAllModals()">
         <div id="interpretation" class="modal-content glass-dark" onclick="event.stopPropagation()">
@@ -374,8 +366,11 @@
         </div>
         <div id="full-analysis" class="modal-content full-analysis glass-solid" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h2 class="title-lg">세피로트의 나무 통합 분석</h2><button onclick="closeFullAnalysis()"
-                    class="close-icon">✕</button>
+                <h2 class="title-lg">스프레드 통합 분석 리포트</h2>
+                <div class="header-actions">
+                    <button class="btn-copy-gold" onclick="copyFullAnalysis()">결과 복사</button>
+                    <button onclick="closeFullAnalysis()" class="close-icon">✕</button>
+                </div>
             </div>
             <div id="analysis-results" class="analysis-scroll"></div>
         </div>

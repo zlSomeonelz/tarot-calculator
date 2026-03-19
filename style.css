@@ -39,8 +39,18 @@ body {
 
 header {
     text-align: center;
-    margin-bottom: 1.5rem; /* Drastically reduced to lift content */
-    padding: 1.5rem 0; /* Drastically reduced to lift content */
+    margin-bottom: 1.5rem;
+    padding: 1.5rem 0;
+    animation: celestialFade 0.8s ease-out;
+}
+
+@keyframes celestialFade {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+section {
+    animation: celestialFade 0.6s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .logo {
@@ -157,7 +167,11 @@ header {
     flex-direction: column;
     align-items: center;
     gap: 0.3rem;
-    z-index: 1;
+    z-index: 10;
+    color: var(--accent-gold); /* AETHER GOLD */
+    font-weight: 300;
+    letter-spacing: 0.4rem;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
 }
 .world-label h3 { 
     font-size: 1.2rem; 
@@ -241,7 +255,7 @@ header {
     background: rgba(10, 10, 10, 0.7);
     border: 1px solid rgba(212, 175, 55, 0.15);
     border-radius: 8px;
-    padding: 1.2rem 0.5rem;
+    padding: 1rem 0.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -313,7 +327,8 @@ header {
 .sef-orange { border-color: #e67e22 !important; } /* Training */
 .sef-violet { border-color: #9b59b6 !important; } /* Information */
 .sef-earth { border-color: #f39c12 !important; } /* Control (Yellow/Amber) */
-.sef-grey { border-color: #999999 !important; border-style: dashed !important; opacity: 0.6; } /* Records/Daath */
+.sef-grey { border-color: #999999 !important; border-style: solid !important; opacity: 0.8; } /* Records/Daath */
+.sef-dashed { border-style: dashed !important; opacity: 0.6; }
 
 /* Slot Meaning Hint */
 .slot-hint {
@@ -325,19 +340,7 @@ header {
 }
 .sef-white .slot-hint { color: #aaa !important; }
 
-/* --- Relation Spread (Cup of Relationship) - 7 Pillar WIDE Layout --- */
-.relation-container {
-    padding: 3rem;
-    max-width: 1400px; 
-    margin: 2rem auto;
-    background: rgba(0,0,0,0.4);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    position: relative;
-    box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
-    overflow: visible; 
-}
-
+/* --- Relation Spread (Cup of Relationship) --- */
 .relation-container {
     padding: 3rem 0 5rem;
     position: relative;
@@ -345,7 +348,8 @@ header {
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: visible;
+    background: radial-gradient(circle at 50% 10%, rgba(212, 175, 55, 0.05), transparent 80%);
+    overflow: visible; 
 }
 
 .relation-grid {
@@ -364,7 +368,12 @@ header {
 .pos-bond-6 { grid-column: 3; grid-row: 1; } /* 12. 미래 */
 .pos-bond-5 { grid-column: 3; grid-row: 2; } /* 11. 결과 */
 .pos-bond-3 { grid-column: 3; grid-row: 4; } /* 5. 현재 */
-.pos-bond-4 { grid-column: 3; grid-row: 5; z-index: 10; border-color: var(--sef-red) !important; } /* 6. 장애물 */
+.pos-bond-4 { 
+    grid-column: 3; grid-row: 5; 
+    transform: rotate(90deg); 
+    border-color: #e74c3c !important; 
+    box-shadow: 0 0 40px rgba(231, 76, 60, 0.1);
+} /* 6. 장애물 (Crossed-Horizontal) */
 .pos-bond-2 { grid-column: 3; grid-row: 6; } /* 4. 기초/과거 */
 .pos-bond-1 { grid-column: 3; grid-row: 7; } /* 3. 이유 */
 
@@ -391,8 +400,8 @@ header {
 /* Cleaned up decoration classes */
 
 .relation-grid .slot {
-    width: 160px; /* Locked constellation node width */
-    height: 150px; /* Compact relationship height */
+    width: 140px; /* Standardized Tree size */
+    height: 180px; /* Standardized Tree size */
 }
 
 .relation-container .board-actions {
@@ -622,6 +631,74 @@ header {
     margin-right: 0.8rem;
     letter-spacing: 1px;
 }
+/* --- Quick Search Overlay --- */
+/* --- Contextual Quick Search Pop-over --- */
+#quick-search-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.15); /* Lightest scrim for focus */
+    z-index: 1000;
+}
+
+.qs-modal {
+    width: 400px; /* Precise Popover Width */
+    max-height: 420px;
+    padding: 1.5rem;
+    background: rgba(14, 14, 14, 0.98);
+    border: 1.5px solid rgba(212, 175, 55, 0.4);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 25px rgba(212, 175, 55, 0.15);
+    backdrop-filter: blur(20px);
+    animation: starBirth 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: center center;
+}
+
+.qs-list {
+    flex: 1;
+    overflow-y: auto !important; 
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-right: 0.5rem;
+    max-height: 280px; 
+}
+
+.qs-item {
+    padding: 0.8rem 1.2rem;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid transparent;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.qs-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: rgba(212, 175, 55, 0.4);
+    transform: translateX(10px);
+}
+
+.qs-icon { font-size: 1.5rem; }
+.qs-name { font-weight: 700; color: #fff; }
+.qs-suit { font-size: 0.75rem; color: #888; margin-left: auto; text-transform: uppercase; letter-spacing: 1px; }
+
+.qs-empty {
+    padding: 3rem;
+    text-align: center;
+    color: #555;
+    font-size: 0.9rem;
+    font-style: italic;
+}
+
+/* Scrollbar styling for QS list */
+.qs-list::-webkit-scrollbar { width: 4px; }
+.qs-list::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.3); border-radius: 2px; }
 
 .modal-footer { margin-top: 3rem; display: flex; justify-content: flex-end; }
 .btn-close-modal, .btn-close-all { padding: 1rem 3rem; background: var(--accent-purple); border: none; color: #fff; font-weight: 900; font-size: 1.1rem; border-radius: 8px; cursor: pointer; }
@@ -631,3 +708,23 @@ header {
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--accent-purple); border-radius: 4px; }
+
+.qs-header { display: flex; justify-content: space-between; align-items: center; }
+.qs-title { font-size: 0.8rem; letter-spacing: 0.4rem; color: var(--accent-gold); opacity: 0.8; }
+#qs-input { width: 100%; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 1rem 1.5rem; font-size: 1.1rem; border-radius: 8px; outline: none; transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1); font-family: 'Noto Sans KR', sans-serif; }
+#qs-input:focus { border-color: var(--accent-gold); background: rgba(212, 175, 55, 0.08); box-shadow: 0 0 30px rgba(212, 175, 55, 0.15); }
+.qs-icon { font-size: 1.4rem; }
+.qs-name { font-weight: 500; color: #eee; font-size: 1.1rem; }
+.qs-suit { font-size: 0.7rem; color: #666; margin-left: auto; text-transform: uppercase; letter-spacing: 1px; }
+.qs-empty { padding: 2rem; text-align: center; color: #444; font-size: 0.85rem; font-style: italic; }
+.qs-list::-webkit-scrollbar { width: 3px; }
+.qs-list::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.2); border-radius: 2px; }
+
+#top-interpretation { position: fixed; top: 1.2rem; left: 50%; transform: translateX(-50%); z-index: 2000; width: auto; max-width: 80%; pointer-events: none; }
+.top-inter-inner { background: rgba(14, 14, 14, 0.95); border: 1.5px solid rgba(212, 175, 55, 0.5); padding: 0.8rem 2rem; border-radius: 50px; display: flex; align-items: center; gap: 1.5rem; box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.2); backdrop-filter: blur(15px); animation: starBirth 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+.top-tag { color: var(--accent-gold); font-size: 0.65rem; letter-spacing: 2px; font-weight: 700; opacity: 0.7; }
+.top-name { color: #fff; font-size: 1.1rem; font-weight: 700; border-right: 1px solid rgba(255,255,255,0.2); padding-right: 1.5rem; }
+.top-desc { color: #ccc; font-size: 0.95rem; font-style: italic; }
+.slot-tooltip { display: none !important; }
+.btn-copy-gold { background: rgba(212, 175, 55, 0.1); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 0.5rem 1.2rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s; margin-right: 1rem; }
+.btn-copy-gold:hover { background: var(--accent-gold); color: #000; box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); }

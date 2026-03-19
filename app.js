@@ -1,5 +1,5 @@
 let currentFilter = 'all';
-let currentMode = 'search';
+let currentMode = 'spread';
 let activeSlotIndex = 0;
 let placedCards4 = [null, null, null, null];
 let placedCardsTree = new Array(11).fill(null);
@@ -7,6 +7,7 @@ let placedCardsRelation = new Array(12).fill(null);
 
 document.addEventListener('DOMContentLoaded', () => {
     setupGrid(tarotDataKo);
+    switchMode('spread'); // Star-Birth with Spread
 });
 
 function setupGrid(cards) {
@@ -40,15 +41,26 @@ function switchMode(mode) {
     document.getElementById('tree-board').classList.toggle('hidden', mode !== 'tree');
     document.getElementById('relation-board').classList.toggle('hidden', mode !== 'relation');
     
-    document.getElementById('view-search').classList.toggle('active', mode === 'search');
-    document.getElementById('view-spread').classList.toggle('active', mode === 'spread');
-    document.getElementById('view-tree').classList.toggle('active', mode === 'tree');
-    document.getElementById('view-relation').classList.toggle('active', mode === 'relation');
+    // UI Tab Sync (Check for null to prevent errors)
+    const btns = ['view-spread', 'view-relation', 'view-tree'];
+    const modes = ['spread', 'relation', 'tree'];
+    
+    btns.forEach((id, i) => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.toggle('active', mode === modes[i]);
+    });
     
     if (mode === 'spread' || mode === 'tree' || mode === 'relation') {
-        activateSlot(0, mode);
+        // Just set the active index and highlight, don't trigger search
+        activeSlotIndex = 0;
+        const slots = document.querySelectorAll('.slot');
+        slots.forEach(slot => slot.classList.remove('active'));
+        let prefix = 'slot';
+        if (mode === 'tree') prefix = 'tslot';
+        if (mode === 'relation') prefix = 'rslot';
+        const target = document.getElementById(`${prefix}-0`);
+        if (target) target.classList.add('active');
     }
-    filterCards();
 }
 
 function activateSlot(index, mode = currentMode) {
@@ -61,7 +73,77 @@ function activateSlot(index, mode = currentMode) {
     slots.forEach(slot => slot.classList.remove('active'));
     
     const target = document.getElementById(`${prefix}-${index}`);
-    if (target) target.classList.add('active');
+    if (target) {
+        target.classList.add('active');
+        
+        // CONTEXTUAL QUICK SEARCH POSITIONING
+        const rect = target.getBoundingClientRect();
+        const qsOverlay = document.getElementById('quick-search-overlay');
+        const qsModal = qsOverlay.querySelector('.qs-modal');
+        
+        qsOverlay.classList.remove('hidden');
+        
+        // Center modal relative to slot
+        const modalWidth = 400; // Updated for compact look
+        const leftPos = Math.min(window.innerWidth - modalWidth - 20, Math.max(20, rect.left + rect.width/2 - modalWidth/2));
+        const topPos = Math.min(window.innerHeight - 450, Math.max(20, rect.top - 100)); // Up slightly
+        
+        qsModal.style.position = 'fixed';
+        qsModal.style.left = `${leftPos}px`;
+        qsModal.style.top = `${topPos}px`;
+        qsModal.style.width = `${modalWidth}px`;
+        
+        const qsInput = document.getElementById('qs-input');
+        qsInput.value = '';
+        qsInput.focus();
+        filterQuickSearch(''); 
+    }
+}
+
+function closeQuickSearch() {
+    document.getElementById('quick-search-overlay').classList.add('hidden');
+}
+
+function filterQuickSearch(forcedQuery) {
+    const query = (typeof forcedQuery === 'string' ? forcedQuery : document.getElementById('qs-input').value).toLowerCase();
+    const resultsArea = document.getElementById('qs-results');
+    
+    if (query.length < 1 && forcedQuery === undefined) {
+        // Show all cards initially or clear? Let's show common ones or all.
+        // For better UX, let's show ALL sorted by name initially or keep empty.
+        // User wants to "find", so maybe empty until they type.
+        resultsArea.innerHTML = '<div class="qs-empty">찾고 싶은 카드 이름을 입력하세요...</div>';
+        return;
+    }
+
+    const filtered = tarotDataKo.filter(c => 
+        c.name.toLowerCase().includes(query) || 
+        c.keywords.some(k => k.toLowerCase().includes(query))
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
+    if (filtered.length === 0) {
+        resultsArea.innerHTML = '<div class="qs-empty">일치하는 카드가 없습니다.</div>';
+        return;
+    }
+
+    resultsArea.innerHTML = filtered.map(card => {
+        const [korName] = card.name.split(' (');
+        return `
+            <div class="qs-item" onclick="selectQuickCard('${card.name.replace(/'/g, "\\'")}')">
+                <span class="qs-icon">${getSuitIcon(card.suit)}</span>
+                <span class="qs-name">${korName}</span>
+                <span class="qs-suit">${card.suit}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectQuickCard(cardName) {
+    const card = tarotDataKo.find(c => c.name === cardName);
+    if (card) {
+        placeCardInSlot(card);
+        closeQuickSearch();
+    }
 }
 
 function placeCardInSlot(card) {
@@ -159,9 +241,9 @@ function analyzeFullSpread(count) {
         let color = 'var(--accent-gold)';
         if (isTree) color = getSefirotColor(idx);
         if (isRelation) {
-            if ([0, 6, 8].includes(idx)) color = '#3498db'; // Me
+            if ([0, 2, 4, 10, 8, 6].includes(idx)) color = '#d4af37'; // ME / Shared
             if ([1, 7, 9].includes(idx)) color = '#e74c3c'; // Partner
-            if (idx >= 10) color = '#f1c40f'; // Future
+            if (idx === 11) color = '#f1c40f'; // Future
         }
 
         item.style.borderLeft = `8px solid ${color}`;
@@ -309,6 +391,60 @@ function showInterpretation(card) {
 function closeInterpretation() { document.getElementById('modal-overlay').classList.add('hidden'); }
 function closeFullAnalysis() { document.getElementById('modal-overlay').classList.add('hidden'); }
 function closeAllModals() { document.getElementById('modal-overlay').classList.add('hidden'); }
+
+function copyFullAnalysis() {
+    const results = document.getElementById('analysis-results').innerText;
+    // Fallback for non-https/localhost
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(results).then(() => {
+            alert('분석 결과가 클립보드에 복사되었습니다.');
+        }).catch(err => copyFallback(results));
+    } else {
+        copyFallback(results);
+    }
+}
+
+function copyFallback(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        alert('분석 결과가 클립보드에 복사되었습니다.');
+    } catch (err) {
+        alert('복사에 실패했습니다. 수동으로 선택하여 복사해 주세요.');
+    }
+    document.body.removeChild(textArea);
+}
+
+function showInterpretationOnTop(index, mode) {
+    let cards;
+    if (mode === 'tree') cards = placedCardsTree;
+    else if (mode === 'relation') cards = placedCardsRelation;
+    else cards = placedCards4;
+
+    const card = cards[index];
+    const topBar = document.getElementById('top-interpretation');
+    
+    if (card && card.name) {
+        topBar.classList.remove('hidden');
+        topBar.innerHTML = `
+            <div class="top-inter-inner">
+                <span class="top-tag">✧ AETHER SYNC ✧</span>
+                <span class="top-name">${card.name}</span>
+                <span class="top-desc">${card.description}</span>
+            </div>
+        `;
+    } else {
+        topBar.classList.add('hidden');
+    }
+}
+
+function clearTopInterpretation() {
+    document.getElementById('top-interpretation').classList.add('hidden');
+}
+
 function drawRandom() {
     const randomIndex = Math.floor(Math.random() * tarotDataKo.length);
     showInterpretation(tarotDataKo[randomIndex]);
