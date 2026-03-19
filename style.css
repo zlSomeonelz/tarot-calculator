@@ -45,12 +45,14 @@ header {
 
 .logo {
     font-family: var(--font-heading);
-    font-size: 3.5rem;
-    font-weight: 700;
-    letter-spacing: 0.8rem;
+    font-size: 3rem;
+    font-weight: 200;
+    letter-spacing: 1.2rem;
     text-transform: uppercase;
     color: var(--text-pure);
-    text-shadow: 0 0 25px rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 30px rgba(50, 50, 50, 0.4);
+    margin: 1.5rem 0 3.5rem;
+    width: 100%;
 }
 
 .mode-tabs {
@@ -80,10 +82,11 @@ header {
 }
 
 .mode-btn.active {
-    background: var(--text-pure);
-    color: var(--bg-black);
-    border-color: var(--text-pure);
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+    background: rgba(212, 175, 55, 0.12);
+    color: var(--accent-gold);
+    border: 1.5px solid var(--accent-gold);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
 }
 
 /* --- Tree of Life Map (Expanded) --- */
@@ -235,19 +238,27 @@ header {
 .slot {
     width: 140px;
     height: 180px;
-    background: rgba(0, 0, 0, 0.95);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 4px;
-    padding: 1.2rem;
+    background: rgba(10, 10, 10, 0.7);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    border-radius: 8px;
+    padding: 1.2rem 0.5rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    background-image: radial-gradient(circle at top left, rgba(255,255,255,0.02), transparent 50%);
-    position: relative; /* FOR TOOLTIP */
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+    backdrop-filter: blur(12px);
+    position: relative;
+    z-index: 10;
+}
+
+.slot:hover {
+    transform: translateY(-12px) scale(1.05);
+    border-color: var(--accent-gold);
+    box-shadow: 0 20px 60px rgba(212, 175, 55, 0.25);
+    background: rgba(212, 175, 55, 0.08);
 }
 
 /* Precise Tooltip System */
@@ -380,8 +391,8 @@ header {
 /* Cleaned up decoration classes */
 
 .relation-grid .slot {
-    width: 140px;
-    height: 180px; /* Slimmer for height management */
+    width: 160px; /* Locked constellation node width */
+    height: 150px; /* Compact relationship height */
 }
 
 .relation-container .board-actions {
