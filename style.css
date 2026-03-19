@@ -354,18 +354,18 @@ section {
 .placed-card-inner .title { font-size: 0.8rem; font-weight: 700; color: #fff; line-height: 1.1; text-align: center; }
 
 /* Sefirot Color Tints - Project Moon Department Palette */
-.sef-white { border-color: #ffffff !important; background: rgba(10, 10, 10, 0.95) !important; box-shadow: 0 0 25px rgba(255, 255, 255, 0.1); }
+.sef-white { border-color: #ffffff !important; box-shadow: inset 0 0 50px rgba(255, 255, 255, 0.1) !important; }
 .sef-white .slot-header, .sef-white .slot-content { color: var(--accent-gold) !important; }
 
-.sef-blue { border-color: #3498db !important; } /* Welfare */
-.sef-black { border-color: #443322 !important; background: rgba(0,0,0,0.95); } /* Extraction */
-.sef-red { border-color: #e74c3c !important; } /* Disciplinary */
-.sef-deepblue { border-color: #3498db !important; } /* Welfare (Dupe with blue) */
-.sef-gold { border-color: #f1c40f !important; box-shadow: 0 0 40px rgba(241,196,15,0.1); } /* Central */
-.sef-green { border-color: #2ecc71 !important; } /* Safety */
-.sef-orange { border-color: #e67e22 !important; } /* Training */
-.sef-violet { border-color: #9b59b6 !important; } /* Information */
-.sef-earth { border-color: #f39c12 !important; } /* Control (Yellow/Amber) */
+.sef-blue { border-color: #3498db !important; box-shadow: inset 0 0 50px rgba(52,  152, 219, 0.2) !important; } /* Welfare */
+.sef-black { border-color: #775533 !important; box-shadow: inset 0 0 50px rgba(119, 85, 51, 0.3) !important; } /* Extraction */
+.sef-red { border-color: #e74c3c !important; box-shadow: inset 0 0 50px rgba(231, 76, 60, 0.2) !important; } /* Disciplinary */
+.sef-deepblue { border-color: #3498db !important; box-shadow: inset 0 0 50px rgba(52, 152, 219, 0.2) !important; } /* Welfare (Dupe with blue) */
+.sef-gold { border-color: #f1c40f !important; box-shadow: inset 0 0 50px rgba(241, 196, 15, 0.2) !important; } /* Central */
+.sef-green { border-color: #2ecc71 !important; box-shadow: inset 0 0 50px rgba(46, 204, 113, 0.2) !important; } /* Safety */
+.sef-orange { border-color: #e67e22 !important; box-shadow: inset 0 0 50px rgba(230, 126, 34, 0.2) !important; } /* Training */
+.sef-violet { border-color: #9b59b6 !important; box-shadow: inset 0 0 50px rgba(155, 89, 182, 0.2) !important; } /* Information */
+.sef-earth { border-color: #f39c12 !important; box-shadow: inset 0 0 50px rgba(243, 156, 18, 0.2) !important; } /* Control (Yellow/Amber) */
 .sef-grey { border-color: #999999 !important; border-style: solid !important; opacity: 0.8; } /* Records/Daath */
 .sef-dashed { border-style: dashed !important; opacity: 0.6; }
 
@@ -559,24 +559,43 @@ section {
 
 .grid-card {
     aspect-ratio: 2/3.2;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.5rem;
+    background: rgba(10, 10, 10, 0.9);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    background-size: cover;
+    background-position: center;
+    transform-origin: center center;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-align: center;
-    transform-origin: center center;
+    justify-content: center;
 }
 
-.grid-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+.grid-card:hover {
+    transform: scale(1.08); /* Unified scale with slots */
+    border-color: rgba(255, 255, 255, 0.5);
+    z-index: 50;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
 
-.grid-card .icon { font-size: 2.2rem; margin-bottom: 0.8rem; }
-.grid-card .name { font-weight: 700; color: #fff; line-height: 1.3; font-size: 1rem; }
+.grid-card .name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 1rem 0.5rem;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    font-weight: 800;
+    color: #fff;
+    font-size: 0.9rem;
+    z-index: 10;
+    text-shadow: 0 0 10px #000;
+    text-align: center;
+}
 
 /* --- Modals & Overlays --- */
 #modal-overlay {

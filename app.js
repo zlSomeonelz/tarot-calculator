@@ -18,11 +18,8 @@ function setupGrid(cards) {
         const [korName, engName] = card.name.split(' (');
         const cardEl = document.createElement('div');
         cardEl.className = 'grid-card';
-        cardEl.innerHTML = `
-            <div class="icon">${getSuitIcon(card.suit)}</div>
-            <div class="name">${korName}</div>
-            ${engName ? `<p style="font-size: 0.7rem; color: #666; font-weight: 700;">${engName.replace(')', '')}</p>` : ''}
-        `;
+        if (card.image) cardEl.style.backgroundImage = `url('${card.image}')`;
+        cardEl.innerHTML = `<div class="name">${korName}</div>`;
 
         cardEl.onclick = () => {
             if (currentMode === 'search') {
