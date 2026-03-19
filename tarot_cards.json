@@ -1,0 +1,555 @@
+[
+  {
+    "id": 0,
+    "name": "The Fool",
+    "suit": "Major Arcana",
+    "keywords": ["BEGINNING", "SPONTANEITY", "INEXPERIENCE", "OPENNESS"],
+    "description": "The pinnacle of possibilities and potential. Indicates an abundance of choices but hints at a lack of information or experience. A reminder to trust instincts in the absence of learned knowledge. [cite: 5, 11]"
+  },
+  {
+    "id": 1,
+    "name": "Magician",
+    "suit": "Major Arcana",
+    "keywords": ["CREATION", "MANIFESTATION", "POWER", "WILL"],
+    "description": "A being of action, concentration, and power. Represents the one who understands the workings and powers of all four suits (human identities). [cite: 23, 30, 31]"
+  },
+  {
+    "id": 2,
+    "name": "High Priestess",
+    "suit": "Major Arcana",
+    "keywords": ["MYSTERY", "SUBCONSCIOUS", "OCCULT KNOWLEDGE", "INTUITION"],
+    "description": "The feminine counterpart to the Magician; quiet and contemplative. Suggests a time of stillness, investigation, and delving into underlying truths. [cite: 41, 44, 45]"
+  },
+  {
+    "id": 3,
+    "name": "Empress",
+    "suit": "Major Arcana",
+    "keywords": ["MOTHERING", "RICHES", "PLEASURE", "SEXUALITY"],
+    "description": "The embodiment of pleasure and abundance in all forms. Represents mothering, birth, and oneness with the planet. Her bounty should be shared, not coveted. [cite: 56, 57, 58, 60]"
+  },
+  {
+    "id": 4,
+    "name": "Emperor",
+    "suit": "Major Arcana",
+    "keywords": ["ORDER", "STRUCTURE", "CONTROL", "SECURITY"],
+    "description": "Stern, direct, and rigid. Creates order from chaos through rules, organization, and responsibility. Essential for the fluid function of any system. [cite: 69, 72, 75]"
+  },
+  {
+    "id": 5,
+    "name": "Hierophant",
+    "suit": "Major Arcana",
+    "keywords": ["BELIEF", "COOPERATION", "COMMUNITY", "TRADITION"],
+    "description": "Symbolizes a call to be part of something greater through shared beliefs and teamwork. Represents the power of eternal ideas passed down through groups. [cite: 84, 85, 88, 89]"
+  },
+  {
+    "id": 6,
+    "name": "Lovers",
+    "suit": "Major Arcana",
+    "keywords": ["BALANCE"],
+    "description": "Represented by the red string of fate that binds souls. Symbolizes opposing but attractive forces and the choice between two different paths. [cite: 100, 106]"
+  },
+  {
+    "id": 7,
+    "name": "Chariot",
+    "suit": "Major Arcana",
+    "keywords": ["AMBITION", "WILL", "SUCCESS", "CONTROL"],
+    "description": "The embodiment of victory after struggle. Represents mastering oneself and harnessing surrounding powers to achieve goals. [cite: 117, 121]"
+  },
+  {
+    "id": 8,
+    "name": "Strength",
+    "suit": "Major Arcana",
+    "keywords": ["STRENGTH", "COMPASSION", "UNDERSTANDING", "COURAGE"],
+    "description": "True strength lies in conviction and the effort to understand the 'other' rather than aggression. Protection of the misunderstood. [cite: 135, 138, 140]"
+  },
+  {
+    "id": 9,
+    "name": "Hermit",
+    "suit": "Major Arcana",
+    "keywords": ["SEARCHING", "REFLECTION", "SOLITUDE", "MENTORING"],
+    "description": "Willingly setting oneself apart to seek truths obscured by civilization. Values internal growth over physical concerns. [cite: 153, 155]"
+  },
+  {
+    "id": 10,
+    "name": "Destiny",
+    "suit": "Major Arcana",
+    "keywords": ["REVERSAL", "FATE", "LUCK", "INEVITABILITY"],
+    "description": "An unknowable force beyond human control. Replaces the Wheel of Fortune. Represents life-altering events and the weaving of collective fate. [cite: 169, 170, 176, 177]"
+  },
+  {
+    "id": 11,
+    "name": "Justice",
+    "suit": "Major Arcana",
+    "keywords": ["FAIRNESS", "PARTIALITY", "KARMA", "CLARITY", "JUSTICE"],
+    "description": "The blind arbiter of truth. Calls us to put aside personal predilections and see actions through impartial eyes. [cite: 187, 189]"
+  },
+  {
+    "id": 12,
+    "name": "Hanged Man",
+    "suit": "Major Arcana",
+    "keywords": ["SURRENDER", "FAITH", "SACRIFICE", "PERSPECTIVE"],
+    "description": "Surrender of principle or will. Realization that some situations are won by losing. Taking an unexpected approach. [cite: 201, 202, 205]"
+  },
+  {
+    "id": 13,
+    "name": "Death",
+    "suit": "Major Arcana",
+    "keywords": ["END", "EVOLUTION", "CHANGE", "MORTALITY"],
+    "description": "A synonym for change and the end of one chapter. Indicates the necessity of growth and flexibility to truly live. [cite: 221, 229]"
+  },
+  {
+    "id": 14,
+    "name": "Temperance",
+    "suit": "Major Arcana",
+    "keywords": ["BALANCE", "CONSIDERATION", "ACCEPTANCE", "COMPROMISE"],
+    "description": "A unifying factor between extremes. Asks for moderation and control of desires so they do not harm others or oneself. [cite: 233, 239]"
+  },
+  {
+    "id": 15,
+    "name": "Devil",
+    "suit": "Major Arcana",
+    "keywords": ["TEMPTATION", "EXCESS", "DECEIT", "MATERIALISM"],
+    "description": "Twists good things like pride and affection into binding forces. Represents a 'willing prison' of beautiful but impermanent pleasures. [cite: 251, 257]"
+  },
+  {
+    "id": 16,
+    "name": "Tower",
+    "suit": "Major Arcana",
+    "keywords": ["CHANGE", "CATACLYSM", "DANGER", "EPIPHANY"],
+    "description": "Unexpected and uncomfortable change. Symbolizes the possibility of a great realization (epiphany) from a sudden event. [cite: 268, 274]"
+  },
+  {
+    "id": 17,
+    "name": "Star",
+    "suit": "Major Arcana",
+    "keywords": ["GUIDANCE", "GOODWILL", "OPTIMISM", "HOPE"],
+    "description": "The bringer of light in the dark. Signals a positive turn of luck and illuminates the way, but hope must be followed by action. [cite: 291, 294, 297]"
+  },
+  {
+    "id": 18,
+    "name": "Moon",
+    "suit": "Major Arcana",
+    "keywords": ["INTUITION", "FEAR", "ILLUSION", "PSYCHIC"],
+    "description": "Asks us to view surroundings in a different light to gain power. A conduit of potential energy for those exploring psychic abilities. [cite: 315, 316, 317]"
+  },
+  {
+    "id": 19,
+    "name": "Sun",
+    "suit": "Major Arcana",
+    "keywords": ["INSIGHT", "CELEBRATION", "WARMTH", "JOY"],
+    "description": "A card of self-assurance and confidence. Its light pierces shadow to reveal truth and enlighten intellectually. [cite: 332, 333]"
+  },
+  {
+    "id": 20,
+    "name": "Judgment",
+    "suit": "Major Arcana",
+    "keywords": ["DECISION", "RECKONING", "REWARD", "PUNISHMENT"],
+    "description": "Culmination of actions and intentions. Calls for clarity on what people or projects are deserving of your time. [cite: 345, 351]"
+  },
+  {
+    "id": 21,
+    "name": "World",
+    "suit": "Major Arcana",
+    "keywords": ["WHOLENESS", "COMPLETION", "TRAVEL", "UNDERSTANDING"],
+    "description": "Conclusion of the Fool's journey. Represents a complete understanding of the human condition and equipped to start anew. [cite: 362, 363, 365]"
+  },
+  {
+    "id": 22,
+    "name": "Anant",
+    "suit": "Major Arcana",
+    "keywords": ["ENDLESS", "INFINITE", "EXEMPT", "CYCLICAL"],
+    "description": "Exists outside temporal constraints. Represents the cyclical nature of eternity where the end of one universe brings a new one. [cite: 376, 378, 382]"
+  },
+  {
+    "id": 23,
+    "name": "Ace of Wands",
+    "suit": "Wands",
+    "keywords": ["CREATIVITY", "GOOD NEWS", "COURAGE", "INITIATION"],
+    "description": "Bold step in a new direction; creative opportunity. [cite: 409, 412]"
+  },
+  {
+    "id": 24,
+    "name": "Two of Wands",
+    "suit": "Wands",
+    "keywords": ["DARING", "INFLUENCE", "PIONEERING", "DECISIONS"],
+    "description": "Ambition in exploring the unknown; choice to stay or go. [cite: 422, 423]"
+  },
+  {
+    "id": 25,
+    "name": "Three of Wands",
+    "suit": "Wands",
+    "keywords": ["EXPLORING", "LEADING", "TRAVEL", "ADVENTURE"],
+    "description": "Leadership and forging the way for followers. [cite: 428, 429]"
+  },
+  {
+    "id": 26,
+    "name": "Four of Wands",
+    "suit": "Wands",
+    "keywords": ["CELEBRATING", "FREEDOM", "POSSIBILITY", "EVENTS"],
+    "description": "Happiness after achieving freedom from mental or physical bonds. [cite: 438, 439, 440]"
+  },
+  {
+    "id": 27,
+    "name": "Five of Wands",
+    "suit": "Wands",
+    "keywords": ["CONFLICT", "COMPETITION", "RIVALING", "ANNOYANCES"],
+    "description": "Fierce competition or daily annoyances causing a sense of defeat. [cite: 446, 450]"
+  },
+  {
+    "id": 28,
+    "name": "Six of Wands",
+    "suit": "Wands",
+    "keywords": ["PRIDE", "GLORY", "RESPECT"],
+    "description": "Success over an obstacle; enjoying victory and reputation. [cite: 453, 458, 459]"
+  },
+  {
+    "id": 29,
+    "name": "Seven of Wands",
+    "suit": "Wands",
+    "keywords": ["TERRITORIAL", "DEFENSIVE", "CONVICTION", "RESISTANCE"],
+    "description": "Protecting a firmly held belief or stance against opponents. [cite: 465, 466]"
+  },
+  {
+    "id": 30,
+    "name": "Eight of Wands",
+    "suit": "Wands",
+    "keywords": ["MESSAGE", "ACTION", "SPEED", "EXCITEMENT"],
+    "description": "Time of sudden news requiring quick thinking and adaptive reactions. [cite: 471, 474]"
+  },
+  {
+    "id": 31,
+    "name": "Nine of Wands",
+    "suit": "Wands",
+    "keywords": ["WARY", "GUARDED", "MISTREATED", "PERSEVERING"],
+    "description": "Caution due to past abuse, but still standing and capable of recovery. [cite: 480, 482, 485]"
+  },
+  {
+    "id": 32,
+    "name": "Ten of Wands",
+    "suit": "Wands",
+    "keywords": ["OVERWHELMED", "BURDENED", "STRUGGLING", "NEAR GOAL"],
+    "description": "Biting off more than one can chew; responsibilities are uneven. [cite: 489, 492]"
+  },
+  {
+    "id": 33,
+    "name": "Page of Wands",
+    "suit": "Wands",
+    "keywords": ["ADVENTUROUS", "UNEXPECTED", "EXCITING", "INNOVATIVE"],
+    "description": "Traversing new frontiers; risk-taking mixed with preparedness. [cite: 501, 502, 504]"
+  },
+  {
+    "id": 34,
+    "name": "Knight of Wands",
+    "suit": "Wands",
+    "keywords": ["BRASH", "PASSIONATE", "COURAGEOUS", "BLUNT"],
+    "description": "Drive and showmanship; caution against bravery without planning. [cite: 507, 509, 512]"
+  },
+  {
+    "id": 35,
+    "name": "Queen of Wands",
+    "suit": "Wands",
+    "keywords": ["BEAUTIFUL", "EMPATHIC", "CONFIDENT", "OPTIMISTIC"],
+    "description": "Quiet assurance; a life brimming with active hobbies and interests. [cite: 516, 517, 518]"
+  },
+  {
+    "id": 36,
+    "name": "King of Wands",
+    "suit": "Wands",
+    "keywords": ["COMMANDING", "INSPIRING", "UNITING", "CREATIVE"],
+    "description": "Rallying others through charisma; carving new paths with conviction. [cite: 522, 525]"
+  },
+  {
+    "id": 37,
+    "name": "Ace of Cups",
+    "suit": "Cups",
+    "keywords": ["LOVE", "EMPATHY", "BONDING", "ABUNDANCE"],
+    "description": "Growing sense of compassion; love gives despite difficulties. [cite: 531, 538]"
+  },
+  {
+    "id": 38,
+    "name": "Two of Cups",
+    "suit": "Cups",
+    "keywords": ["CONNECTION", "PARTNERSHIP", "UNION", "ROMANCE"],
+    "description": "Attraction or deep friendship based on trust; end to hostilities. [cite: 542, 545]"
+  },
+  {
+    "id": 39,
+    "name": "Three of Cups",
+    "suit": "Cups",
+    "keywords": ["CELEBRATION", "FRIENDSHIP", "SUPPORT", "CONNECTION"],
+    "description": "Bonds of trust and shared burden; time of joy and relaxation. [cite: 547, 550, 553]"
+  },
+  {
+    "id": 40,
+    "name": "Four of Cups",
+    "suit": "Cups",
+    "keywords": ["WITHDRAWN", "PASSIVE", "INTROSPECTIVE", "HIDDEN"],
+    "description": "Apathy or purposeful withdrawal for introspection and dreaming. [cite: 559, 562]"
+  },
+  {
+    "id": 41,
+    "name": "Five of Cups",
+    "suit": "Cups",
+    "keywords": ["LOSS", "DEFEAT", "SORROW", "DIFFICULTY"],
+    "description": "Failure in projects or relationships; holding onto hope that it will pass. [cite: 567, 569]"
+  },
+  {
+    "id": 42,
+    "name": "Six of Cups",
+    "suit": "Cups",
+    "keywords": ["INNOCENCE", "CAREFREE", "CHARITY", "SWEETNESS"],
+    "description": "Fondness for childhood memories; caution against over-indulging in nostalgia. [cite: 573, 576]"
+  },
+  {
+    "id": 43,
+    "name": "Seven of Cups",
+    "suit": "Cups",
+    "keywords": ["FANTASIES", "DAYDREAMS", "ILLUSIONS", "PROCRASTINATION"],
+    "description": "Creativity but warns against indecision; dreams remain smoke without action. [cite: 584, 587, 589]"
+  },
+  {
+    "id": 44,
+    "name": "Eight of Cups",
+    "suit": "Cups",
+    "keywords": ["DISCOVERY", "JOURNEY", "LONELINESS", "MOVING ON"],
+    "description": "Outgrowing the old; leaving fulfilling pasts for new discoveries. [cite: 594, 595, 596]"
+  },
+  {
+    "id": 45,
+    "name": "Nine of Cups",
+    "suit": "Cups",
+    "keywords": ["INDULGENCE", "ABUNDANCE", "SATISFACTION", "COMFORT"],
+    "description": "A wish come true; reaping rewards and prosperity in social endeavors. [cite: 602, 605]"
+  },
+  {
+    "id": 46,
+    "name": "Ten of Cups",
+    "suit": "Cups",
+    "keywords": ["HAPPINESS", "MATURITY", "UNITY", "FORGIVENESS"],
+    "description": "Emotional growth; past transgressions are forgiven for peace. [cite: 609, 614]"
+  },
+  {
+    "id": 47,
+    "name": "Page of Cups",
+    "suit": "Cups",
+    "keywords": ["SOFT", "HOPEFUL", "CHILDLIKE", "CARING"],
+    "description": "Messages of love; nurturing potential friendship with uplifting spirit. [cite: 618, 621]"
+  },
+  {
+    "id": 48,
+    "name": "Knight of Cups",
+    "suit": "Cups",
+    "keywords": ["EMOTIONAL", "BROODING", "ARTISTIC", "DREAMING"],
+    "description": "Sensitive dreamer; openness and limitless thinking vs delivery. [cite: 624, 626, 629]"
+  },
+  {
+    "id": 49,
+    "name": "Queen of Cups",
+    "suit": "Cups",
+    "keywords": ["INTUITIVE", "UNDERSTANDING", "NURTURING", "TENDER"],
+    "description": "Following heart and intuition; understanding others' emotional states. [cite: 635, 636]"
+  },
+  {
+    "id": 50,
+    "name": "King of Cups",
+    "suit": "Cups",
+    "keywords": ["CALM", "DIPLOMATIC", "DISCIPLINED", "COLLECTED"],
+    "description": "Level-headedness and diplomacy; composure in stormy situations. [cite: 645, 646]"
+  },
+  {
+    "id": 51,
+    "name": "Ace of Swords",
+    "suit": "Swords",
+    "keywords": ["TRUTH", "REASONING", "OBJECTIVITY", "BREAKTHROUGH"],
+    "description": "Dispelling confusion with pure intellect; cutting straight to facts. [cite: 653, 656]"
+  },
+  {
+    "id": 52,
+    "name": "Two of Swords",
+    "suit": "Swords",
+    "keywords": ["BLOCKED OFF", "AVOIDANCE", "STUCK", "REFUSAL"],
+    "description": "Situation requiring action; refusal to choose is still a choice. [cite: 660, 664]"
+  },
+  {
+    "id": 53,
+    "name": "Three of Swords",
+    "suit": "Swords",
+    "keywords": ["HEARTBREAK", "RELEASE", "LESSONS", "ISOLATION"],
+    "description": "Unexpected loss; calling to heal and learn from heartbreak. [cite: 671, 675]"
+  },
+  {
+    "id": 54,
+    "name": "Four of Swords",
+    "suit": "Swords",
+    "keywords": ["RESTING", "REJUVENATING", "PREPARING", "HEALING"],
+    "description": "Recharging from previous effort or preparing for upcoming stress. [cite: 680, 683]"
+  },
+  {
+    "id": 55,
+    "name": "Five of Swords",
+    "suit": "Swords",
+    "keywords": ["SELFISH", "CRIMINAL", "IMMORAL", "CONFLICT"],
+    "description": "Taking advantage of others; behaviors that siphon life from groups. [cite: 690, 691]"
+  },
+  {
+    "id": 56,
+    "name": "Six of Swords",
+    "suit": "Swords",
+    "keywords": ["WEARINESS", "DESPONDENCE", "LETHARGIC", "TRANSITION"],
+    "description": "Lethargic pause while moving towards an unknown, gray future. [cite: 698, 703]"
+  },
+  {
+    "id": 57,
+    "name": "Seven of Swords",
+    "suit": "Swords",
+    "keywords": ["BETRAYAL", "THIEVERY", "PLOTTING", "DISHONOR"],
+    "description": "Subversive situation; loyalty and honor are absent. [cite: 709, 711]"
+  },
+  {
+    "id": 58,
+    "name": "Eight of Swords",
+    "suit": "Swords",
+    "keywords": ["TEST", "CRUCIBLE", "STRESS", "PERSECUTION"],
+    "description": "Stressful environment; opportunity to come out stronger or be destroyed. [cite: 718, 720]"
+  },
+  {
+    "id": 59,
+    "name": "Nine of Swords",
+    "suit": "Swords",
+    "keywords": ["NIGHTMARE", "TERROR", "DESPERATION", "WORRY"],
+    "description": "Loss of hope; dread that is perhaps more dream/mental than reality. [cite: 726, 732, 733]"
+  },
+  {
+    "id": 60,
+    "name": "Ten of Swords",
+    "suit": "Swords",
+    "keywords": ["CRISIS", "BREAKDOWN", "PERSEVERANCE", "CLOSURE"],
+    "description": "Darkness before dawn; perseverance needed so the story doesn't end in dark. [cite: 737, 741]"
+  },
+  {
+    "id": 61,
+    "name": "Page of Swords",
+    "suit": "Swords",
+    "keywords": ["TRUTH", "RESOLVE", "CLARITY", "CANDOR"],
+    "description": "Facing problems head-on; seeking truth in the face of setbacks. [cite: 745, 749]"
+  },
+  {
+    "id": 62,
+    "name": "Knight of Swords",
+    "suit": "Swords",
+    "keywords": ["CUTTING", "DIRECT", "LOGICAL", "AGILE"],
+    "description": "Excessive force through intellect; penetrating confusion by setting aside feelings. [cite: 754, 756]"
+  },
+  {
+    "id": 63,
+    "name": "Queen of Swords",
+    "suit": "Swords",
+    "keywords": ["JUST", "STRAIGHTFORWARD", "HONEST", "SHARP"],
+    "description": "Knowledge of the factual and empirical; truth can sometimes hurt. [cite: 763, 766]"
+  },
+  {
+    "id": 64,
+    "name": "King of Swords",
+    "suit": "Swords",
+    "keywords": ["COMMANDING", "INSPIRING", "UNITING", "CREATIVE"],
+    "description": "Calculated and impartial; potential for harming oneself if only logical. [cite: 773, 776, 777]"
+  },
+  {
+    "id": 65,
+    "name": "Ace of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["PRACTICALITY", "WORKING", "WEALTH", "STABILITY"],
+    "description": "Investment paid off; using manual labor to build a foundation. [cite: 781, 783]"
+  },
+  {
+    "id": 66,
+    "name": "Two of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["FUN", "INDECISIVENESS", "JUGGLING", "FINANCES"],
+    "description": "Balancing shifting attentions; warning of financial instability. [cite: 791, 793]"
+  },
+  {
+    "id": 67,
+    "name": "Three of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["DEDICATION", "GROWTH", "TEAMWORK", "SYNERGY"],
+    "description": "Using each other's strengths; careful consideration and planning. [cite: 798, 802]"
+  },
+  {
+    "id": 68,
+    "name": "Four of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["HOARDING", "GREED", "MATERIALISM", "STAGNATION"],
+    "description": "Inability to move on; riches meant to be used, not dormant. [cite: 808, 810, 811]"
+  },
+  {
+    "id": 69,
+    "name": "Five of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["HARDSHIP", "REJECTION", "POVERTY", "SICKNESS"],
+    "description": "Temporary hard times in wealth or health; seeking help when necessary. [cite: 817, 819]"
+  },
+  {
+    "id": 70,
+    "name": "Six of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["INEQUALITY", "DOMINATION", "APPRAISAL", "CONTRAST"],
+    "description": "One party has greater access; power used to dominate or give. [cite: 828, 829]"
+  },
+  {
+    "id": 71,
+    "name": "Seven of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["REST", "PRIDE", "REWARD", "EVALUATION"],
+    "description": "Reaching a goal/milestone; evaluate current position during rest. [cite: 833, 834, 838]"
+  },
+  {
+    "id": 72,
+    "name": "Eight of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["CRAFTING", "WORK", "QUALITY", "DILIGENCE"],
+    "description": "Continued effort required; advancing knowledge and pushing boundaries. [cite: 843, 845]"
+  },
+  {
+    "id": 73,
+    "name": "Nine of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["RESTRAINT", "ABUNDANCE", "LUXURY"],
+    "description": "Upscale luxuries enjoyed for oneself, not for public bragging. [cite: 850, 853, 854]"
+  },
+  {
+    "id": 74,
+    "name": "Ten of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["PROSPERITY", "STABILITY", "FAMILY", "LONGEVITY"],
+    "description": "Long-lasting wealth; focus on growing family, relations, and wisdom. [cite: 859, 861]"
+  },
+  {
+    "id": 75,
+    "name": "Page of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["INITIATIVE", "PRACTICAL", "PHYSICAL", "EARTHLY"],
+    "description": "Love for physical activity; initiative leads to success. [cite: 867, 869, 871]"
+  },
+  {
+    "id": 6,
+    "name": "Knight of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["PREPARED", "STEADFAST", "DEDICATED", "CAREFUL"],
+    "description": "Obsessive preparation; tenacity and stamina in work. [cite: 874, 878, 879]"
+  },
+  {
+    "id": 77,
+    "name": "Queen of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["GIVING", "WELCOMING", "NURTURING", "AUTHENTIC"],
+    "description": "Dependable in emotional need; practical use of the world. [cite: 884, 887]"
+  },
+  {
+    "id": 78,
+    "name": "King of Pentacles",
+    "suit": "Pentacles",
+    "keywords": ["ENTREPRENEUR", "FORGING", "SUPPORT", "SUCCESSFUL"],
+    "description": "Creation of opportunities; complete control over the material world. [cite: 894, 895]"
+  }
+]

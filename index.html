@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Tarot Answer - True Black Studio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="noise-overlay"></div>
+    <div id="app-container">
+        <header>
+            <div class="logo">BLACK TAROT ANSWER</div>
+            <nav class="mode-tabs">
+                <button id="view-search" class="mode-btn active" onclick="switchMode('search')">도감</button>
+                <button id="view-spread" class="mode-btn" onclick="switchMode('spread')">포 카드</button>
+                <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- 1. 포 카드 -->
+            <section id="spread-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="board-slots-4">
+                        <div id="slot-0" class="slot active" onclick="activateSlot(0)"><div class="slot-header">과거 <br><small>PAST</small></div><div class="slot-content">선택</div></div>
+                        <div id="slot-1" class="slot" onclick="activateSlot(1)"><div class="slot-header">현재 <br><small>PRESENT</small></div><div class="slot-content">선택</div></div>
+                        <div id="slot-2" class="slot" onclick="activateSlot(2)"><div class="slot-header">미래 <br><small>FUTURE</small></div><div class="slot-content">선택</div></div>
+                        <div id="slot-3" class="slot highlight" onclick="activateSlot(3)"><div class="slot-header">해결책 <br><small>SOLUTION</small></div><div class="slot-content">선택</div></div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(4)">전체 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(4)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 세피로트의 나무 (Project Moon 스타일) -->
+            <section id="tree-board" class="hidden">
+                <div class="tree-container">
+                    <!-- Path Pattern Overlay (Centered behind slots) -->
+                    <div class="tree-bg-overlay">
+                        <!-- Precisely Recalculated Coordinates (Col Step: 190px, Row Step: 60px) -->
+                        <svg viewBox="0 0 580 950" width="580" height="950" style="stroke:rgba(212,175,55,0.4); stroke-width:2.5; filter: drop-shadow(0 0 8px rgba(212,175,55,0.3));">
+                            <!-- Kether(0: 280,175) to Chokmah(1: 470,235) & Binah(2: 90,235) -->
+                            <line x1="280" y1="175" x2="470" y2="235" />
+                            <line x1="280" y1="175" x2="90" y2="235" />
+                            <line x1="470" y1="235" x2="90" y2="235" />
+                            
+                            <!-- Chokmah(1) to Chesed(3: 470,475) & Tiphareth(5: 280,435) -->
+                            <line x1="470" y1="235" x2="470" y2="475" />
+                            <line x1="470" y1="235" x2="280" y2="435" />
+                            
+                            <!-- Binah(2) to Geburah(4: 90,475) & Tiphareth(5) -->
+                            <line x1="90" y1="235" x2="90" y2="475" />
+                            <line x1="90" y1="235" x2="280" y2="435" />
+                            
+                            <!-- Chesed(3) to Geburah(4) & Tiphareth(5) & Netzach(6: 470,715) -->
+                            <line x1="470" y1="475" x2="90" y2="475" />
+                            <line x1="470" y1="475" x2="280" y2="435" />
+                            <line x1="470" y1="475" x2="470" y2="715" />
+                            
+                            <!-- Geburah(4) to Tiphareth(5) & Hod(7: 90,715) -->
+                            <line x1="90" y1="475" x2="280" y2="435" />
+                            <line x1="90" y1="475" x2="90" y2="715" />
+                            
+                            <!-- Tiphareth(5) to Netzach(6) & Hod(7) & Yesod(8: 280,675) -->
+                            <line x1="280" y1="435" x2="470" y2="715" />
+                            <line x1="280" y1="435" x2="90" y2="715" />
+                            <line x1="280" y1="435" x2="280" y2="675" />
+                            
+                            <!-- Netzach(6) to Hod(7) & Yesod(8) & Malkuth(9: 280,895) -->
+                            <line x1="470" y1="715" x2="90" y2="715" />
+                            <line x1="470" y1="715" x2="280" y2="675" />
+                            <line x1="470" y1="715" x2="280" y2="895" />
+                            
+                            <!-- Hod(7) to Yesod(8) & Malkuth(9) -->
+                            <line x1="90" y1="715" x2="280" y2="675" />
+                            <line x1="90" y1="715" x2="280" y2="895" />
+                            
+                            <!-- Yesod(8) to Malkuth(9) -->
+                            <line x1="280" y1="675" x2="280" y2="895" />
+                        </svg>
+                    </div>
+
+                    <!-- World Labels (Left Sidebar Overlay) -->
+                    <div class="world-sidebar">
+                        <div class="world-label world-top">ATZILUTH <small>원형: 정신의 근원과 순수한 의지</small></div>
+                        <div class="world-label world-mid">BERIAH <small>창조: 감정의 발현과 깊은 열망</small></div>
+                        <div class="world-label world-low">YETZIRAH <small>형성: 정보의 체계화와 구체적 계획</small></div>
+                        <div class="world-label world-bottom">ASIYAH <small>활동: 최종적인 결과와 현실적 현현</small></div>
+                    </div>
+
+                    <!-- Layout Guides (Pillars) -->
+                    <div class="tree-pillars-guide">
+                        <div class="guide-pillar"><small>엄격 (Severity)</small></div>
+                        <div class="guide-pillar"><small>균형 (Mildness)</small></div>
+                        <div class="guide-pillar"><small>자비 (Mercy)</small></div>
+                    </div>
+
+                    <!-- Interactive Slots Grid -->
+                    <div class="tree-grid-refined">
+                        <!-- Upper -->
+                        <div id="tslot-0" class="slot active sef-white pos-center-1" onclick="activateSlot(0, 'tree')">
+                            <div class="slot-header">1. 케테르<br><small>설계팀 (Architecture)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">남아있는 영혼</div>
+                        </div>
+                        <div id="tslot-1" class="slot sef-grey pos-right-2" onclick="activateSlot(1, 'tree')">
+                            <div class="slot-header">2. 호크마<br><small>기록팀 (Records)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">닿을 수 있는 영원</div>
+                        </div>
+                        <div id="tslot-2" class="slot sef-black pos-left-2" onclick="activateSlot(2, 'tree')">
+                            <div class="slot-header">3. 비나<br><small>추출팀 (Extraction)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">굴레를 끊어낼 관용</div>
+                        </div>
+
+                        <!-- Da'ath -->
+                        <div id="tslot-10" class="slot sef-grey pos-center-daath" onclick="activateSlot(10, 'tree')">
+                            <div class="slot-header"><small>지식 (Da'ath)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">건너야 할 심연</div>
+                        </div>
+
+                        <!-- Middle -->
+                        <div id="tslot-3" class="slot sef-blue pos-right-4" onclick="activateSlot(3, 'tree')">
+                            <div class="slot-header">4. 헤세드<br><small>복지팀 (Welfare)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">믿음에 보답하는 마음</div>
+                        </div>
+                        <div id="tslot-4" class="slot sef-red pos-left-4" onclick="activateSlot(4, 'tree')">
+                            <div class="slot-header">5. 게부라<br><small>징계팀 (Disciplinary)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">굴복하지 않는 용기</div>
+                        </div>
+                        <div id="tslot-5" class="slot sef-gold pos-center-5" onclick="activateSlot(5, 'tree')">
+                            <div class="slot-header">6. 티페레트<br><small>중앙본부 (Central)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">존재에 대한 확신</div>
+                        </div>
+
+                        <!-- Lower -->
+                        <div id="tslot-6" class="slot sef-green pos-right-7" onclick="activateSlot(6, 'tree')">
+                            <div class="slot-header">7. 네짜흐<br><small>안전팀 (Safety)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">삶을 이어갈 용기</div>
+                        </div>
+                        <div id="tslot-7" class="slot sef-orange pos-left-7" onclick="activateSlot(7, 'tree')">
+                            <div class="slot-header">8. 호드<br><small>교육팀 (Training)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">더 나은 존재가 될 희망</div>
+                        </div>
+                        <div id="tslot-8" class="slot sef-violet pos-center-8" onclick="activateSlot(8, 'tree')">
+                            <div class="slot-header">9. 예소드<br><small>정보팀 (Information)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">분별할 수 있는 이성</div>
+                        </div>
+
+                        <!-- Bottom -->
+                        <div id="tslot-9" class="slot sef-earth pos-center-10" onclick="activateSlot(9, 'tree')">
+                            <div class="slot-header">10. 말쿠트<br><small>지휘팀 (Control)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">똑바로 설 수 있는 의지</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-actions">
+                    <button class="btn-main-gold" onclick="analyzeFullSpread(10)">전체 분석 리포트</button>
+                    <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                </div>
+            </section>
+
+            <!-- 검색 영역 -->
+            <section id="card-selection-area">
+                <div class="search-wrap">
+                    <input type="text" id="universal-search" placeholder="영혼의 울림을 따라 검색하세요..." oninput="filterCards()">
+                    <div id="search-filters" class="filter-tabs">
+                        <button class="tab-btn active" onclick="setFilter(this, 'all')">전체</button>
+                        <button class="tab-btn" onclick="setFilter(this, 'Major Arcana')">메이저</button>
+                        <button class="tab-btn" onclick="setFilter(this, 'Wands')">완드</button>
+                        <button class="tab-btn" onclick="setFilter(this, 'Cups')">컵</button>
+                        <button class="tab-btn" onclick="setFilter(this, 'Swords')">소드</button>
+                        <button class="tab-btn" onclick="setFilter(this, 'Pentacles')">펜타클</button>
+                        <button class="tab-btn rand-btn" onclick="drawRandom()">랜덤</button>
+                    </div>
+                </div>
+                <div id="cards-grid" class="cards-grid"></div>
+            </section>
+        </main>
+        <footer><p>© 2026 BLACK TAROT ANSWER. THE STARS ARE WITHIN YOU.</p></footer>
+    </div>
+
+    <!-- 모달 -->
+    <div id="modal-overlay" class="hidden" onclick="closeAllModals()">
+        <div id="interpretation" class="modal-content glass-dark" onclick="event.stopPropagation()">
+            <div class="modal-header"><span id="card-suit-tag" class="tag-gold">Major</span><button onclick="closeInterpretation()" class="close-icon">✕</button></div>
+            <h2 id="card-name" class="title-xl">Card Name</h2>
+            <div id="keywords-list" class="keywords-wrap"></div>
+            <div class="divider"></div>
+            <p id="card-desc" class="desc-readable"></p>
+        </div>
+        <div id="full-analysis" class="modal-content full-analysis glass-solid" onclick="event.stopPropagation()">
+            <div class="modal-header"><h2 class="title-lg">세피로트의 나무 통합 분석</h2><button onclick="closeFullAnalysis()" class="close-icon">✕</button></div>
+            <div id="analysis-results" class="analysis-scroll"></div>
+        </div>
+    </div>
+
+    <script src="data_ko.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
