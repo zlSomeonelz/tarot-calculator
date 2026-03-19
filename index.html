@@ -17,6 +17,7 @@
             <nav class="mode-tabs">
                 <button id="view-search" class="mode-btn active" onclick="switchMode('search')">도감</button>
                 <button id="view-spread" class="mode-btn" onclick="switchMode('spread')">포 카드</button>
+                <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계 분석</button>
                 <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
             </nav>
         </header>
@@ -34,6 +35,38 @@
                     <div class="board-actions">
                         <button class="btn-main-gold" onclick="analyzeFullSpread(4)">전체 분석 리포트</button>
                         <button class="btn-outline" onclick="clearBoard(4)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 관계 분석 (컵 오브 릴레이션쉽 - 12장) -->
+            <section id="relation-board" class="hidden">
+                <div class="relation-container">
+                    <div class="relation-grid">
+                        <!-- Left Side: My Energy -->
+                        <div class="side-label me-side">ME <small>나의 에너지</small></div>
+                        <div id="rslot-0" class="slot sef-white pos-me-1" onclick="activateSlot(0, 'relation')"><div class="slot-header">1. 나 <br><small>MY STATE</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-6" class="slot sef-white pos-me-2" onclick="activateSlot(6, 'relation')"><div class="slot-header">7. 나의 겉모습 <br><small>SURFACE</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-8" class="slot sef-gold pos-me-3" onclick="activateSlot(8, 'relation')"><div class="slot-header">9. 나의 속마음 <br><small>INNER MIND</small></div><div class="slot-content">선택</div></div>
+
+                        <!-- Right Side: Partner's Energy -->
+                        <div class="side-label partner-side">PARTNER <small>상대의 에너지</small></div>
+                        <div id="rslot-1" class="slot sef-white pos-you-1" onclick="activateSlot(1, 'relation')"><div class="slot-header">2. 상대 <br><small>PARTNER'S STATE</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-7" class="slot sef-white pos-you-2" onclick="activateSlot(7, 'relation')"><div class="slot-header">8. 상대의 겉모습 <br><small>SURFACE</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-9" class="slot sef-gold pos-you-3" onclick="activateSlot(9, 'relation')"><div class="slot-header">10. 상대의 속마음 <br><small>INNER MIND</small></div><div class="slot-content">선택</div></div>
+
+                        <!-- Center: The Connection -->
+                        <div class="side-label bond-side">CONNECTION <small>관계의 흐름</small></div>
+                        <div id="rslot-2" class="slot sef-violet pos-bond-1" onclick="activateSlot(2, 'relation')"><div class="slot-header">3. 만남 <br><small>REASON</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-3" class="slot sef-grey pos-bond-2" onclick="activateSlot(3, 'relation')"><div class="slot-header">4. 기초/과거 <br><small>FOUNDATION</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-4" class="slot sef-blue pos-bond-3" onclick="activateSlot(4, 'relation')"><div class="slot-header">5. 현재 <br><small>PRESENT</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-5" class="slot sef-red pos-bond-4" onclick="activateSlot(5, 'relation')"><div class="slot-header">6. 장애물 <br><small>OBSTACLE</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-10" class="slot sef-green pos-bond-5" onclick="activateSlot(10, 'relation')"><div class="slot-header">11. 결과 <br><small>RESULT</small></div><div class="slot-content">선택</div></div>
+                        <div id="rslot-11" class="slot sef-gold pos-bond-6" onclick="activateSlot(11, 'relation')"><div class="slot-header">12. 미래 <br><small>FUTURE</small></div><div class="slot-content">선택</div></div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(12)">관계 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(12)">초기화</button>
                     </div>
                 </div>
             </section>
