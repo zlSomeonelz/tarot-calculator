@@ -28,7 +28,7 @@ function setupGrid(cards) {
             if (currentMode === 'search') {
                 showInterpretation(card);
             } else {
-                placeCardInSlot(card);
+                initiateCardPlacement(card);
             }
         };
         grid.appendChild(cardEl);
@@ -43,6 +43,7 @@ function switchMode(mode) {
     document.getElementById('celtic-board').classList.toggle('hidden', mode !== 'celtic');
     document.getElementById('hexa-board').classList.toggle('hidden', mode !== 'hexa');
     document.getElementById('zodiac-board').classList.toggle('hidden', mode !== 'zodiac');
+
 
     updateSpreadGuide(mode);
 
@@ -66,6 +67,7 @@ function switchMode(mode) {
         if (mode === 'celtic') prefix = 'cslot';
         if (mode === 'hexa') prefix = 'hslot';
         if (mode === 'zodiac') prefix = 'zslot';
+        if (mode === 'zodiac') prefix = 'zslot';
         const target = document.getElementById(`${prefix}-0`);
         if (target) target.classList.add('active');
     }
@@ -78,6 +80,7 @@ function activateSlot(index, mode = currentMode) {
     if (mode === 'relation') prefix = 'rslot';
     if (mode === 'celtic') prefix = 'cslot';
     if (mode === 'hexa') prefix = 'hslot';
+    if (mode === 'zodiac') prefix = 'zslot';
     if (mode === 'zodiac') prefix = 'zslot';
 
     const slots = document.querySelectorAll('.slot');
@@ -152,12 +155,77 @@ function filterQuickSearch(forcedQuery) {
 function selectQuickCard(cardName) {
     const card = tarotDataKo.find(c => c.name === cardName);
     if (card) {
-        placeCardInSlot(card);
+        initiateCardPlacement(card);
         closeQuickSearch();
     }
 }
 
-function placeCardInSlot(card) {
+let pendingPlaceCard = null;
+
+function initiateCardPlacement(card) {
+    pendingPlaceCard = card;
+    
+    // Destroy previous instance to guarantee freshness
+    let oldOverlay = document.getElementById('direction-select-overlay-js');
+    if (oldOverlay) oldOverlay.remove();
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'direction-select-overlay-js';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+    overlay.style.zIndex = '99999';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    
+    const korName = card.name.split(' (')[0];
+    
+    overlay.innerHTML = `
+        <div style="background: rgba(10, 10, 15, 0.95); border: 2px solid #d4af37; border-radius: 12px; padding: 3rem 2rem; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 50px rgba(0,0,0,1);">
+            <h3 style="color: #d4af37; margin-bottom: 0.5rem; font-size: 1.4rem;">${korName}</h3>
+            <p style="color: #bbb; margin-bottom: 2.5rem;">어느 방향으로 뽑으시겠습니까?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button id="btn-upright" style="flex: 1; padding: 1.5rem 1rem; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; cursor: pointer; border-radius: 8px;">
+                    <div style="color: #d4af37; font-size: 1.8rem; margin-bottom: 0.5rem;">▲</div>
+                    <strong style="font-size: 1.1rem;">정방향</strong>
+                </button>
+                <button id="btn-reversed" style="flex: 1; padding: 1.5rem 1rem; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; cursor: pointer; border-radius: 8px;">
+                    <div style="color: #e74c3c; font-size: 1.8rem; margin-bottom: 0.5rem; transform: rotate(180deg);">▲</div>
+                    <strong style="font-size: 1.1rem;">역방향</strong>
+                </button>
+            </div>
+            <button id="btn-cancel-dir" style="margin-top: 1.5rem; width: 100%; border: none; background: transparent; color: #888; cursor: pointer; padding: 1rem; border-radius: 8px;">취소 (선택 취소)</button>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    document.getElementById('btn-upright').onclick = () => {
+        overlay.remove();
+        confirmDirection(false);
+    };
+    document.getElementById('btn-reversed').onclick = () => {
+        overlay.remove();
+        confirmDirection(true);
+    };
+    document.getElementById('btn-cancel-dir').onclick = () => {
+        overlay.remove();
+        pendingPlaceCard = null;
+    };
+}
+
+function confirmDirection(isReversed) {
+    if (pendingPlaceCard) {
+        placeCardInSlot(pendingPlaceCard, isReversed);
+        pendingPlaceCard = null;
+    }
+}
+
+function placeCardInSlot(baseCard, isReversed) {
     let cards, prefix, max;
     if (currentMode === 'tree') {
         cards = placedCardsTree; prefix = 'tslot'; max = 10;
@@ -173,24 +241,54 @@ function placeCardInSlot(card) {
         cards = placedCards4; prefix = 'slot'; max = 4;
     }
 
+    const card = { ...baseCard, isReversed: isReversed };
+
     cards[activeSlotIndex] = card;
     const slotEl = document.getElementById(`${prefix}-${activeSlotIndex}`);
-    const [korName] = card.name.split(' (');
+    const korNameOrigin = card.name.split(' (')[0];
+    const displayKorName = isReversed ? `${korNameOrigin} [역]` : korNameOrigin;
 
+    // Remove plain background image assigned previously
+    slotEl.style.backgroundImage = 'none';
+
+    // Implement proper background layer for rotation without rotating the inner UI
+    let bgLayer = slotEl.querySelector('.slot-bg-layer');
+    if (!bgLayer) {
+        bgLayer = document.createElement('div');
+        bgLayer.className = 'slot-bg-layer';
+        slotEl.insertBefore(bgLayer, slotEl.firstChild);
+    }
+    
     if (card.image) {
-        slotEl.style.backgroundImage = `url('${card.image}')`;
+        bgLayer.style.backgroundImage = `url('${card.image}')`;
+        bgLayer.style.transform = isReversed ? 'rotate(180deg)' : 'none';
+        bgLayer.style.opacity = '1';
     } else {
-        slotEl.style.backgroundImage = 'none';
+        bgLayer.style.backgroundImage = 'none';
     }
 
-    slotEl.querySelector('.slot-content').innerHTML = korName;
+    slotEl.querySelector('.slot-content').innerHTML = displayKorName;
     const tooltip = slotEl.querySelector('.slot-tooltip');
-    if (tooltip) tooltip.innerText = card.description;
+    
+    // Switch meaning on tooltip based on orientation
+    let tipText = card.description;
+    if (card.meanings) {
+        tipText += `\n\n[해석] ${isReversed ? card.meanings.reversed : card.meanings.upright}`;
+    }
+    if (tooltip) tooltip.innerText = tipText;
+    
     slotEl.setAttribute('data-active', 'true');
 
     let nextIndex = activeSlotIndex + 1;
     if (nextIndex < max) {
-        activateSlot(nextIndex);
+        activeSlotIndex = nextIndex;
+        const slots = document.querySelectorAll('.slot');
+        slots.forEach(s => s.classList.remove('active'));
+        const nextTarget = document.getElementById(`${prefix}-${nextIndex}`);
+        if (nextTarget) nextTarget.classList.add('active');
+    } else {
+        const slots = document.querySelectorAll('.slot');
+        slots.forEach(s => s.classList.remove('active'));
     }
 }
 
@@ -312,25 +410,21 @@ function analyzeFullSpread(count) {
         item.style.borderLeft = `8px solid ${color}`;
         let advancedHTML = '';
         if (card.meanings) {
-            let contextMeaning = `<span style="color: #ddd;">${card.meanings.upright}</span>`;
+            const dirLabel = card.isReversed ? '<strong style="color:#e74c3c;">[역방향]</strong>' : '<strong style="color:var(--accent-gold);">[정방향]</strong>';
+            const baseMeaning = card.isReversed ? card.meanings.reversed : card.meanings.upright;
+            let contextMeaning = `<div style="margin-bottom:4px;">${dirLabel} ${baseMeaning}</div>`;
+            
             if (isRelation && info[idx].t !== '11. 결과 (RESULT)') {
                 // 관계 배열일 때는 기본적으로 연애운 해석을 포함
-                contextMeaning = `
-                    <div style="margin-bottom:4px;"><strong style="color:var(--accent-gold);">기본:</strong> ${card.meanings.upright}</div>
-                    <div><strong style="color:#ff6b6b;">관계:</strong> ${card.meanings.love}</div>
-                `;
-            } else if (!isTree && !isRelation && idx === 3) {
+                contextMeaning += `<div><strong style="color:#ff6b6b;">관계:</strong> ${card.meanings.love}</div>`;
+            } else if (!isTree && !isRelation && idx === 3 && currentMode === 'spread') { // Only for 4-card spread's solution slot
                 // 4카드 중 '해결책' 위치일 땐 조언 해석을 표시
-                contextMeaning = `
-                    <div style="margin-bottom:4px;"><strong style="color:var(--accent-gold);">기본:</strong> ${card.meanings.upright}</div>
-                    <div><strong style="color:#2ecc71;">조언:</strong> ${card.meanings.advice}</div>
-                `;
+                contextMeaning += `<div><strong style="color:#2ecc71;">조언:</strong> ${getMysticalAdvice(card)}</div>`;
             } else if (isTree || info[idx].t === '11. 결과 (RESULT)') {
-                // 트리이거나 관계운 결과일 경우
-                contextMeaning = `<div style="margin-bottom:4px;"><strong style="color:var(--accent-gold);">핵심:</strong> ${card.meanings.upright}</div>`;
+                // 트리이거나 관계운 결과일 경우, 기본 의미만 표시 (이미 위에서 처리됨)
             } else {
                 // 일반 카드 (과거, 현재, 미래)
-               contextMeaning = `<div style="margin-bottom:4px;"><strong style="color:var(--accent-gold);">핵심:</strong> ${card.meanings.upright}</div>`;
+                // contextMeaning = `<div style="margin-bottom:4px;"><strong style="color:var(--accent-gold);">핵심:</strong> ${card.meanings.upright}</div>`; // Already handled by baseMeaning
             }
 
             advancedHTML = `
@@ -362,6 +456,7 @@ function analyzeFullSpread(count) {
     if (isTree) addWorldAnalysis(resultsContainer, cards);
     if (isRelation) addEmotionalAnalysis(resultsContainer, cards);
     if (isZodiac) addZodiacAnalysis(resultsContainer, cards);
+    if (isCeltic) addCelticAnalysis(resultsContainer, cards);
 
     document.getElementById('modal-overlay').classList.remove('hidden');
     document.getElementById('interpretation').classList.add('hidden');
@@ -549,10 +644,76 @@ function addZodiacAnalysis(container, cards) {
     container.appendChild(section);
 }
 
+function addCelticAnalysis(container, cards) {
+    const section = document.createElement('div');
+    section.className = 'world-summary-container';
+    
+    // Header
+    section.innerHTML = `
+        <h2 class="title-lg" style="text-align:left; margin-bottom:1rem; color: #d4af37; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.5rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">켈틱 크로스(Celtic Cross) 예언적 통찰</h2>
+        <p style="color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">단편적인 대답을 넘어, 하나의 질문을 둘러싼 '원인-상황-결과'의 거대한 운명적 굴레를 3개의 축으로 조망합니다.</p>
+    `;
+
+    // 1. The Core (1 & 2)
+    let coreHTML = `
+        <h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. 운명의 수레바퀴 축 (The Core)</h3>
+        <div class="world-summary-box" style="margin-bottom: 1.5rem; border: 1px solid rgba(212, 175, 55, 0.2); background: rgba(15, 10, 20, 0.7);">
+            <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 1rem;">현재 당신을 사로잡고 있는 가장 강력한 중심 에너지와 그것을 막아서는(혹은 교차하는) 도전 과제입니다.</p>
+            <div style="font-size: 0.95rem; color: #fff; line-height: 1.8;">
+                <strong style="color:var(--accent-gold);">현재 상황:</strong> [${cards[0].name.split(' (')[0]}]의 기운이 지배하고 있습니다.<br>
+                <strong style="color:#e74c3c;">도전/교차:</strong> 그 위로 [${cards[1].name.split(' (')[0]}]의 힘이 덮어쓰여 갈등이나 역동을 일으킵니다.
+            </div>
+        </div>
+    `;
+
+    // 2. The Horizontal/Vertical Axes (3,4,5,6)
+    let axisHTML = `
+        <h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">II. 시간과 무의식의 십자가</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <div class="world-summary-box" style="flex: 1; min-width: 250px; background: rgba(0,0,0,0.5);">
+                <h4 style="color: #3498db; margin-bottom: 0.5rem;">무의식에서 의식으로 (수직)</h4>
+                <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">
+                    당신의 근원적인 <strong>무의식([${cards[3].name.split(' (')[0]}])</strong>이 
+                    어떻게 표면적인 <strong>목표/의식([${cards[2].name.split(' (')[0]}])</strong>으로 자라나고 있는지를 보여줍니다. 이상과 현실의 간극을 의미합니다.
+                </p>
+            </div>
+            <div class="world-summary-box" style="flex: 1; min-width: 250px; background: rgba(0,0,0,0.5);">
+                <h4 style="color: #f1c40f; margin-bottom: 0.5rem;">과거에서 미래로 (수평)</h4>
+                <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">
+                    당신 등 뒤로 흩어지는 <strong>과거([${cards[4].name.split(' (')[0]}])</strong>의 여운이 
+                    곧 다가올 <strong>미래([${cards[5].name.split(' (')[0]}])</strong>의 흐름에 어떤 방향성을 제시하고 있는지 보여줍니다.
+                </p>
+            </div>
+        </div>
+    `;
+
+    // 3. The Staff (7,8,9,10)
+    let staffHTML = `
+        <h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">III. 운명의 지팡이 (The Staff)</h3>
+        <div class="world-summary-box" style="background: linear-gradient(135deg, rgba(20,15,25,0.8), rgba(10,5,15,0.9)); border: 1px solid rgba(212,175,55,0.3);">
+            <p style="line-height: 1.8; color: #eee; font-size: 0.95rem;">
+                당신의 질문은 스스로의 <strong>[${cards[6].name.split(' (')[0]}]</strong> 같은 태도와 
+                주변 환경 <strong>[${cards[7].name.split(' (')[0]}]</strong>의 영향 사이에서 진동합니다.<br><br>
+                당신이 깊이 품은 두려움 혹은 희망인 <strong>[${cards[8].name.split(' (')[0]}]</strong>을 넘어설 때, 
+                마침내 우주가 제시하는 최종 결과 <strong>[${cards[9].name.split(' (')[0]}]</strong>의 문이 열릴 것입니다.
+            </p>
+            <div style="margin-top: 1.5rem; color: #d4af37; font-weight: 700; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); text-align: center;">
+                "수레바퀴는 돌고, 십자가는 지시하며, 지팡이는 길을 엽니다."
+            </div>
+        </div>
+    `;
+
+    section.innerHTML += coreHTML + axisHTML + staffHTML;
+    container.appendChild(section);
+}
+
 function getSefirotColor(idx) {
     const colors = ['#ffffff', '#999999', '#443322', '#3498db', '#e74c3c', '#f1c40f', '#2ecc71', '#e67e22', '#9b59b6', '#f39c12', '#555555'];
     return colors[idx];
 }
+
+
+
 
 function clearBoard(count) {
     let cards, prefix, boardId;
@@ -566,13 +727,21 @@ function clearBoard(count) {
         cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board';
     } else if (count === 12 && currentMode === 'zodiac') {
         cards = placedCardsZodiac; prefix = 'zslot'; boardId = 'zodiac-board';
+
     } else {
         cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
     }
     cards.fill(null);
     document.querySelectorAll(`#${boardId} .slot`).forEach(slot => {
-        slot.querySelector('.slot-content').innerHTML = '선택';
+        let bgLayer = slot.querySelector('.slot-bg-layer');
+        if (bgLayer) {
+            bgLayer.style.backgroundImage = 'none';
+            bgLayer.style.transform = 'none';
+            bgLayer.style.opacity = '0';
+        }
         slot.style.backgroundImage = 'none';
+        
+        slot.querySelector('.slot-content').innerHTML = '선택';
         slot.removeAttribute('data-active');
     });
     activateSlot(0);
@@ -607,6 +776,36 @@ function getSuitIcon(suit) {
     }
 }
 
+function getMysticalAdvice(card, isReversed = false) {
+    if (!card.meanings || !card.meanings.advice) return "그대의 직관을 믿고 나아가십시오.";
+    
+    const rawAdvice = card.meanings.advice;
+    const intros = [
+        "운명의 실타래가 당신에게 조용히 속삭입니다: ",
+        "별들의 길을 가리키는 지혜의 등불은 이렇게 말합니다. ",
+        "그대의 영혼이 간직한 신성한 계시를 경청하십시오. ",
+        "심연에서 울려 퍼지는 지혜의 목소리가 들리나요? ",
+        "우주의 섭리는 지금 이 순간 당신에게 일러줍니다. "
+    ];
+    const outros = [
+        " 이 길의 끝에서 당신의 진정한 빛을 발견하게 될 것입니다.",
+        " 그대의 직관이 가리키는 그곳으로 용기 있게 발을 내디디세요.",
+        " 하늘은 스스로 돕는 자를 결코 외면하지 않습니다.",
+        " 당신의 내면에는 이미 모든 해답이 깃들어 있습니다.",
+        " 별들은 당신의 선택을 축복하고 있습니다."
+    ];
+
+    const pick = (arr) => arr[card.id % arr.length]; // Deterministic based on card ID for consistency
+    const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    
+    // For Major Arcana, make it even more grand
+    if (card.suit === 'Major Arcana') {
+        return `✦ ${pick(intros)} <strong>"${rawAdvice}"</strong> ${pickRandom(outros)} ✦`;
+    }
+    
+    return `✧ ${rawAdvice} ${pickRandom(outros)} ✧`;
+}
+
 function showInterpretation(card) {
     document.getElementById('card-suit-tag').textContent = card.suit === 'Major Arcana' ? '메이저' : card.suit;
     document.getElementById('card-name').textContent = card.name;
@@ -623,12 +822,16 @@ function showInterpretation(card) {
     const advContainer = document.getElementById('card-advanced-meanings');
     if (advContainer) {
         if (card.meanings) {
+            const refinedAdvice = getMysticalAdvice(card);
             advContainer.innerHTML = `
                 <div style="margin-bottom: 0.8rem;"><strong style="color:var(--accent-gold);">[정방향]</strong> ${card.meanings.upright}</div>
                 <div style="margin-bottom: 0.8rem;"><strong style="color:#aaa;">[역방향]</strong> ${card.meanings.reversed}</div>
                 <div style="margin-bottom: 0.8rem;"><strong style="color:#ff6b6b;">[연애/관계]</strong> ${card.meanings.love}</div>
                 <div style="margin-bottom: 0.8rem;"><strong style="color:#4da8da;">[직업/성취]</strong> ${card.meanings.career}</div>
-                <div><strong style="color:#2ecc71;">[핵심 조언]</strong> ${card.meanings.advice}</div>
+                <div style="background: rgba(46, 204, 113, 0.05); padding: 1rem; border-left: 4px solid #2ecc71; margin-top: 1rem;">
+                    <strong style="color:#2ecc71; display: block; margin-bottom: 0.4rem;">🔮 신성한 조언 (Oracle)</strong> 
+                    <span style="color: #eee; line-height: 1.6;">${refinedAdvice}</span>
+                </div>
             `;
         } else {
             advContainer.innerHTML = '';
