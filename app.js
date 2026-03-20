@@ -199,6 +199,7 @@ function analyzeFullSpread(count) {
     let isTree = false;
     let isRelation = false;
     let isCeltic = false;
+    let isZodiac = false;
 
     if (count === 10 && currentMode === 'tree') {
         cards = placedCardsTree; isTree = true;
@@ -260,7 +261,7 @@ function analyzeFullSpread(count) {
             { t: '7. 최종 결과 (OUTCOME)', m: '흐름의 최종 결론' }
         ];
     } else if (count === 12 && currentMode === 'zodiac') {
-        cards = placedCardsZodiac;
+        cards = placedCardsZodiac; isZodiac = true;
         allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         info = [
             { t: '1궁 백양 (Aries)', m: '자아, 기본 성향, 육체적 에너지' },
@@ -360,6 +361,7 @@ function analyzeFullSpread(count) {
 
     if (isTree) addWorldAnalysis(resultsContainer, cards);
     if (isRelation) addEmotionalAnalysis(resultsContainer, cards);
+    if (isZodiac) addZodiacAnalysis(resultsContainer, cards);
 
     document.getElementById('modal-overlay').classList.remove('hidden');
     document.getElementById('interpretation').classList.add('hidden');
@@ -466,6 +468,84 @@ function addWorldAnalysis(container, cards) {
     }
 
     section.innerHTML += worldsHTML + pillarsHTML + grandSummaryHTML;
+    container.appendChild(section);
+}
+
+function addZodiacAnalysis(container, cards) {
+    const section = document.createElement('div');
+    section.className = 'world-summary-container';
+    
+    // Header
+    section.innerHTML = `
+        <h2 class="title-lg" style="text-align:left; margin-bottom:1rem; color: #d4af37; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.5rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">조디악 신성(Astrological) 융합 리딩</h2>
+        <p style="color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">12궁의 카드는 개별적으로도 의미가 있지만, 우주적 관점에서 서로 연결될 때 진정한 1년의 흐름을 보여줍니다.</p>
+    `;
+
+    // 1. The 4 Elements (Triplicities)
+    // Fire: 1, 5, 9 (indices 0, 4, 8)
+    // Earth: 2, 6, 10 (indices 1, 5, 9)
+    // Air: 3, 7, 11 (indices 2, 6, 10)
+    // Water: 4, 8, 12 (indices 3, 7, 11)
+    const elements = [
+        { title: '🔥 불의 삼각 (Fire)', desc: '자아, 창조, 그리고 확장의 에너지', ids: [0, 4, 8], color: '#e74c3c' },
+        { title: '🌍 흙의 삼각 (Earth)', desc: '금전, 일상, 그리고 성취의 에너지', ids: [1, 5, 9], color: '#f1c40f' },
+        { title: '💨 공기의 삼각 (Air)', desc: '지성, 관계, 그리고 이상의 에너지', ids: [2, 6, 10], color: '#3498db' },
+        { title: '💧 물의 삼각 (Water)', desc: '감정, 무의식, 그리고 영혼의 에너지', ids: [3, 7, 11], color: '#9b59b6' }
+    ];
+
+    let elementsHTML = '<h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. 원소별 생명력의 흐름</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">';
+    elements.forEach(e => {
+        const filled = e.ids.map(id => cards[id]).filter(card => card !== null);
+        if (filled.length === 0) return;
+        elementsHTML += `
+            <div class="world-summary-box" style="margin-bottom:0.5rem; border-top: 2px solid ${e.color}">
+                <h4 style="color: ${e.color}; margin-bottom: 0.5rem;">${e.title}</h4>
+                <p style="font-size: 0.8rem; color: #ccc; margin-bottom: 0.5rem;">${e.desc}</p>
+                <div style="font-size:0.85rem; color: #fff; background: rgba(0,0,0,0.5); padding: 0.5rem; border-radius: 4px;">
+                    ${filled.map(c => c.name.split(' (')[0]).join(' / ')}
+                </div>
+            </div>
+        `;
+    });
+    elementsHTML += '</div>';
+
+    // 2. The Cross of Matter (Angles)
+    // 1(Self), 4(Home), 7(Partner), 10(Career) -> indices 0, 3, 6, 9
+    let crossHTML = '';
+    const crossIds = [0, 3, 6, 9];
+    const filledCross = crossIds.map(id => cards[id]).filter(card => card !== null);
+    
+    if (filledCross.length === 4) {
+        crossHTML = `
+            <h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">II. 운명의 십자가 (The Major Angles)</h3>
+            <div class="world-summary-box" style="background: rgba(20, 20, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 1rem;">
+                    인생을 지탱하는 네 개의 기둥(나, 가정, 배우자, 직업)에 놓인 카드들입니다. 이 십자가가 올해 운명의 뼈대 역할을 합니다.
+                </p>
+                <ul style="list-style:none; line-height: 1.8; color: #eee; font-size: 0.95rem; text-align: left; display: inline-block; margin: 0 auto; padding-left: 0;">
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">나 (1)</strong> : ${cards[0].name.split(' (')[0]}</li>
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">가정 (4)</strong> : ${cards[3].name.split(' (')[0]}</li>
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">관계 (7)</strong> : ${cards[6].name.split(' (')[0]}</li>
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">사회 (10)</strong>: ${cards[9].name.split(' (')[0]}</li>
+                </ul>
+            </div>
+        `;
+    }
+
+    // 3. Cosmic Verdict
+    let verdictHTML = `
+        <h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">III. 우주적 총평 (Cosmic Verdict)</h3>
+        <div class="world-summary-box" style="text-align:center; background: linear-gradient(135deg, rgba(20,15,25,0.8), rgba(10,5,15,0.9)); border: 1px solid rgba(212,175,55,0.3);">
+            <p style="font-size: 1rem; color: #fff; line-height: 1.8; font-weight: 300;">
+                가장 큰 변화가 닥칠 영역은 십자가가 가리키는 방향에 있으며,<br>
+                당신의 무의식(12궁)에 놓인 <strong>[${cards[11] ? cards[11].name.split(' (')[0] : '미지의 영혼'}]</strong> 카드가 한 해의 숨겨진 테마가 될 것입니다.<br>
+                우주가 그리는 큰 그림 안에서 당신의 역할을 찾으십시오.
+            </p>
+            <div style="margin-top: 1rem; color: #d4af37; font-weight: 700; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">"THE STARS INCLINE, BUT DO NOT BIND."</div>
+        </div>
+    `;
+
+    section.innerHTML += elementsHTML + crossHTML + verdictHTML;
     container.appendChild(section);
 }
 
