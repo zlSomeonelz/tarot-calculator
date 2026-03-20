@@ -241,6 +241,7 @@ const tarotDataKo = [
     "id": 12,
     "name": "매달린 사람 (Hanged Man)",
     "suit": "Major Arcana",
+    "image": "images/tarot_12.png",
     "keywords": [
       "항복",
       "믿음",
@@ -280,6 +281,7 @@ const tarotDataKo = [
     "id": 14,
     "name": "절제 (Temperance)",
     "suit": "Major Arcana",
+    "image": "images/tarot_14.png",
     "keywords": [
       "균형",
       "배려",
@@ -299,6 +301,7 @@ const tarotDataKo = [
     "id": 15,
     "name": "악마 (Devil)",
     "suit": "Major Arcana",
+    "image": "images/tarot_15.png",
     "keywords": [
       "유혹",
       "과잉",
@@ -318,6 +321,7 @@ const tarotDataKo = [
     "id": 16,
     "name": "탑 (Tower)",
     "suit": "Major Arcana",
+    "image": "images/tarot_16.png",
     "keywords": [
       "변화",
       "격변",
@@ -357,6 +361,7 @@ const tarotDataKo = [
     "id": 18,
     "name": "달 (Moon)",
     "suit": "Major Arcana",
+    "image": "images/tarot_18.png",
     "keywords": [
       "직관",
       "두려움",
@@ -376,6 +381,7 @@ const tarotDataKo = [
     "id": 19,
     "name": "태양 (Sun)",
     "suit": "Major Arcana",
+    "image": "images/tarot_19.png",
     "keywords": [
       "통찰",
       "축하",
@@ -395,6 +401,7 @@ const tarotDataKo = [
     "id": 20,
     "name": "심판 (Judgment)",
     "suit": "Major Arcana",
+    "image": "images/tarot_20.png",
     "keywords": [
       "결정",
       "심판",
@@ -414,6 +421,7 @@ const tarotDataKo = [
     "id": 21,
     "name": "세계 (World)",
     "suit": "Major Arcana",
+    "image": "images/tarot_21.png",
     "keywords": [
       "온전함",
       "완성",
@@ -433,6 +441,7 @@ const tarotDataKo = [
     "id": 22,
     "name": "아난트 (Anant)",
     "suit": "Major Arcana",
+    "image": "images/tarot_22.png",
     "keywords": [
       "끝없는",
       "무한한",

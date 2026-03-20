@@ -2,6 +2,7 @@ let currentFilter = 'all';
 let currentMode = 'spread';
 let activeSlotIndex = 0;
 let placedCards4 = [null, null, null, null];
+let placedCards3 = [null, null, null];
 let placedCardsTree = new Array(10).fill(null);
 let placedCardsRelation = new Array(12).fill(null);
 let placedCardsCeltic = new Array(10).fill(null);
@@ -38,6 +39,7 @@ function setupGrid(cards) {
 function switchMode(mode) {
     currentMode = mode;
     document.getElementById('spread-board').classList.toggle('hidden', mode !== 'spread');
+    document.getElementById('spread3-board').classList.toggle('hidden', mode !== 'spread3');
     document.getElementById('tree-board').classList.toggle('hidden', mode !== 'tree');
     document.getElementById('relation-board').classList.toggle('hidden', mode !== 'relation');
     document.getElementById('celtic-board').classList.toggle('hidden', mode !== 'celtic');
@@ -48,8 +50,8 @@ function switchMode(mode) {
     updateSpreadGuide(mode);
 
     // UI Tab Sync (Check for null to prevent errors)
-    const btns = ['view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
-    const modes = ['spread', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
+    const btns = ['view-spread3', 'view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
+    const modes = ['spread3', 'spread', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
 
     btns.forEach((id, i) => {
         const btn = document.getElementById(id);
@@ -62,6 +64,7 @@ function switchMode(mode) {
         const slots = document.querySelectorAll('.slot');
         slots.forEach(slot => slot.classList.remove('active'));
         let prefix = 'slot';
+        if (mode === 'spread3') prefix = 's3slot';
         if (mode === 'tree') prefix = 'tslot';
         if (mode === 'relation') prefix = 'rslot';
         if (mode === 'celtic') prefix = 'cslot';
@@ -76,6 +79,7 @@ function switchMode(mode) {
 function activateSlot(index, mode = currentMode) {
     activeSlotIndex = index;
     let prefix = 'slot';
+    if (mode === 'spread3') prefix = 's3slot';
     if (mode === 'tree') prefix = 'tslot';
     if (mode === 'relation') prefix = 'rslot';
     if (mode === 'celtic') prefix = 'cslot';
@@ -227,7 +231,9 @@ function confirmDirection(isReversed) {
 
 function placeCardInSlot(baseCard, isReversed) {
     let cards, prefix, max;
-    if (currentMode === 'tree') {
+    if (currentMode === 'spread3') {
+        cards = placedCards3; prefix = 's3slot'; max = 3;
+    } else if (currentMode === 'tree') {
         cards = placedCardsTree; prefix = 'tslot'; max = 10;
     } else if (currentMode === 'relation') {
         cards = placedCardsRelation; prefix = 'rslot'; max = 12;
@@ -299,7 +305,15 @@ function analyzeFullSpread(count) {
     let isCeltic = false;
     let isZodiac = false;
 
-    if (count === 10 && currentMode === 'tree') {
+    if (count === 3 && currentMode === 'spread3') {
+        cards = placedCards3;
+        allIndices = [0, 1, 2];
+        info = [
+            { t: '과거 (PAST)', m: '원인과 발단' },
+            { t: '현재 (PRESENT)', m: '진행 상황과 에너지' },
+            { t: '미래 (FUTURE)', m: '예상되는 결과' }
+        ];
+    } else if (count === 10 && currentMode === 'tree') {
         cards = placedCardsTree; isTree = true;
         allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
         info = [
@@ -717,7 +731,9 @@ function getSefirotColor(idx) {
 
 function clearBoard(count) {
     let cards, prefix, boardId;
-    if (count === 12 && currentMode === 'relation') {
+    if (count === 3 && currentMode === 'spread3') {
+        cards = placedCards3; prefix = 's3slot'; boardId = 'spread3-board';
+    } else if (count === 12 && currentMode === 'relation') {
         cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board';
     } else if (count === 10 && currentMode === 'tree') {
         cards = placedCardsTree; prefix = 'tslot'; boardId = 'tree-board';
@@ -880,6 +896,7 @@ function showInterpretationOnTop(index, mode) {
     else if (mode === 'celtic') cards = placedCardsCeltic;
     else if (mode === 'hexa') cards = placedCardsHexa;
     else if (mode === 'zodiac') cards = placedCardsZodiac;
+    else if (mode === 'spread3') cards = placedCards3;
     else cards = placedCards4;
 
     const card = cards[index];
@@ -917,8 +934,12 @@ function updateSpreadGuide(mode) {
 
     const guides = {
         'spread': {
-            title: "자유로운 탐색 (Free Draw)",
-            desc: "오늘의 운세나 정해진 형태 없는 즉흥적인 질문에 대한 답을 구하세요. 카드의 개수는 당신의 직관에 맡깁니다."
+            title: "포 카드 (Four Card)",
+            desc: "과거, 현재, 미래, 그리고 문제를 해결할 조언까지 입체적으로 파악합니다."
+        },
+        'spread3': {
+            title: "쓰리 카드 (Three Card)",
+            desc: "과거, 현재, 미래의 흐름을 군더더기 없이 명확하게 꿰뚫어 봅니다."
         },
         'relation': {
             title: "관계의 컵 (Relationship Cup)",

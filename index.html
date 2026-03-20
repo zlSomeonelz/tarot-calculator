@@ -21,39 +21,86 @@
     <div id="app-container">
         <header>
             <div class="logo">SOMEONE'S TAROT CALCULATOR</div>
-            <nav class="mode-tabs">
-                <button id="view-spread" class="mode-btn active" onclick="switchMode('spread')">포 카드</button>
-                <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계의 컵</button>
-                <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
-                <button id="view-celtic" class="mode-btn" onclick="switchMode('celtic')">켈틱 크로스</button>
-                <button id="view-hexa" class="mode-btn" onclick="switchMode('hexa')">헥사그램</button>
-                <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁)</button>
-            </nav>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <nav class="mode-tabs">
+                    <button id="view-spread3" class="mode-btn" onclick="switchMode('spread3')">쓰리 카드</button>
+                    <button id="view-spread" class="mode-btn active" onclick="switchMode('spread')">포 카드</button>
+                    <button id="view-celtic" class="mode-btn" onclick="switchMode('celtic')">켈틱 크로스</button>
+                </nav>
+                <nav class="mode-tabs" style="margin-top: 0;">
+                    <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계의 컵</button>
+                    <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
+                    <button id="view-hexa" class="mode-btn" onclick="switchMode('hexa')">헥사그램</button>
+                    <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁)</button>
+                </nav>
+            </div>
             <div id="top-interpretation" class="hidden fade-in"></div>
         </header>
 
         <main>
-            <!-- 1. 포 카드 -->
+            <!-- 1. 쓰리 카드 -->
+            <section id="spread3-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="board-slots-3">
+                        <div class="spread3-bg-overlay">
+                            <svg viewBox="0 0 484 180" width="484" height="180"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="spread3-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <line x1="70" y1="90" x2="414" y2="90" stroke-opacity="0.3" stroke-dasharray="10 5" />
+                                <circle cx="70" cy="90" r="4" fill="#d4af37" filter="url(#spread3-star-glow)" />
+                                <circle cx="242" cy="90" r="4" fill="#d4af37" filter="url(#spread3-star-glow)" />
+                                <circle cx="414" cy="90" r="4" fill="#d4af37" filter="url(#spread3-star-glow)" />
+                            </svg>
+                        </div>
+                        <div id="s3slot-0" class="slot active" onclick="activateSlot(0, 'spread3')"
+                            onmouseenter="showInterpretationOnTop(0, 'spread3')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">과거 <br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
+                        <div id="s3slot-1" class="slot" onclick="activateSlot(1, 'spread3')"
+                            onmouseenter="showInterpretationOnTop(1, 'spread3')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">현재 <br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
+                        <div id="s3slot-2" class="slot highlight" onclick="activateSlot(2, 'spread3')"
+                            onmouseenter="showInterpretationOnTop(2, 'spread3')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">미래 <br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-outline" onclick="clearBoard(3)">초기화</button>
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(3)">결과 분석</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 포 카드 -->
             <section id="spread-board" class="hidden">
                 <div class="board-wrapper">
-                    <!-- Standard Golden Overlay -->
-                    <div class="spread-bg-overlay">
-                        <svg viewBox="0 0 656 180" width="656" height="180"
-                            style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
-                            <defs>
-                                <filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%">
-                                    <feGaussianBlur stdDeviation="3" result="blur" />
-                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                                </filter>
-                            </defs>
-                            <line x1="70" y1="90" x2="586" y2="90" stroke-opacity="0.3" stroke-dasharray="10 5" />
-                            <circle cx="70" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
-                            <circle cx="242" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
-                            <circle cx="414" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
-                            <circle cx="586" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
-                        </svg>
-                    </div>
+                    <!-- Standard Golden Overlay Moved Inside -->
                     <div class="board-slots-4">
+                        <div class="spread-bg-overlay">
+                            <svg viewBox="0 0 656 180" width="656" height="180"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <line x1="70" y1="90" x2="586" y2="90" stroke-opacity="0.3" stroke-dasharray="10 5" />
+                                <circle cx="70" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                                <circle cx="242" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                                <circle cx="414" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                                <circle cx="586" cy="90" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />
+                            </svg>
+                        </div>
                         <div id="slot-0" class="slot active" onclick="activateSlot(0)"
                             onmouseenter="showInterpretationOnTop(0, 'spread')" onmouseleave="clearTopInterpretation()">
                             <div class="slot-header">과거 <br><small>PAST</small></div>
