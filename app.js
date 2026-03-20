@@ -265,13 +265,10 @@ function placeCardInSlot(baseCard, isReversed) {
         slotEl.insertBefore(bgLayer, slotEl.firstChild);
     }
     
-    if (card.image) {
-        bgLayer.style.backgroundImage = `url('${card.image}')`;
-        bgLayer.style.transform = isReversed ? 'rotate(180deg)' : 'none';
-        bgLayer.style.opacity = '1';
-    } else {
-        bgLayer.style.backgroundImage = 'none';
-    }
+    const finalImg = card.image || `images/tarot_${card.id}.png`;
+    bgLayer.style.backgroundImage = `url('${finalImg}')`;
+    bgLayer.style.transform = isReversed ? 'rotate(180deg)' : 'none';
+    bgLayer.style.opacity = '1';
 
     slotEl.querySelector('.slot-content').innerHTML = displayKorName;
     const tooltip = slotEl.querySelector('.slot-tooltip');

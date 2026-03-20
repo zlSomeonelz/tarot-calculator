@@ -3,7 +3,7 @@ const tarotDataKo = [
     "id": 0,
     "name": "바보 (The Fool)",
     "suit": "Major Arcana",
-    "image": "images/tarot_0.png",
+    "image": "images/major_arcana/tarot_0.png",
     "keywords": [
       "시작",
       "자발성",
@@ -23,7 +23,7 @@ const tarotDataKo = [
     "id": 1,
     "name": "마법사 (Magician)",
     "suit": "Major Arcana",
-    "image": "images/tarot_1.png",
+    "image": "images/major_arcana/tarot_1.png",
     "keywords": [
       "창조",
       "현현",
@@ -43,7 +43,7 @@ const tarotDataKo = [
     "id": 2,
     "name": "고위 여사제 (High Priestess)",
     "suit": "Major Arcana",
-    "image": "images/tarot_2.png",
+    "image": "images/major_arcana/tarot_2.png",
     "keywords": [
       "신비",
       "무의식",
@@ -63,7 +63,7 @@ const tarotDataKo = [
     "id": 3,
     "name": "여황제 (Empress)",
     "suit": "Major Arcana",
-    "image": "images/tarot_3.png",
+    "image": "images/major_arcana/tarot_3.png",
     "keywords": [
       "어머니의 돌봄",
       "풍요",
@@ -83,7 +83,7 @@ const tarotDataKo = [
     "id": 4,
     "name": "황제 (Emperor)",
     "suit": "Major Arcana",
-    "image": "images/tarot_4.png",
+    "image": "images/major_arcana/tarot_4.png",
     "keywords": [
       "질서",
       "구조",
@@ -103,7 +103,7 @@ const tarotDataKo = [
     "id": 5,
     "name": "교황 (Hierophant)",
     "suit": "Major Arcana",
-    "image": "images/tarot_5.png",
+    "image": "images/major_arcana/tarot_5.png",
     "keywords": [
       "믿음",
       "협력",
@@ -123,7 +123,7 @@ const tarotDataKo = [
     "id": 6,
     "name": "연인 (Lovers)",
     "suit": "Major Arcana",
-    "image": "images/tarot_6.png",
+    "image": "images/major_arcana/tarot_6.png",
     "keywords": [
       "균형"
     ],
@@ -140,7 +140,7 @@ const tarotDataKo = [
     "id": 7,
     "name": "전차 (Chariot)",
     "suit": "Major Arcana",
-    "image": "images/tarot_7.png",
+    "image": "images/major_arcana/tarot_7.png",
     "keywords": [
       "야망",
       "의지",
@@ -160,7 +160,7 @@ const tarotDataKo = [
     "id": 8,
     "name": "힘 (Strength)",
     "suit": "Major Arcana",
-    "image": "images/tarot_8.png",
+    "image": "images/major_arcana/tarot_8.png",
     "keywords": [
       "힘",
       "연민",
@@ -180,7 +180,7 @@ const tarotDataKo = [
     "id": 9,
     "name": "은둔자 (Hermit)",
     "suit": "Major Arcana",
-    "image": "images/tarot_9.png",
+    "image": "images/major_arcana/tarot_9.png",
     "keywords": [
       "탐구",
       "성찰",
@@ -196,11 +196,11 @@ const tarotDataKo = [
       "advice": "세상의 소음에서 벗어나 스스로의 내면에 집중할 시간이 필요합니다."
     }
   },
-    {
+  {
     "id": 10,
     "name": "운명의 수레바퀴 (Wheel of Fortune)",
     "suit": "Major Arcana",
-    "image": "images/tarot_10.png",
+    "image": "images/major_arcana/tarot_10.png",
     "keywords": [
       "변화",
       "운명",
@@ -220,7 +220,7 @@ const tarotDataKo = [
     "id": 11,
     "name": "정의 (Justice)",
     "suit": "Major Arcana",
-    "image": "images/tarot_11.png",
+    "image": "images/major_arcana/tarot_11.png",
     "keywords": [
       "공정함",
       "치우침 없음",
@@ -241,7 +241,7 @@ const tarotDataKo = [
     "id": 12,
     "name": "매달린 사람 (Hanged Man)",
     "suit": "Major Arcana",
-    "image": "images/tarot_12.png",
+    "image": "images/major_arcana/tarot_12.png",
     "keywords": [
       "항복",
       "믿음",
@@ -261,7 +261,7 @@ const tarotDataKo = [
     "id": 13,
     "name": "죽음 (Death)",
     "suit": "Major Arcana",
-    "image": "images/tarot_13.png",
+    "image": "images/major_arcana/tarot_13.png",
     "keywords": [
       "끝",
       "진화",
@@ -281,7 +281,7 @@ const tarotDataKo = [
     "id": 14,
     "name": "절제 (Temperance)",
     "suit": "Major Arcana",
-    "image": "images/tarot_14.png",
+    "image": "images/major_arcana/tarot_14.png",
     "keywords": [
       "균형",
       "배려",
@@ -301,7 +301,7 @@ const tarotDataKo = [
     "id": 15,
     "name": "악마 (Devil)",
     "suit": "Major Arcana",
-    "image": "images/tarot_15.png",
+    "image": "images/major_arcana/tarot_15.png",
     "keywords": [
       "유혹",
       "과잉",
@@ -321,7 +321,7 @@ const tarotDataKo = [
     "id": 16,
     "name": "탑 (Tower)",
     "suit": "Major Arcana",
-    "image": "images/tarot_16.png",
+    "image": "images/major_arcana/tarot_16.png",
     "keywords": [
       "변화",
       "격변",
@@ -341,7 +341,7 @@ const tarotDataKo = [
     "id": 17,
     "name": "별 (Star)",
     "suit": "Major Arcana",
-    "image": "images/tarot_17.png",
+    "image": "images/major_arcana/tarot_17.png",
     "keywords": [
       "인도",
       "선의",
@@ -361,7 +361,7 @@ const tarotDataKo = [
     "id": 18,
     "name": "달 (Moon)",
     "suit": "Major Arcana",
-    "image": "images/tarot_18.png",
+    "image": "images/major_arcana/tarot_18.png",
     "keywords": [
       "직관",
       "두려움",
@@ -381,7 +381,7 @@ const tarotDataKo = [
     "id": 19,
     "name": "태양 (Sun)",
     "suit": "Major Arcana",
-    "image": "images/tarot_19.png",
+    "image": "images/major_arcana/tarot_19.png",
     "keywords": [
       "통찰",
       "축하",
@@ -401,7 +401,7 @@ const tarotDataKo = [
     "id": 20,
     "name": "심판 (Judgment)",
     "suit": "Major Arcana",
-    "image": "images/tarot_20.png",
+    "image": "images/major_arcana/tarot_20.png",
     "keywords": [
       "결정",
       "심판",
@@ -421,7 +421,7 @@ const tarotDataKo = [
     "id": 21,
     "name": "세계 (World)",
     "suit": "Major Arcana",
-    "image": "images/tarot_21.png",
+    "image": "images/major_arcana/tarot_21.png",
     "keywords": [
       "온전함",
       "완성",
@@ -441,7 +441,7 @@ const tarotDataKo = [
     "id": 22,
     "name": "아난트 (Anant)",
     "suit": "Major Arcana",
-    "image": "images/tarot_22.png",
+    "image": "images/major_arcana/tarot_22.png",
     "keywords": [
       "끝없는",
       "무한한",
@@ -474,7 +474,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_23.png"
   },
   {
     "id": 24,
@@ -493,7 +494,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_24.png"
   },
   {
     "id": 25,
@@ -512,7 +514,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_25.png"
   },
   {
     "id": 26,
@@ -531,7 +534,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_26.png"
   },
   {
     "id": 27,
@@ -550,7 +554,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_27.png"
   },
   {
     "id": 28,
@@ -568,7 +573,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_28.png"
   },
   {
     "id": 29,
@@ -587,7 +593,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_29.png"
   },
   {
     "id": 30,
@@ -606,7 +613,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_30.png"
   },
   {
     "id": 31,
@@ -625,7 +633,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_31.png"
   },
   {
     "id": 32,
@@ -644,7 +653,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_32.png"
   },
   {
     "id": 33,
@@ -663,7 +673,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_33.png"
   },
   {
     "id": 34,
@@ -682,7 +693,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_34.png"
   },
   {
     "id": 35,
@@ -701,7 +713,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_35.png"
   },
   {
     "id": 36,
@@ -720,7 +733,8 @@ const tarotDataKo = [
       "love": "뜨겁고 빠른 관계 진전 혹은 경쟁",
       "career": "적극적인 업무 추진, 새로운 아이디어 실현",
       "advice": "생각만 하지 말고 당장 열정을 불태워 행동으로 옮기세요."
-    }
+    },
+    "image": "images/wands/tarot_36.png"
   },
   {
     "id": 37,
@@ -739,7 +753,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_37.png"
   },
   {
     "id": 38,
@@ -758,7 +773,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_38.png"
   },
   {
     "id": 39,
@@ -777,7 +793,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_39.png"
   },
   {
     "id": 40,
@@ -796,7 +813,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_40.png"
   },
   {
     "id": 41,
@@ -815,7 +833,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_41.png"
   },
   {
     "id": 42,
@@ -834,7 +853,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_42.png"
   },
   {
     "id": 43,
@@ -853,7 +873,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_43.png"
   },
   {
     "id": 44,
@@ -872,7 +893,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_44.png"
   },
   {
     "id": 45,
@@ -891,7 +913,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_45.png"
   },
   {
     "id": 46,
@@ -910,7 +933,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_46.png"
   },
   {
     "id": 47,
@@ -929,7 +953,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_47.png"
   },
   {
     "id": 48,
@@ -948,7 +973,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_48.png"
   },
   {
     "id": 49,
@@ -967,7 +993,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_49.png"
   },
   {
     "id": 50,
@@ -986,7 +1013,8 @@ const tarotDataKo = [
       "love": "깊은 정서적 안정감과 상호 공감",
       "career": "대인관계에서의 화합, 직장 내 긍정적 분위기",
       "advice": "자신의 솔직한 감정에 충실하고 상대의 마음에 공감하세요."
-    }
+    },
+    "image": "images/cups/tarot_50.png"
   },
   {
     "id": 51,
@@ -1005,7 +1033,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_51.png"
   },
   {
     "id": 52,
@@ -1024,7 +1053,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_52.png"
   },
   {
     "id": 53,
@@ -1043,7 +1073,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_53.png"
   },
   {
     "id": 54,
@@ -1062,7 +1093,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_54.png"
   },
   {
     "id": 55,
@@ -1081,7 +1113,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_55.png"
   },
   {
     "id": 56,
@@ -1100,7 +1133,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_56.png"
   },
   {
     "id": 57,
@@ -1119,7 +1153,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_57.png"
   },
   {
     "id": 58,
@@ -1138,7 +1173,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_58.png"
   },
   {
     "id": 59,
@@ -1157,7 +1193,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_59.png"
   },
   {
     "id": 60,
@@ -1176,7 +1213,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_60.png"
   },
   {
     "id": 61,
@@ -1195,7 +1233,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_61.png"
   },
   {
     "id": 62,
@@ -1214,7 +1253,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_62.png"
   },
   {
     "id": 63,
@@ -1233,7 +1273,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_63.png"
   },
   {
     "id": 64,
@@ -1252,7 +1293,8 @@ const tarotDataKo = [
       "love": "감정보다는 이성을 앞세우는 냉혹한 판단 시기",
       "career": "장애물을 논리적으로 베어버리고 결단을 내림",
       "advice": "감정에 휘둘리면 집니다. 차갑고 예리한 지성으로 돌파하세요."
-    }
+    },
+    "image": "images/swords/tarot_64.png"
   },
   {
     "id": 65,
@@ -1271,7 +1313,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_65.png"
   },
   {
     "id": 66,
@@ -1290,7 +1333,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_66.png"
   },
   {
     "id": 67,
@@ -1309,7 +1353,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_67.png"
   },
   {
     "id": 68,
@@ -1328,7 +1373,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_68.png"
   },
   {
     "id": 69,
@@ -1347,7 +1393,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_69.png"
   },
   {
     "id": 70,
@@ -1366,7 +1413,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_70.png"
   },
   {
     "id": 71,
@@ -1385,7 +1433,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_71.png"
   },
   {
     "id": 72,
@@ -1404,7 +1453,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_72.png"
   },
   {
     "id": 73,
@@ -1422,7 +1472,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_73.png"
   },
   {
     "id": 74,
@@ -1441,7 +1492,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_74.png"
   },
   {
     "id": 75,
@@ -1460,7 +1512,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_75.png"
   },
   {
     "id": 76,
@@ -1479,7 +1532,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_76.png"
   },
   {
     "id": 77,
@@ -1498,7 +1552,8 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_77.png"
   },
   {
     "id": 78,
@@ -1517,6 +1572,7 @@ const tarotDataKo = [
       "love": "신뢰할 수 있고 안정적이며 진지한 관계 발전",
       "career": "꾸준한 노력 끝에 얻어내는 견고하고 든든한 성과",
       "advice": "요행을 바라지 말고 흙을 빚어 벽돌을 쌓는 마음으로 실력을 다지세요."
-    }
+    },
+    "image": "images/pentacles/tarot_78.png"
   }
 ];
