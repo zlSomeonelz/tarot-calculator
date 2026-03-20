@@ -519,10 +519,49 @@ section {
 .hexa-pos-5 { left: 103px; top: 200px; } /* T-Left: cx=173, cy=290 */
 .hexa-pos-6 { left: 657px; top: 200px; } /* T-Right: cx=727, cy=290 */
 
+/* --- Zodiac Spread (12 Cards) --- */
+.zodiac-container {
+    position: relative;
+    width: 1000px; height: 1000px;
+    margin: 0 auto;
+}
+
+.zodiac-bg-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 1000px; height: 1000px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85; /* Same premium golden glow */
+}
+
+/* Center = 500,500. R = 340. Slot = 140x200 */
+.zodiac-pos-1, .zodiac-pos-2, .zodiac-pos-3, .zodiac-pos-4, 
+.zodiac-pos-5, .zodiac-pos-6, .zodiac-pos-7, .zodiac-pos-8, 
+.zodiac-pos-9, .zodiac-pos-10, .zodiac-pos-11, .zodiac-pos-12 {
+    position: absolute !important;
+    width: 140px; height: 180px;
+    z-index: 10;
+}
+
+.zodiac-pos-1 { left: 600px; top: 106px; } /* 1 o'clock (30) */
+.zodiac-pos-2 { left: 724px; top: 230px; } /* 2 o'clock (60) */
+.zodiac-pos-3 { left: 770px; top: 400px; } /* 3 o'clock (90) */
+.zodiac-pos-4 { left: 724px; top: 570px; } /* 4 o'clock (120) */
+.zodiac-pos-5 { left: 600px; top: 694px; } /* 5 o'clock (150) */
+.zodiac-pos-6 { left: 430px; top: 740px; } /* 6 o'clock (180) */
+.zodiac-pos-7 { left: 260px; top: 694px; } /* 7 o'clock (210) */
+.zodiac-pos-8 { left: 136px; top: 570px; } /* 8 o'clock (240) */
+.zodiac-pos-9 { left: 90px;  top: 400px; } /* 9 o'clock (270) */
+.zodiac-pos-10 { left: 136px; top: 230px; } /* 10 o'clock (300) */
+.zodiac-pos-11 { left: 260px; top: 106px; } /* 11 o'clock (330) */
+.zodiac-pos-12 { left: 430px; top: 60px;  } /* 12 o'clock (0) */
+
 /* Hide obsolete side-labels in relation mode */
 #relation-board .side-label { display: none; }
 #celtic-board .side-label { display: none; }
 #hexa-board .side-label { display: none; }
+#zodiac-board .side-label { display: none; }
 .board-wrapper {
     background: rgba(0, 0, 0, 0.65);
     border: 1px solid var(--border);
@@ -585,6 +624,44 @@ section {
     border-radius: 4px;
     font-weight: 700;
     cursor: pointer;
+}
+
+/* --- Spread Guide Box --- */
+#spread-guide-box {
+    width: fit-content;
+    max-width: 800px;
+    margin: 0 auto 2.5rem auto;
+    padding: 1.2rem 2.5rem;
+    background: rgba(15, 12, 20, 0.7);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 40px;
+    backdrop-filter: blur(10px);
+    text-align: center;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.1);
+    animation: fadeInSlideDown 0.8s ease-out;
+}
+#spread-guide-box.hidden { display: none; }
+
+#spread-guide-title {
+    color: #d4af37;
+    font-size: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
+}
+#spread-guide-desc {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 300;
+    word-break: keep-all;
+}
+
+@keyframes fadeInSlideDown {
+    from { opacity: 0; transform: translateY(-15px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- Card Selection Area --- */

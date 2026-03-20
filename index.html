@@ -24,6 +24,7 @@
                 <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
                 <button id="view-celtic" class="mode-btn" onclick="switchMode('celtic')">켈틱 크로스</button>
                 <button id="view-hexa" class="mode-btn" onclick="switchMode('hexa')">헥사그램</button>
+                <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁)</button>
             </nav>
             <div id="top-interpretation" class="hidden fade-in"></div>
         </header>
@@ -513,6 +514,130 @@
                 <div class="board-actions">
                     <button class="btn-main-gold" onclick="analyzeFullSpread(7, 'hexa')">헥사그램 분석 리포트</button>
                     <button class="btn-outline" onclick="clearBoard(7)">초기화</button>
+                </div>
+            </section>
+
+            <!-- 6. 조디악 (12궁) 스프레드 -->
+            <section id="zodiac-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="zodiac-container">
+                        <!-- Decorative Circular Astrological SVG Background -->
+                        <div class="zodiac-bg-overlay">
+                            <svg viewBox="0 0 1000 1000" width="1000" height="1000"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="zodiac-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <!-- Central Sun / Core -->
+                                <circle cx="500" cy="500" r="100" fill="none" stroke-opacity="0.3" stroke-dasharray="10 5" />
+                                <circle cx="500" cy="500" r="40" fill="none" />
+                                <circle cx="500" cy="500" r="8" fill="#d4af37" filter="url(#zodiac-star-glow)" /> <!-- The Sun -->
+                                
+                                <!-- Outer Zodiac Wheel Rings -->
+                                <circle cx="500" cy="500" r="420" fill="none" stroke-opacity="0.4" />
+                                <circle cx="500" cy="500" r="300" fill="none" stroke-opacity="0.2" stroke-dasharray="8 8" />
+
+                                <!-- Spoke Lines for 12 Houses -->
+                                <!-- 1 and 7 (9 to 3 o'clock) -->
+                                <line x1="80" y1="500" x2="920" y2="500" opacity="0.15" />
+                                <!-- 4 and 10 (12 to 6 o'clock) -->
+                                <line x1="500" y1="80" x2="500" y2="920" opacity="0.15" />
+                                <!-- Cross 1 (30 and 210 degrees) -->
+                                <line x1="136" y1="290" x2="864" y2="710" opacity="0.15" />
+                                <!-- Cross 2 (60 and 240 degrees) -->
+                                <line x1="290" y1="136" x2="710" y2="864" opacity="0.15" />
+                                <!-- Cross 3 (120 and 300 degrees) -->
+                                <line x1="710" y1="136" x2="290" y2="864" opacity="0.15" />
+                                <!-- Cross 4 (150 and 330 degrees) -->
+                                <line x1="864" y1="290" x2="136" y2="710" opacity="0.15" />
+
+                                <!-- Star Nodes located exactly at the cards' anchor points (R=340) -->
+                                <!-- 1 o'clock to 12 o'clock -->
+                                <circle cx="670" cy="206" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="794" cy="330" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="840" cy="500" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="794" cy="670" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="670" cy="794" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="500" cy="840" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="330" cy="794" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="206" cy="670" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="160" cy="500" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="206" cy="330" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="330" cy="206" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="500" cy="160" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                            </svg>
+                        </div>
+
+                        <!-- 12 Slots (Clockwise layout) -->
+                        <div id="zslot-0" class="slot zodiac-pos-1" onclick="activateSlot(0, 'zodiac')" onmouseenter="showInterpretationOnTop(0, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1궁 백양<br><small>ARIES (SELF)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">자아, 기본 성향, 에너지</div>
+                        </div>
+                        <div id="zslot-1" class="slot zodiac-pos-2" onclick="activateSlot(1, 'zodiac')" onmouseenter="showInterpretationOnTop(1, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2궁 황소<br><small>TAURUS (WEALTH)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">금전, 물질, 가치관</div>
+                        </div>
+                        <div id="zslot-2" class="slot zodiac-pos-3" onclick="activateSlot(2, 'zodiac')" onmouseenter="showInterpretationOnTop(2, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3궁 쌍아<br><small>GEMINI (MIND)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">소통, 학습, 짧은 여행</div>
+                        </div>
+                        <div id="zslot-3" class="slot zodiac-pos-4" onclick="activateSlot(3, 'zodiac')" onmouseenter="showInterpretationOnTop(3, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4궁 거해<br><small>CANCER (HOME)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">가정, 안식처, 감정의 뿌리</div>
+                        </div>
+                        <div id="zslot-4" class="slot zodiac-pos-5" onclick="activateSlot(4, 'zodiac')" onmouseenter="showInterpretationOnTop(4, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5궁 사자<br><small>LEO (CREATIVITY)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">연애, 창조성, 기쁨, 자녀</div>
+                        </div>
+                        <div id="zslot-5" class="slot zodiac-pos-6" onclick="activateSlot(5, 'zodiac')" onmouseenter="showInterpretationOnTop(5, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6궁 처녀<br><small>VIRGO (WORK)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">일상 업무, 의무, 건강</div>
+                        </div>
+                        <div id="zslot-6" class="slot zodiac-pos-7" onclick="activateSlot(6, 'zodiac')" onmouseenter="showInterpretationOnTop(6, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7궁 천칭<br><small>LIBRA (PARTNER)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">결혼, 파트너십, 대인관계</div>
+                        </div>
+                        <div id="zslot-7" class="slot zodiac-pos-8" onclick="activateSlot(7, 'zodiac')" onmouseenter="showInterpretationOnTop(7, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">8궁 천갈<br><small>SCORPIO (DEPTH)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">변화, 숨겨진 것, 타인의 자산</div>
+                        </div>
+                        <div id="zslot-8" class="slot zodiac-pos-9" onclick="activateSlot(8, 'zodiac')" onmouseenter="showInterpretationOnTop(8, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">9궁 인마<br><small>SAGITTARIUS (EXPAND)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">철학, 장거리 여행, 탐구</div>
+                        </div>
+                        <div id="zslot-9" class="slot zodiac-pos-10" onclick="activateSlot(9, 'zodiac')" onmouseenter="showInterpretationOnTop(9, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">10궁 마갈<br><small>CAPRICORN (CAREER)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">커리어, 명예, 사회적 성취</div>
+                        </div>
+                        <div id="zslot-10" class="slot zodiac-pos-11" onclick="activateSlot(10, 'zodiac')" onmouseenter="showInterpretationOnTop(10, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">11궁 보병<br><small>AQUARIUS (HOPES)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">희망, 공동체, 친구, 이상</div>
+                        </div>
+                        <div id="zslot-11" class="slot zodiac-pos-12" onclick="activateSlot(11, 'zodiac')" onmouseenter="showInterpretationOnTop(11, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">12궁 쌍어<br><small>PISCES (SOUL)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">무의식, 영적인 세계, 비밀</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="board-actions">
+                    <button class="btn-main-gold" onclick="analyzeFullSpread(12, 'zodiac')">조디악 분석 리포트</button>
+                    <button class="btn-outline" onclick="clearBoard(12, 'zodiac')">초기화</button>
                 </div>
             </section>
 

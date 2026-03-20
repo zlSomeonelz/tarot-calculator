@@ -6,6 +6,7 @@ let placedCardsTree = new Array(10).fill(null);
 let placedCardsRelation = new Array(12).fill(null);
 let placedCardsCeltic = new Array(10).fill(null);
 let placedCardsHexa = new Array(7).fill(null);
+let placedCardsZodiac = new Array(12).fill(null);
 
 document.addEventListener('DOMContentLoaded', () => {
     setupGrid(tarotDataKo);
@@ -41,17 +42,20 @@ function switchMode(mode) {
     document.getElementById('relation-board').classList.toggle('hidden', mode !== 'relation');
     document.getElementById('celtic-board').classList.toggle('hidden', mode !== 'celtic');
     document.getElementById('hexa-board').classList.toggle('hidden', mode !== 'hexa');
+    document.getElementById('zodiac-board').classList.toggle('hidden', mode !== 'zodiac');
+
+    updateSpreadGuide(mode);
 
     // UI Tab Sync (Check for null to prevent errors)
-    const btns = ['view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa'];
-    const modes = ['spread', 'relation', 'tree', 'celtic', 'hexa'];
+    const btns = ['view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
+    const modes = ['spread', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
 
     btns.forEach((id, i) => {
         const btn = document.getElementById(id);
         if (btn) btn.classList.toggle('active', mode === modes[i]);
     });
 
-    if (mode === 'spread' || mode === 'tree' || mode === 'relation' || mode === 'celtic' || mode === 'hexa') {
+    if (modes.includes(mode)) {
         // Just set the active index and highlight, don't trigger search
         activeSlotIndex = 0;
         const slots = document.querySelectorAll('.slot');
@@ -61,6 +65,7 @@ function switchMode(mode) {
         if (mode === 'relation') prefix = 'rslot';
         if (mode === 'celtic') prefix = 'cslot';
         if (mode === 'hexa') prefix = 'hslot';
+        if (mode === 'zodiac') prefix = 'zslot';
         const target = document.getElementById(`${prefix}-0`);
         if (target) target.classList.add('active');
     }
@@ -73,6 +78,7 @@ function activateSlot(index, mode = currentMode) {
     if (mode === 'relation') prefix = 'rslot';
     if (mode === 'celtic') prefix = 'cslot';
     if (mode === 'hexa') prefix = 'hslot';
+    if (mode === 'zodiac') prefix = 'zslot';
 
     const slots = document.querySelectorAll('.slot');
     slots.forEach(slot => slot.classList.remove('active'));
@@ -161,6 +167,8 @@ function placeCardInSlot(card) {
         cards = placedCardsCeltic; prefix = 'cslot'; max = 10;
     } else if (currentMode === 'hexa') {
         cards = placedCardsHexa; prefix = 'hslot'; max = 7;
+    } else if (currentMode === 'zodiac') {
+        cards = placedCardsZodiac; prefix = 'zslot'; max = 12;
     } else {
         cards = placedCards4; prefix = 'slot'; max = 4;
     }
@@ -207,7 +215,7 @@ function analyzeFullSpread(count) {
             { t: '9. 예소드 (Yesod)', a: '정보팀', m: '분별할 수 있는 이성' },
             { t: '10. 말쿠트 (Malkuth)', a: '지휘팀', m: '똑바로 설 수 있는 의지' }
         ];
-    } else if (count === 12) {
+    } else if (count === 12 && currentMode === 'relation') {
         cards = placedCardsRelation; isRelation = true;
         allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         info = [
@@ -249,7 +257,24 @@ function analyzeFullSpread(count) {
             { t: '4. 무의식 (HIDDEN)', m: '숨겨진 욕망과 기반' },
             { t: '5. 환경 (ENV)', m: '주변의 영향과 타인' },
             { t: '6. 조언 (ADVICE)', m: '문제 해결을 위한 지침' },
-            { t: '7. 결과 (OUTCOME)', m: '모든 흐름의 최종 결론' }
+            { t: '7. 최종 결과 (OUTCOME)', m: '흐름의 최종 결론' }
+        ];
+    } else if (count === 12 && currentMode === 'zodiac') {
+        cards = placedCardsZodiac;
+        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        info = [
+            { t: '1궁 백양 (Aries)', m: '자아, 기본 성향, 육체적 에너지' },
+            { t: '2궁 황소 (Taurus)', m: '재물, 소유, 나의 가치관' },
+            { t: '3궁 쌍아 (Gemini)', m: '소통, 학습, 형제나 이웃' },
+            { t: '4궁 거해 (Cancer)', m: '가정, 안식처, 감정의 기반' },
+            { t: '5궁 사자 (Leo)', m: '창조성, 연애, 오락, 자기표현' },
+            { t: '6궁 처녀 (Virgo)', m: '일상의 일, 의무, 건강과 봉사' },
+            { t: '7궁 천칭 (Libra)', m: '파트너십, 결혼, 대면 관계' },
+            { t: '8궁 천갈 (Scorpio)', m: '변화, 남의 자산, 깊은 무의식' },
+            { t: '9궁 인마 (Sagittarius)', m: '철학, 장거리 여행, 고등 학문' },
+            { t: '10궁 마갈 (Capricorn)', m: '사회적 성취, 직업, 명예' },
+            { t: '11궁 보병 (Aquarius)', m: '희망, 친구, 공동체, 이상' },
+            { t: '12궁 쌍어 (Pisces)', m: '영적 세계, 고립, 내면의 비밀' }
         ];
     } else {
         cards = placedCards4;
@@ -398,7 +423,7 @@ function getSefirotColor(idx) {
 
 function clearBoard(count) {
     let cards, prefix, boardId;
-    if (count === 12) {
+    if (count === 12 && currentMode === 'relation') {
         cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board';
     } else if (count === 10 && currentMode === 'tree') {
         cards = placedCardsTree; prefix = 'tslot'; boardId = 'tree-board';
@@ -406,6 +431,8 @@ function clearBoard(count) {
         cards = placedCardsCeltic; prefix = 'cslot'; boardId = 'celtic-board';
     } else if (count === 7 && currentMode === 'hexa') {
         cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board';
+    } else if (count === 12 && currentMode === 'zodiac') {
+        cards = placedCardsZodiac; prefix = 'zslot'; boardId = 'zodiac-board';
     } else {
         cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
     }
@@ -516,6 +543,7 @@ function showInterpretationOnTop(index, mode) {
     else if (mode === 'relation') cards = placedCardsRelation;
     else if (mode === 'celtic') cards = placedCardsCeltic;
     else if (mode === 'hexa') cards = placedCardsHexa;
+    else if (mode === 'zodiac') cards = placedCardsZodiac;
     else cards = placedCards4;
 
     const card = cards[index];
@@ -543,3 +571,56 @@ function drawRandom() {
     const randomIndex = Math.floor(Math.random() * tarotDataKo.length);
     showInterpretation(tarotDataKo[randomIndex]);
 }
+
+function updateSpreadGuide(mode) {
+    const guideBox = document.getElementById('spread-guide-box');
+    const titleEl = document.getElementById('spread-guide-title');
+    const descEl = document.getElementById('spread-guide-desc');
+
+    if (!guideBox || !titleEl || !descEl) return;
+
+    const guides = {
+        'spread': {
+            title: "자유로운 탐색 (Free Draw)",
+            desc: "오늘의 운세나 정해진 형태 없는 즉흥적인 질문에 대한 답을 구하세요. 카드의 개수는 당신의 직관에 맡깁니다."
+        },
+        'relation': {
+            title: "관계의 컵 (Relationship Cup)",
+            desc: "두 사람 사이의 에너지와 흐름, 잠재적인 마찰과 조화의 가능성을 읽어냅니다. 사랑과 협력의 깊이를 탐구하세요."
+        },
+        'tree': {
+            title: "생명의 나무 (Tree of Life)",
+            desc: "10개의 세피라를 통해 당신의 영혼이 나아갈 로드맵과 현재 도달한 성취의 단계를 성찰하는 거시적인 스프레드입니다."
+        },
+        'celtic': {
+            title: "켈틱 크로스 (Celtic Cross)",
+            desc: "가장 고전적이고 강력한 기법입니다. 문제의 핵심부터 과거의 원인, 미래의 결과까지 당신을 둘러싼 운명을 입체적으로 분석합니다."
+        },
+        'hexa': {
+            title: "헥사그램 (Hexagram)",
+            desc: "상반된 에너지 사이의 균형점을 찾습니다. 복잡한 상황에서의 조언과 최종적인 조화의 가능성을 상징합니다."
+        },
+        'zodiac': {
+            title: "조디악 12궁 (Zodiac Spread)",
+            desc: "우주가 선사한 12개의 방(House)을 통해 자아, 재물, 소통 등 인생의 모든 영역을 아우르는 거대한 운명의 흐름을 조망합니다."
+        }
+    };
+
+    if (guides[mode]) {
+        guideBox.classList.remove('hidden');
+        titleEl.textContent = guides[mode].title;
+        descEl.textContent = guides[mode].desc;
+        
+        // Trigger animation reset
+        guideBox.style.animation = 'none';
+        guideBox.offsetHeight; // trigger reflow
+        guideBox.style.animation = null;
+    } else {
+        guideBox.classList.add('hidden');
+    }
+}
+
+// Global initialization call
+document.addEventListener('DOMContentLoaded', () => {
+    updateSpreadGuide(currentMode);
+});
