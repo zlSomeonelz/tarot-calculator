@@ -390,29 +390,82 @@ function addEmotionalAnalysis(container, cards) {
 function addWorldAnalysis(container, cards) {
     const section = document.createElement('div');
     section.className = 'world-summary-container';
-    section.innerHTML = '<h2 class="title-lg" style="text-align:left; margin-bottom:2rem;">세피로트 층위(World) 분석</h2>';
+    
+    // Header
+    section.innerHTML = `
+        <h2 class="title-lg" style="text-align:left; margin-bottom:1rem; color: #d4af37; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.5rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">세피로트 심층(Profound) 분석</h2>
+        <p style="color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">생명의 나무에 배열된 10장의 카드는 당신의 근원적인 영혼(케테르)에서 시작하여 물질적인 현실(말쿠트)로 현현하는 우주적 흐름을 보여줍니다.</p>
+    `;
 
+    // 1. The 4 Worlds
     const layers = [
-        { title: 'ATZILUTH (원형)', dept: '정신의 근원과 순수한 의지', ids: [0, 1, 2], desc: '질문의 본질적인 설계와 의지의 세계' },
-        { title: 'BERIAH (창조)', dept: '감정의 발현과 깊은 열망', ids: [3, 4, 5], desc: '의지가 감정의 힘을 얻어 창조되는 단계' },
-        { title: 'YETZIRAH (형성)', dept: '정보의 체계화와 구체적 계획', ids: [6, 7, 8], desc: '현실로 드러나기 직전의 계획과 형성' },
-        { title: 'ASIYAH (활동)', dept: '최종적인 결과와 현실적 현현', ids: [9], desc: '물질화된 결과와 현실적인 행동' }
+        { title: 'ATZILUTH (아칠루트)', dept: '원형과 불의 세계 (영적 근원)', ids: [0, 1, 2], desc: '질문의 가장 본질적인 불씨이자 신성한 의지의 세계입니다.' },
+        { title: 'BERIAH (브리아)', dept: '창조와 물의 세계 (지성/감정)', ids: [3, 4, 5], desc: '순수한 의지가 형태를 갖추기 위해 지성과 감정의 힘을 얻는 단계입니다.' },
+        { title: 'YETZIRAH (예치라)', dept: '형성과 공기의 세계 (계획/심리)', ids: [6, 7, 8], desc: '현실로 드러나기 직전, 에너지들이 부딪히며 구체적인 계획으로 엮입니다.' },
+        { title: 'ASIYAH (아시야)', dept: '활동과 흙의 세계 (물질적 현현)', ids: [9], desc: '모든 에너지가 마침내 도달한 물질적 결과이자 현실적인 행동입니다.' }
     ];
 
+    let worldsHTML = '<h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. 4계(Four Worlds)의 에너지 흐름</h3>';
     layers.forEach(l => {
         const filled = l.ids.map(id => cards[id]).filter(card => card !== null);
         if (filled.length === 0) return;
-        const box = document.createElement('div');
-        box.className = 'world-summary-box';
-        box.innerHTML = `
-            <h3><span class="world-title">${l.title}</span> <small style="color:#666; font-weight:300;">${l.dept}</small></h3>
-            <p>${l.desc}</p>
-            <div style="margin-top:1rem; font-size:0.85rem; color:var(--accent-gold);">
-                <strong>에너지:</strong> ${filled.map(c => c.name.split(' (')[0]).join(', ')}
+        worldsHTML += `
+            <div class="world-summary-box" style="margin-bottom: 1rem;">
+                <h4><span class="world-title" style="color: #f1c40f;">${l.title}</span> <small style="color:#aaa; font-weight:300;">- ${l.dept}</small></h4>
+                <p style="font-size: 0.85rem; color: #ccc; margin: 0.5rem 0;">${l.desc}</p>
+                <div style="font-size:0.9rem; color: #fff; background: rgba(0,0,0,0.4); padding: 0.5rem; border-radius: 5px;">
+                    <strong style="color:var(--accent-gold);">관여된 에너지:</strong> ${filled.map(c => c.name.split(' (')[0]).join(', ')}
+                </div>
             </div>
         `;
-        section.appendChild(box);
     });
+
+    // 2. The 3 Pillars (우측/자비: 2,4,7 | 좌측/준엄: 3,5,8 | 중앙/균형: 1,6,9,10 => 0-indexed: 1,3,6 | 2,4,7 | 0,5,8,9)
+    const pillars = [
+        { title: '자비의 기둥 (우측)', ids: [1, 3, 6], desc: '팽창, 남성성, 긍정적이고 활동적인 에너지를 의미합니다.' },
+        { title: '준엄의 기둥 (좌측)', ids: [2, 4, 7], desc: '수축, 여성성, 형태를 부여하고 제한하는 이성적 에너지를 의미합니다.' },
+        { title: '균형의 기둥 (중앙)', ids: [0, 5, 8, 9], desc: '양극단을 조화시키며 의식이 현실로 내려오는 핵심 축입니다.' }
+    ];
+
+    let pillarsHTML = '<h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">II. 세 기둥(Three Pillars)의 균형점</h3><div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+    pillars.forEach(p => {
+        const filled = p.ids.map(id => cards[id]).filter(card => card !== null);
+        if (filled.length === 0) return;
+        pillarsHTML += `
+            <div class="world-summary-box" style="flex: 1; min-width: 200px;">
+                <h4 style="color: #f1c40f; margin-bottom: 0.5rem;">${p.title}</h4>
+                <p style="font-size: 0.8rem; color: #ccc; margin-bottom: 0.5rem;">${p.desc}</p>
+                <div style="font-size:0.85rem; color: #fff;">
+                    ${filled.map(c => `<span style="display:inline-block; margin: 2px; padding: 2px 6px; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212,175,55,0.4); border-radius: 4px;">${c.name.split(' (')[0]}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    });
+    pillarsHTML += '</div>';
+
+    // 3. Grand Summary (0: Root, 5: Heart, 9: Result)
+    const rootCard = cards[0];
+    const heartCard = cards[5];
+    const resultCard = cards[9];
+    let grandSummaryHTML = '';
+    
+    if (rootCard && heartCard && resultCard) {
+        grandSummaryHTML = `
+            <h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">III. 운명의 직조 (최종 리딩)</h3>
+            <div class="world-summary-box" style="border: 1px solid rgba(212, 175, 55, 0.5); background: linear-gradient(135deg, rgba(20,15,25,0.8), rgba(10,5,15,0.9));">
+                <p style="line-height: 1.8; color: #eee; font-size: 0.95rem;">
+                    당신의 근원적인 의도와 영혼의 뿌리에는 <strong>[${rootCard.name.split(' (')[0]}]</strong>의 강렬한 에너지가 자리잡고 있습니다.<br/>
+                    이 보이지 않는 씨앗은 당신의 자아와 심장을 관통하는 <strong>[${heartCard.name.split(' (')[0]}]</strong>의 힘을 거치며 깨달음을 얻고 확신으로 변모합니다.<br/>
+                    결국 이 모든 영적/정서적 층위의 소용돌이는, 마침내 현실의 흙바닥에 <strong>[${resultCard.name.split(' (')[0]}]</strong>의 형태로 찬란하게 결실을 맺게 될 것입니다.
+                </p>
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; color: #d4af37; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);">
+                    "우주의 섭리가 당신의 현실로 투영되었습니다."
+                </div>
+            </div>
+        `;
+    }
+
+    section.innerHTML += worldsHTML + pillarsHTML + grandSummaryHTML;
     container.appendChild(section);
 }
 
@@ -619,6 +672,127 @@ function updateSpreadGuide(mode) {
         guideBox.classList.add('hidden');
     }
 }
+
+// --- STARDUST PARTICLE SYSTEM ---
+const canvas = document.getElementById('stardust-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let w, h;
+
+function initCanvas() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', initCanvas);
+initCanvas();
+
+class Particle {
+    constructor() {
+        this.reset();
+        // Pre-warm the stars so they don't start totally black
+        this.opacity = Math.random() * this.maxOpacity;
+        this.fadingOut = Math.random() > 0.5;
+    }
+    reset() {
+        // Create a galaxy band effect (diagonal clustering)
+        const isBand = Math.random() < 0.6; // 60% of stars in a cluster band
+        if (isBand) {
+            const t = Math.random();
+            const baseX = t * w;
+            const baseY = t * h;
+            const spread = (Math.random() - 0.5) * (w * 0.4); 
+            this.x = baseX - spread + (Math.random() * 200 - 100);
+            this.y = (h - baseY) - spread + (Math.random() * 200 - 100);
+        } else {
+            // Scattered randomly in deep space
+            this.x = Math.random() * w;
+            this.y = Math.random() * h;
+        }
+
+        this.size = Math.random() * 1.5 + 0.1;
+        
+        // Very slow, uniform cosmic drift
+        this.speedX = Math.random() * 0.03 + 0.01;
+        this.speedY = Math.random() * 0.03 - 0.015;
+
+        // Twinkling effect setup
+        this.opacity = 0;
+        this.maxOpacity = Math.random() * 0.8 + 0.2;
+        this.fadeStep = Math.random() * 0.005 + 0.001; // Slower fade for starlight
+        this.fadingOut = false;
+
+        // Cosmic color palette
+        const colors = [
+            '212, 175, 55',  // Gold
+            '255, 255, 255', // Pure white
+            '220, 230, 255', // Pale blue
+            '230, 210, 255'  // Pale lavender
+        ];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Twinkling (Breathing opacity)
+        if (this.fadingOut) {
+            this.opacity -= this.fadeStep;
+            if (this.opacity <= 0) {
+                this.opacity = 0;
+                this.fadingOut = false;
+                // Once entirely faded, give it a chance to relocate for a dynamic galaxy
+                if (Math.random() < 0.1) this.reset();
+            }
+        } else {
+            this.opacity += this.fadeStep;
+            if (this.opacity >= this.maxOpacity) {
+                this.opacity = this.maxOpacity;
+                this.fadingOut = true;
+            }
+        }
+
+        // Loop bounds smoothly
+        if (this.x < 0) this.x = w;
+        if (this.x > w) this.x = 0;
+        if (this.y < 0) this.y = h;
+        if (this.y > h) this.y = 0;
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+        ctx.fill();
+        
+        // Add subtle glow for brighter/larger stars
+        if (this.size > 1.0) {
+            ctx.shadowBlur = this.size * 4;
+            ctx.shadowColor = `rgba(${this.color}, ${this.opacity})`;
+        } else {
+            ctx.shadowBlur = 0;
+        }
+    }
+}
+
+function createParticles() {
+    // Increase density slightly for a richer galaxy (divide by 6000 instead of 10000)
+    const count = Math.floor((w * h) / 6000);
+    for (let i = 0; i < count; i++) {
+        particles.push(new Particle());
+    }
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    requestAnimationFrame(animateParticles);
+}
+
+createParticles();
+animateParticles();
 
 // Global initialization call
 document.addEventListener('DOMContentLoaded', () => {
