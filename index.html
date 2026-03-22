@@ -34,6 +34,11 @@
                     <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁)</button>
                 </nav>
             </div>
+            <div class="global-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center;">
+                <button class="btn-outline" style="border-color:#3498db; color:#3498db; min-width: 180px;" onclick="fillSpreadRandomly()">✨ 현재 배열 랜덤 채우기</button>
+                <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; min-width: 180px;" onclick="broadcastState()">📺 OBS로 화면 송출하기</button>
+                <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; min-width: 180px;" onclick="clearOBSBoard()">🚫 OBS 화면 지우기</button>
+            </div>
             <div id="top-interpretation" class="hidden fade-in"></div>
         </header>
 

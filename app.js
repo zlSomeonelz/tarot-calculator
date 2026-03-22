@@ -226,7 +226,6 @@ function confirmDirection(isReversed) {
     if (pendingPlaceCard) {
         placeCardInSlot(pendingPlaceCard, isReversed);
         pendingPlaceCard = null;
-        broadcastState();
     }
 }
 
@@ -759,7 +758,6 @@ function clearBoard(count) {
         slot.removeAttribute('data-active');
     });
     activateSlot(0);
-    broadcastState();
 }
 
 function filterCards() {
@@ -920,6 +918,11 @@ function clearTopInterpretation() {
 }
 
 function drawRandom() {
+    const randomIndex = Math.floor(Math.random() * tarotDataKo.length);
+    showInterpretation(tarotDataKo[randomIndex]);
+}
+
+function fillSpreadRandomly() {
     let cards, max;
     if (currentMode === 'spread3') {
         cards = placedCards3; max = 3;
@@ -1161,4 +1164,20 @@ function broadcastState() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     }).catch(e => { /* Ignore if server is not running */ });
+}
+
+function clearOBSBoard() {
+    const payload = {
+        type: 'update_spread',
+        mode: currentMode,
+        cards: [] // empty array to clear
+    };
+
+    obsChannel.postMessage(payload);
+
+    fetch('http://127.0.0.1:8099/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(e => { /* Ignore */ });
 }
