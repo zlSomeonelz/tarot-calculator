@@ -226,6 +226,7 @@ function confirmDirection(isReversed) {
     if (pendingPlaceCard) {
         placeCardInSlot(pendingPlaceCard, isReversed);
         pendingPlaceCard = null;
+        broadcastState();
     }
 }
 
@@ -758,6 +759,7 @@ function clearBoard(count) {
         slot.removeAttribute('data-active');
     });
     activateSlot(0);
+    broadcastState();
 }
 
 function filterCards() {
@@ -918,8 +920,40 @@ function clearTopInterpretation() {
 }
 
 function drawRandom() {
-    const randomIndex = Math.floor(Math.random() * tarotDataKo.length);
-    showInterpretation(tarotDataKo[randomIndex]);
+    let cards, max;
+    if (currentMode === 'spread3') {
+        cards = placedCards3; max = 3;
+    } else if (currentMode === 'tree') {
+        cards = placedCardsTree; max = 10;
+    } else if (currentMode === 'relation') {
+        cards = placedCardsRelation; max = 12;
+    } else if (currentMode === 'celtic') {
+        cards = placedCardsCeltic; max = 10;
+    } else if (currentMode === 'hexa') {
+        cards = placedCardsHexa; max = 7;
+    } else if (currentMode === 'zodiac') {
+        cards = placedCardsZodiac; max = 12;
+    } else {
+        cards = placedCards4; max = 4;
+    }
+
+    let placedIds = cards.filter(c => c !== null).map(c => c.id);
+
+    for (let i = 0; i < max; i++) {
+        if (cards[i] === null) {
+            let availableCards = tarotDataKo.filter(c => !placedIds.includes(c.id));
+            if (availableCards.length === 0) break;
+
+            const randomIndex = Math.floor(Math.random() * availableCards.length);
+            const card = availableCards[randomIndex];
+            placedIds.push(card.id);
+
+            activeSlotIndex = i;
+            // 50% chance for reverse
+            const isReversed = Math.random() < 0.5;
+            placeCardInSlot(card, isReversed);
+        }
+    }
 }
 
 function updateSpreadGuide(mode) {
@@ -1099,3 +1133,32 @@ animateParticles();
 document.addEventListener('DOMContentLoaded', () => {
     updateSpreadGuide(currentMode);
 });
+
+// OBS Multi-Broadcast
+const obsChannel = new BroadcastChannel('tarot_obs_channel');
+function broadcastState() {
+    let cards;
+    if (currentMode === 'spread3') cards = placedCards3;
+    else if (currentMode === 'tree') cards = placedCardsTree;
+    else if (currentMode === 'relation') cards = placedCardsRelation;
+    else if (currentMode === 'celtic') cards = placedCardsCeltic;
+    else if (currentMode === 'hexa') cards = placedCardsHexa;
+    else if (currentMode === 'zodiac') cards = placedCardsZodiac;
+    else cards = placedCards4;
+
+    const payload = {
+        type: 'update_spread',
+        mode: currentMode,
+        cards: cards
+    };
+
+    // 1. BroadcastChannel (For Chrome-to-Chrome Window Capture)
+    obsChannel.postMessage(payload);
+
+    // 2. HTTP Server Sync (For pure OBS Browser Source via server.py)
+    fetch('http://127.0.0.1:8099/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(e => { /* Ignore if server is not running */ });
+}
