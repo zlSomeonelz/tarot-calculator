@@ -10,8 +10,8 @@
             margin: 0;
             padding: 0;
             overflow: hidden;
-            width: 1920px;
-            height: 1080px;
+            width: 100vw;
+            height: 100vh;
         }
 
         /* Hide unwanted elements from the injected HTML */
@@ -19,19 +19,18 @@
         .slot-hint { display: none !important; }
         
         #obs-container {
-            width: 1920px;
-            height: 1080px;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* 화면 잘림 방지를 위해 top 정렬 */
-            padding-top: 50px; /* 위쪽 여유 공간 확보 */
+            align-items: flex-start; /* 화면 잘림 방지 */
+            padding-top: 4vh; /* 비율에 맞춘 상단 여백 */
         }
         
         main { 
             width: 1400px;
             margin: 0 auto;
-            transform: scale(0.85); /* 85% 로 축소 */
-            transform-origin: top center; /* 축소의 기준점을 화면 위쪽 중앙으로 설정 */
+            transform-origin: top center;
         }
         
         section {
@@ -49,6 +48,21 @@
         const container = document.getElementById('obs-container');
         let lastStateStr = "";
 
+        // 화면 해상도에 맞춰 가장 예쁜 비율로 자동 확대/축소 (4K, 1440p, 1080p 모두 대응)
+        function resizeLayout() {
+            const mainEl = document.querySelector('main');
+            if (!mainEl) return;
+            // 관계 배열(가장 큼)이 1300px 정도이므로 기준 높이를 1350으로 넉넉히 잡습니다.
+            const scaleHeight = window.innerHeight / 1350;
+            const scaleWidth = window.innerWidth / 1450;
+            // 브라우저 소스의 크기에 맞게 딱 들어맞도록 스케일 조정 (최대 2.0x 줌 제한)
+            const finalScale = Math.min(scaleHeight, scaleWidth, 2.0);
+            
+            mainEl.style.transform = `scale(${finalScale})`;
+        }
+
+        window.addEventListener('resize', resizeLayout);
+
         async function initLayout() {
             try {
                 // index.html에서 구조를 그대로 복제해 옵니다. (스타일 유지)
@@ -60,6 +74,8 @@
                 
                 mainBoards.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
                 container.appendChild(mainBoards);
+                
+                resizeLayout(); // 로드 직후 1회 실행
                 
                 setInterval(pollServer, 1000);
                 pollServer();
