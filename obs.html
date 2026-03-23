@@ -14,23 +14,6 @@
             height: 1080px;
         }
 
-        /* OBS 편의성 스위치 컨트롤 */
-        .obs-controls {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            z-index: 9999;
-            background: rgba(0,0,0,0.7);
-            padding: 10px;
-            border-radius: 8px;
-            color: white;
-            font-family: 'Noto Sans KR', sans-serif;
-            opacity: 0.1;
-            transition: opacity 0.3s;
-        }
-
-        .obs-controls:hover { opacity: 1; }
-
         /* Hide unwanted elements from the injected HTML */
         .board-actions, header, footer, .search-wrap { display: none !important; }
         .slot-hint { display: none !important; }
@@ -38,17 +21,17 @@
         #obs-container {
             width: 1920px;
             height: 1080px;
-            transform: scale(0.8); /* 전체 크기를 80%로 축소하여 화면에 여유롭게 담기 */
-            transform-origin: center center;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* 화면 잘림 방지를 위해 top 정렬 */
+            padding-top: 50px; /* 위쪽 여유 공간 확보 */
         }
         
-        /* main 블록은 플렉스가 아니라 정상적인 웹페이지(app-container 역할)처럼 넓게 퍼지도록 유지 */
         main { 
-            width: 1400px; /* 원래 사이트의 app-container 너비 모방 */
+            width: 1400px;
             margin: 0 auto;
+            transform: scale(0.85); /* 85% 로 축소 */
+            transform-origin: top center; /* 축소의 기준점을 화면 위쪽 중앙으로 설정 */
         }
         
         section {
@@ -59,24 +42,12 @@
 </head>
 <body id="obs-body">
 
-    <div class="obs-controls">
-        <label>
-            <input type="checkbox" id="bg-toggle"> 크로마키 초록 배경 <small>(투명 배경이 기본입니다)</small>
-        </label>
-        <div style="font-size:12px; margin-top:5px; color:#aaa;">(마우스를 올리면 이 창이 보이며, 방송 중엔 이 창은 보이지 않습니다)</div>
-    </div>
-
     <!-- The actual injected layout goes here -->
     <div id="obs-container"></div>
 
     <script>
         const container = document.getElementById('obs-container');
         let lastStateStr = "";
-
-        // 크로마키 배경 스위치
-        document.getElementById('bg-toggle').addEventListener('change', (e) => {
-            document.getElementById('obs-body').style.backgroundColor = e.target.checked ? '#00ff00' : 'transparent';
-        });
 
         async function initLayout() {
             try {
