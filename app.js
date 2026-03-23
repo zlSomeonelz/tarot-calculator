@@ -1156,10 +1156,13 @@ function broadcastState() {
     else if (currentMode === 'zodiac') cards = placedCardsZodiac;
     else cards = placedCards4;
 
+    const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
+    
     const payload = {
         type: 'update_spread',
         mode: currentMode,
-        cards: cards
+        cards: cards,
+        key: secretKey // 클라우드 상에서 방을 분리하기 위한 비밀키
     };
 
     // 1. BroadcastChannel (For Chrome-to-Chrome Window Capture)
@@ -1174,10 +1177,13 @@ function broadcastState() {
 }
 
 function clearOBSBoard() {
+    const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
+    
     const payload = {
         type: 'update_spread',
         mode: currentMode,
-        cards: [] // empty array to clear
+        cards: [], // empty array to clear
+        key: secretKey
     };
 
     obsChannel.postMessage(payload);

@@ -1,9 +1,10 @@
 import json
 import os
+import urllib.parse
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-# 타로 상태를 저장하는 메모리
-current_state = {}
+# 여러 방송인이 동시에 써도 섞이지 않도록 방(채널)별로 상태를 저장하는 메모리
+channels_state = {}
 
 class RequestHandler(SimpleHTTPRequestHandler):
     def set_cors_headers(self):
@@ -17,24 +18,40 @@ class RequestHandler(SimpleHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        if self.path == '/state':
+        parsed_path = urllib.parse.urlparse(self.path)
+        if parsed_path.path == '/state':
+            # 쿼리스트링에서 방송용 비밀키(key) 추출 (없으면 'default')
+            query_params = urllib.parse.parse_qs(parsed_path.query)
+            room_key = query_params.get('key', ['default'])[0]
+            
             self.send_response(200)
             self.send_header("Content-type", "application/json")
             self.set_cors_headers()
             self.end_headers()
-            self.wfile.write(json.dumps(current_state).encode('utf-8'))
+            
+            # 해당 방의 상태만 전송
+            state = channels_state.get(room_key, {})
+            self.wfile.write(json.dumps(state).encode('utf-8'))
         else:
             # 기본 정적 파일(HTML, CSS, JS, 이미지 등) 제공
             super().do_GET()
 
     def do_POST(self):
-        global current_state
-        if self.path == '/update':
+        global channels_state
+        parsed_path = urllib.parse.urlparse(self.path)
+        if parsed_path.path == '/update':
             content_length = int(self.headers.get('Content-Length', 0))
             if content_length > 0:
                 post_data = self.rfile.read(content_length)
                 try:
-                    current_state = json.loads(post_data.decode('utf-8'))
+                    state_data = json.loads(post_data.decode('utf-8'))
+                    
+                    # 전송받은 데이터에서 비밀키 추출
+                    room_key = state_data.get('key', 'default')
+                    
+                    # 해당 방 번호에 상태 저장
+                    channels_state[room_key] = state_data
+
                     self.send_response(200)
                     self.send_header("Content-type", "application/json")
                     self.set_cors_headers()

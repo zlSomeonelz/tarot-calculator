@@ -108,9 +108,13 @@
             }
         };
 
+        // 쿼리스트링에서 비밀키(key) 추출 (예: obs.html?key=타로마스터)
+        const urlParams = new URLSearchParams(window.location.search);
+        const secretKey = urlParams.get('key') || 'default';
+
         async function pollServer() {
             try {
-                const response = await fetch('/state');
+                const response = await fetch('/state?key=' + encodeURIComponent(secretKey));
                 const data = await response.json();
                 if (data && data.type === 'update_spread') {
                     const stateStr = JSON.stringify(data);
