@@ -867,6 +867,28 @@ function closeOBSGuide() {
     document.getElementById('obs-guide-modal').classList.add('hidden');
 }
 
+function copyOBSUrl() {
+    const rawKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value.trim() : '';
+    const secretKey = rawKey !== '' ? rawKey : 'default';
+    
+    // Create the full absolute url for obs.html based on current environment
+    let basePath = window.location.href;
+    if (basePath.includes('index.html')) {
+        basePath = basePath.replace('index.html', '');
+    }
+    if (!basePath.endsWith('/')) {
+        basePath += '/';
+    }
+    
+    const obsUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}/obs.html?key=${encodeURIComponent(secretKey)}`;
+    
+    navigator.clipboard.writeText(obsUrl).then(() => {
+        alert("OBS 브라우저 소스용 URL이 복사되었습니다!\nOBS에 붙여넣기 하세요.\n\n복사된 주소:\n" + obsUrl);
+    }).catch(err => {
+        alert("클립보드 복사에 실패했습니다. 권한을 확인해주세요.");
+    });
+}
+
 function copyFullAnalysis() {
     const results = document.getElementById('analysis-results').innerText;
     // Fallback for non-https/localhost
