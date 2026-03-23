@@ -1159,7 +1159,7 @@ function broadcastState() {
     obsChannel.postMessage(payload);
 
     // 2. HTTP Server Sync (For pure OBS Browser Source via server.py)
-    fetch('http://127.0.0.1:8099/update', {
+    fetch('/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
@@ -1175,7 +1175,7 @@ function clearOBSBoard() {
 
     obsChannel.postMessage(payload);
 
-    fetch('http://127.0.0.1:8099/update', {
+    fetch('/update', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

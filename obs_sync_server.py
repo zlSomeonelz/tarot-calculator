@@ -1,11 +1,11 @@
 import json
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import os
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-# 타로 상태를 저장하는 메모리 (Chrome에서 보내면 OBS에서 받아감)
+# 타로 상태를 저장하는 메모리
 current_state = {}
 
-class RequestHandler(BaseHTTPRequestHandler):
-    # CORS (브라우저 보안: 다른 파일끼리 통신 허용) 설정
+class RequestHandler(SimpleHTTPRequestHandler):
     def set_cors_headers(self):
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
@@ -16,7 +16,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.set_cors_headers()
         self.end_headers()
 
-    # OBS에서 타로 상태를 물어볼 때 (GET)
     def do_GET(self):
         if self.path == '/state':
             self.send_response(200)
@@ -25,10 +24,9 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(json.dumps(current_state).encode('utf-8'))
         else:
-            self.send_response(404)
-            self.end_headers()
+            # 기본 정적 파일(HTML, CSS, JS, 이미지 등) 제공
+            super().do_GET()
 
-    # 크롬 메인 화면에서 타로 상태를 갱신할 때 (POST)
     def do_POST(self):
         global current_state
         if self.path == '/update':
@@ -48,19 +46,19 @@ class RequestHandler(BaseHTTPRequestHandler):
         self.send_response(400)
         self.end_headers()
 
-    # 불필요한 로그 메세지 가리기 (서버 화면 더럽혀지지 않게)
     def log_message(self, format, *args):
+        # 정적 파일 요청 로그 가리기 (필요하면 주석 해제)
         pass
 
 def main():
-    port = 8099
+    # Render.com은 PORT 환경 변수를 사용합니다. 로컬은 8099 사용.
+    port = int(os.environ.get("PORT", 8099))
     server_address = ('', port)
     httpd = HTTPServer(server_address, RequestHandler)
     print("="*60)
-    print(" 🔮 타로카드 OBS 실시간 동기화 서버가 켜졌습니다! ")
+    print(f" 🌐 타로카드 FULL Web Server가 시작되었습니다! (포트: {port}) ")
+    print(" 👉 로컬 테스트 접속 주소: http://localhost:8099")
     print("="*60)
-    print("- 이제 이 창을 켜두신 상태로 OBS 브라우저 소스를 쓰시면 됩니다.")
-    print("- 종료하려면 이 창을 끄시거나 Ctrl+C 를 누르세요.")
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:

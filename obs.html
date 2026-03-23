@@ -113,7 +113,7 @@
         // 2. 파이썬 로컬 서버 통신 폴링 (푸지텍 같은 브라우저 소스 직접 캡처용)
         async function pollServer() {
             try {
-                const response = await fetch('http://127.0.0.1:8099/state');
+                const response = await fetch('/state');
                 const data = await response.json();
                 if (data && data.type === 'update_spread') {
                     const stateStr = JSON.stringify(data);
