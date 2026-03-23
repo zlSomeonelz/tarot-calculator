@@ -2,15 +2,13 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OBS 송출용 타로 스프레드</title>
+    <title>OBS Tarot Broadcast</title>
+    <link rel="stylesheet" href="style.css">
     <style>
-        /* OBS용 투명한 배경, 또는 크로마키. */
         body {
-            background: transparent; /* OBS 브라우저 소스를 쓰거나 우클릭 투명화를 위해 */
+            background: transparent !important;
             margin: 0;
-            padding: 20px;
-            font-family: 'Noto Sans KR', sans-serif;
+            padding: 0;
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -18,87 +16,70 @@
             height: 100vh;
         }
 
-        /* 윈도우 캡처 시 배경을 초록색으로 하고 싶다면 사용할 클래스 */
-        .chroma-key-bg {
-            background: #00ff00 !important;
-        }
-
-        #obs-container {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            max-width: 1920px;
-        }
-
-        .obs-card-slot {
-            width: 160px;
-            height: 270px;
-            background-color: rgba(0, 0, 0, 0.6);
-            border: 2px solid #d4af37;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #d4af37;
-            font-weight: bold;
-            font-size: 1.2rem;
-            transition: all 0.3s ease;
-        }
-
-        .obs-card-image {
-            position: absolute;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-size: cover;
-            background-position: center;
-            border-radius: 6px;
-        }
-
-        .obs-card-label {
-            position: absolute;
-            bottom: -35px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #fff;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 4px 8px;
-            border: 1px solid #d4af37;
-            border-radius: 4px;
-            font-size: 0.9rem;
-            white-space: nowrap;
-            text-shadow: 1px 1px 2px #000;
-        }
-
-        /* 크로마키 토글 버튼 */
-        #btn-toggle-bg {
+        /* OBS 편의성 스위치 컨트롤 */
+        .obs-controls {
             position: fixed;
             top: 10px;
             left: 10px;
-            padding: 8px 12px;
-            background: #333;
-            color: #fff;
-            border: 1px solid #666;
-            cursor: pointer;
-            z-index: 1000;
+            z-index: 9999;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 8px;
+            color: white;
+            font-family: 'Noto Sans KR', sans-serif;
+            opacity: 0.1;
+            transition: opacity 0.3s;
         }
+
+        .obs-controls:hover { opacity: 1; }
+
+        /* Hide unwanted elements from the injected HTML */
+        .board-actions, header, footer, .search-wrap { display: none !important; }
+        .slot-hint { display: none !important; }
+        main { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+
     </style>
 </head>
-<body>
-    <button id="btn-toggle-bg" onclick="document.body.classList.toggle('chroma-key-bg')">크로마키 배경 전환 (Green Screen)</button>
-    <div id="obs-container">
-        <!-- Result will be injected here -->
-        <h2 style="color:#d4af37; text-align:center;">타로 카드를 뽑으면 이 화면에 출력됩니다.</h2>
+<body id="obs-body">
+
+    <div class="obs-controls">
+        <label>
+            <input type="checkbox" id="bg-toggle"> 크로마키 초록 배경 <small>(투명 배경이 기본입니다)</small>
+        </label>
+        <div style="font-size:12px; margin-top:5px; color:#aaa;">(마우스를 올리면 이 창이 보이며, 방송 중엔 이 창은 보이지 않습니다)</div>
     </div>
+
+    <!-- The actual injected layout goes here -->
+    <div id="obs-container" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center; transform: scale(0.9);"></div>
 
     <script>
         const container = document.getElementById('obs-container');
         let lastStateStr = "";
 
-        // 1. 채널 방식 (창 캡처용)
+        // 크로마키 배경 스위치
+        document.getElementById('bg-toggle').addEventListener('change', (e) => {
+            document.getElementById('obs-body').style.backgroundColor = e.target.checked ? '#00ff00' : 'transparent';
+        });
+
+        async function initLayout() {
+            try {
+                // index.html에서 구조를 그대로 복제해 옵니다. (스타일 유지)
+                const res = await fetch('index.html');
+                const text = await res.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+                const mainBoards = doc.querySelector('main');
+                
+                mainBoards.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
+                container.appendChild(mainBoards);
+                
+                setInterval(pollServer, 1000);
+                pollServer();
+            } catch (e) {
+                console.error("레이아웃 로딩 실패", e);
+            }
+        }
+
         const obsChannel = new BroadcastChannel('tarot_obs_channel');
         obsChannel.onmessage = (event) => {
             if (event.data.type === 'update_spread') {
@@ -110,7 +91,6 @@
             }
         };
 
-        // 2. 파이썬 로컬 서버 통신 폴링 (푸지텍 같은 브라우저 소스 직접 캡처용)
         async function pollServer() {
             try {
                 const response = await fetch('/state');
@@ -123,42 +103,64 @@
                     }
                 }
             } catch (e) {
-                // 서버가 꺼져 있거나 오류가 나면 무시
+                // Ignore API errors if offline
             }
         }
-        setInterval(pollServer, 1000); // 1초마다 동기화 체크
-        pollServer();
 
         function renderCards(mode, cards) {
-            container.innerHTML = '';
-            
+            if (cards.length === 0) {
+                // Completely hide all
+                document.querySelectorAll('#obs-container main section').forEach(sec => sec.classList.add('hidden'));
+                return;
+            }
+
+            let boardId, prefix;
+            if (mode === 'spread3') { boardId = 'spread3-board'; prefix = 's3slot'; }
+            else if (mode === 'tree') { boardId = 'tree-board'; prefix = 'tslot'; }
+            else if (mode === 'relation') { boardId = 'relation-board'; prefix = 'rslot'; }
+            else if (mode === 'celtic') { boardId = 'celtic-board'; prefix = 'cslot'; }
+            else if (mode === 'hexa') { boardId = 'hexa-board'; prefix = 'hslot'; }
+            else if (mode === 'zodiac') { boardId = 'zodiac-board'; prefix = 'zslot'; }
+            else { boardId = 'board'; prefix = 'slot'; }
+
+            // Hide all and show active
+            document.querySelectorAll('#obs-container main section').forEach(sec => sec.classList.add('hidden'));
+            const activeSec = document.getElementById(boardId);
+            if (activeSec) activeSec.classList.remove('hidden');
+
             cards.forEach((card, index) => {
-                const slot = document.createElement('div');
-                slot.className = 'obs-card-slot';
-
-                if (card) {
-                    const img = document.createElement('div');
-                    img.className = 'obs-card-image';
-                    const finalImg = card.image || `images/tarot_${card.id}.png`;
-                    img.style.backgroundImage = `url('${finalImg}')`;
-                    
-                    if (card.isReversed) {
-                        img.style.transform = 'rotate(180deg)';
-                    }
-                    slot.appendChild(img);
-
-                    const korNameOrigin = card.name.split(' (')[0];
-                    const label = document.createElement('div');
-                    label.className = 'obs-card-label';
-                    label.textContent = card.isReversed ? `${korNameOrigin} [역]` : korNameOrigin;
-                    slot.appendChild(label);
-                } else {
-                    slot.innerHTML = `<span>?</span>`;
+                const slotEl = document.getElementById(`${prefix}-${index}`);
+                if (!slotEl) return;
+                
+                slotEl.style.backgroundImage = 'none';
+                let bgLayer = slotEl.querySelector('.slot-bg-layer');
+                if (!bgLayer) {
+                    bgLayer = document.createElement('div');
+                    bgLayer.className = 'slot-bg-layer';
+                    slotEl.insertBefore(bgLayer, slotEl.firstChild);
                 }
 
-                container.appendChild(slot);
+                if (card) {
+                    const finalImg = card.image || `images/tarot_${card.id}.png`;
+                    bgLayer.style.backgroundImage = `url('${finalImg}')`;
+                    bgLayer.style.transform = card.isReversed ? 'rotate(180deg)' : 'none';
+                    bgLayer.style.opacity = '1';
+
+                    const korNameOrigin = card.name.split(' (')[0];
+                    const displayKorName = card.isReversed ? `${korNameOrigin} [역]` : korNameOrigin;
+                    slotEl.querySelector('.slot-content').innerHTML = displayKorName;
+                    slotEl.setAttribute('data-active', 'true');
+                } else {
+                    bgLayer.style.backgroundImage = 'none';
+                    bgLayer.style.transform = 'none';
+                    bgLayer.style.opacity = '0';
+                    slotEl.querySelector('.slot-content').innerHTML = '선택';
+                    slotEl.removeAttribute('data-active');
+                }
             });
         }
+
+        initLayout();
     </script>
 </body>
 </html>
