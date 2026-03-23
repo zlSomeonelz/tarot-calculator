@@ -34,12 +34,44 @@
                     <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁)</button>
                 </nav>
             </div>
-            <div class="global-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center;">
+            <div class="global-actions" style="display: flex; gap: 1rem; margin-top: 1.5rem; justify-content: center; flex-wrap: wrap;">
                 <button class="btn-outline" style="border-color:#3498db; color:#3498db; min-width: 180px;" onclick="fillSpreadRandomly()">✨ 현재 배열 랜덤 채우기</button>
-                <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; min-width: 180px;" onclick="broadcastState()">📺 OBS로 화면 송출하기</button>
-                <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; min-width: 180px;" onclick="clearOBSBoard()">🚫 OBS 화면 지우기</button>
+                <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; min-width: 180px;" onclick="broadcastState()">📺 OBS로 화면 송출</button>
+                <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; min-width: 180px;" onclick="clearOBSBoard()">🚫 OBS 송출 화면 지우기</button>
+                <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; min-width: 140px;" onclick="showOBSGuide()">❓ 송출 가이드</button>
             </div>
             <div id="top-interpretation" class="hidden fade-in"></div>
+
+            <!-- OBS 가이드 모달 -->
+            <div id="obs-guide-modal" class="modal-overlay hidden">
+                <div class="modal-content" style="max-width: 650px; text-align: left;">
+                    <button class="close-btn" onclick="closeOBSGuide()">✕</button>
+                    <h2 style="color:var(--accent-gold); margin-bottom: 20px; text-align:center;">방송(OBS) 완벽 연동 가이드</h2>
+                    
+                    <p style="color:#ccc; line-height:1.6; margin-bottom: 15px;">이 사이트는 OBS 스튜디오를 이용한 타로 방송에 최적화된 독립된 인터페이스를 제공합니다. 방송 화면에 타로 카드를 투명하게 띄우는 마법 같은 기능을 사용하려면 아래 순서를 따라해 주세요.</p>
+                    
+                    <h3 style="color:#fff; margin-top:20px;">1. OBS에 화면 추가하기 (최초 1회)</h3>
+                    <ol style="color:#ccc; line-height:1.6; padding-left: 20px; margin-bottom: 20px;">
+                        <li>OBS의 하단 [소스 목록]에서 <b>[+]</b> 버튼을 누르고 <b>[브라우저(Browser)]</b>를 선택합니다.</li>
+                        <li>URL 칸에 <b>현재 보고 계신 이 사이트 주소 끝에 <span style="color:#3498db;">/obs.html</span></b>을 붙여서 입력합니다.<br>
+                            <small style="color:#aaa;">(예: https://tarot-calculator.onrender.com/obs.html)</small>
+                        </li>
+                        <li>너비(Width)를 <b>1920</b>, 높이(Height)를 <b>1080</b>으로 넉넉하게 적고 [확인]을 누릅니다.</li>
+                        <li><em>(참고: 배경은 이미 100% 투명하게 들어갑니다!)</em></li>
+                    </ol>
+
+                    <h3 style="color:#fff; margin-top:20px;">2. 타로 방송 진행하는 법</h3>
+                    <ol style="color:#ccc; line-height:1.6; padding-left: 20px; margin-bottom: 20px;">
+                        <li>현재 켜두신 <b>이 메인 크롬 창은 혼자만 조작하는 '비밀 리모컨'</b>입니다. 여기서 카드를 뽑거나 셋팅해도 시청자 화면(OBS)에는 절대 노출되지 않습니다!</li>
+                        <li>카드 배치가 예쁘게 끝났을 때! 상단의 파란색 <b>[📺 OBS로 화면 송출]</b> 버튼을 "딸깍" 누르세요.</li>
+                        <li>그 순간 방금 전 OBS에 만들어둔 투명한 브라우저 화면이 0.1초 만에 여러분의 세팅대로 변신하며 시청자에게 멋지게 노출됩니다.</li>
+                    </ol>
+
+                    <p style="color:#e74c3c; font-size:0.95rem; text-align:center; padding: 15px; border: 1px dashed #e74c3c; background: rgba(231,76,60,0.1); border-radius: 8px;">
+                        다음 손님을 상담하실 땐 <b>[🚫 OBS 송출 화면 지우기]</b>를 먼저 꾹 눌러서 시청자 화면을 깨끗하게 정리해 주세요!
+                    </p>
+                </div>
+            </div>
         </header>
 
         <main>

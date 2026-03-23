@@ -860,6 +860,13 @@ function closeInterpretation() { document.getElementById('modal-overlay').classL
 function closeFullAnalysis() { document.getElementById('modal-overlay').classList.add('hidden'); }
 function closeAllModals() { document.getElementById('modal-overlay').classList.add('hidden'); }
 
+function showOBSGuide() {
+    document.getElementById('obs-guide-modal').classList.remove('hidden');
+}
+function closeOBSGuide() {
+    document.getElementById('obs-guide-modal').classList.add('hidden');
+}
+
 function copyFullAnalysis() {
     const results = document.getElementById('analysis-results').innerText;
     // Fallback for non-https/localhost
