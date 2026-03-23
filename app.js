@@ -205,8 +205,15 @@ function initiateCardPlacement(card) {
             <button id="btn-cancel-dir" style="margin-top: 1.5rem; width: 100%; border: none; background: transparent; color: #888; cursor: pointer; padding: 1rem; border-radius: 8px;">취소 (선택 취소)</button>
         </div>
     `;
-    
     document.body.appendChild(overlay);
+    
+    // 배경(어두운 부분) 클릭 시 취소(Escape) 상호작용
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+            pendingPlaceCard = null;
+        }
+    };
     
     document.getElementById('btn-upright').onclick = () => {
         overlay.remove();
