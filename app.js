@@ -767,6 +767,16 @@ function clearBoard(count) {
     activateSlot(0);
 }
 
+function clearCurrentBoard() {
+    if (currentMode === 'spread3') clearBoard(3);
+    else if (currentMode === 'tree') clearBoard(10);
+    else if (currentMode === 'relation') clearBoard(12);
+    else if (currentMode === 'celtic') clearBoard(10);
+    else if (currentMode === 'hexa') clearBoard(7);
+    else if (currentMode === 'zodiac') clearBoard(12);
+    else clearBoard(4);
+}
+
 function filterCards() {
     const query = document.getElementById('universal-search').value.toLowerCase();
     const filtered = tarotDataKo.filter(card => {
