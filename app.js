@@ -978,9 +978,19 @@ function fillSpreadRandomly() {
 
     let placedIds = cards.filter(c => c !== null).map(c => c.id);
 
+    const isReversedAllowed = document.getElementById('toggle-reversed').checked;
+    const isMinorAllowed = document.getElementById('toggle-minor').checked;
+
     for (let i = 0; i < max; i++) {
         if (cards[i] === null) {
-            let availableCards = tarotDataKo.filter(c => !placedIds.includes(c.id));
+            let availableCards = tarotDataKo.filter(c => {
+                // 이미 뽑힌 카드 제외
+                if (placedIds.includes(c.id)) return false;
+                // 마이너 제외 옵션 체크
+                if (!isMinorAllowed && c.suit !== "Major Arcana") return false;
+                return true;
+            });
+
             if (availableCards.length === 0) break;
 
             const randomIndex = Math.floor(Math.random() * availableCards.length);
@@ -988,8 +998,8 @@ function fillSpreadRandomly() {
             placedIds.push(card.id);
 
             activeSlotIndex = i;
-            // 50% chance for reverse
-            const isReversed = Math.random() < 0.5;
+            // 50% chance for reverse only if allowed
+            const isReversed = isReversedAllowed ? (Math.random() < 0.5) : false;
             placeCardInSlot(card, isReversed);
         }
     }
