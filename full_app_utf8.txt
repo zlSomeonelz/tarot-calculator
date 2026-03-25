@@ -1,0 +1,1306 @@
+﻿let currentInterpretationMode = 'all'; // 'all', 'love', 'career', 'advice'
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupGrid(tarotDataKo);
+    switchMode('spread'); // Star-Birth with Spread
+});
+
+function setupGrid(cards) {
+    const grid = document.getElementById('cards-grid');
+    grid.innerHTML = '';
+
+    cards.forEach(card => {
+        const [korName, engName] = card.name.split(' (');
+        const cardEl = document.createElement('div');
+        cardEl.className = 'grid-card';
+        if (card.image) cardEl.style.backgroundImage = `url('${card.image}')`;
+        cardEl.innerHTML = `<div class="name">${korName}</div>`;
+
+        cardEl.onclick = () => {
+            if (currentMode === 'search') {
+                showInterpretation(card);
+            } else {
+                initiateCardPlacement(card);
+            }
+        };
+        grid.appendChild(cardEl);
+    });
+}
+
+function switchMode(mode) {
+    currentMode = mode;
+    document.getElementById('spread-board').classList.toggle('hidden', mode !== 'spread');
+    document.getElementById('spread3-board').classList.toggle('hidden', mode !== 'spread3');
+    document.getElementById('tree-board').classList.toggle('hidden', mode !== 'tree');
+    document.getElementById('relation-board').classList.toggle('hidden', mode !== 'relation');
+    document.getElementById('celtic-board').classList.toggle('hidden', mode !== 'celtic');
+    document.getElementById('hexa-board').classList.toggle('hidden', mode !== 'hexa');
+    document.getElementById('zodiac-board').classList.toggle('hidden', mode !== 'zodiac');
+
+
+    updateSpreadGuide(mode);
+
+    // UI Tab Sync (Check for null to prevent errors)
+    const btns = ['view-spread3', 'view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
+    const modes = ['spread3', 'spread', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
+
+    btns.forEach((id, i) => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.toggle('active', mode === modes[i]);
+    });
+
+    if (modes.includes(mode)) {
+        // Just set the active index and highlight, don't trigger search
+        activeSlotIndex = 0;
+        const slots = document.querySelectorAll('.slot');
+        slots.forEach(slot => slot.classList.remove('active'));
+        let prefix = 'slot';
+        if (mode === 'spread3') prefix = 's3slot';
+        if (mode === 'tree') prefix = 'tslot';
+        if (mode === 'relation') prefix = 'rslot';
+        if (mode === 'celtic') prefix = 'cslot';
+        if (mode === 'hexa') prefix = 'hslot';
+        if (mode === 'zodiac') prefix = 'zslot';
+        if (mode === 'zodiac') prefix = 'zslot';
+        const target = document.getElementById(`${prefix}-0`);
+        if (target) target.classList.add('active');
+    }
+}
+
+function setInterpretationMode(mode) {
+    currentInterpretationMode = mode;
+    // UI ?낅뜲?댄듃: 紐⑤뱺 .inter-mode-btn?먯꽌 active ?대옒???쒓굅 ???대┃??寃껋뿉 異붽?
+    document.querySelectorAll('.inter-mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
+    });
+    
+    // ?대? ?대젮?덈뒗 遺꾩꽍 蹂닿퀬?쒓? ?덈떎硫??ㅼ떆媛?諛섏쁺???꾪빐 ?ㅼ떆 ?뚮뜑留곹븷 ?섎룄 ?덉?留? 
+    // ?곗꽑? ?ㅼ쓬 踰?遺꾩꽍 ???곸슜?섎룄濡??⑸땲??
+}
+
+function activateSlot(index, mode = currentMode) {
+    activeSlotIndex = index;
+    let prefix = 'slot';
+    if (mode === 'spread3') prefix = 's3slot';
+    else if (mode === 'tree') prefix = 'tslot';
+    else if (mode === 'relation') prefix = 'rslot';
+    else if (mode === 'celtic') prefix = 'cslot';
+    else if (mode === 'hexa') prefix = 'hslot';
+    else if (mode === 'zodiac') prefix = 'zslot';
+
+    const boards = {
+        'spread': placedCards4,
+        'spread3': placedCards3,
+        'tree': placedCardsTree,
+        'relation': placedCardsRelation,
+        'celtic': placedCardsCeltic,
+        'hexa': placedCardsHexa,
+        'zodiac': placedCardsZodiac
+    };
+    
+    const cards = boards[mode];
+    
+    // 留뚯빟 ?대? 移대뱶媛 ?볦뿬?덈떎硫??댁꽍 紐⑤떖???꾩썎?덈떎.
+    if (cards && cards[index]) {
+        showInterpretation(cards[index]);
+        return;
+    }
+
+    const slots = document.querySelectorAll('.slot');
+    slots.forEach(slot => slot.classList.remove('active'));
+
+    const target = document.getElementById(`${prefix}-${index}`);
+    if (target) {
+        target.classList.add('active');
+
+        // CONTEXTUAL QUICK SEARCH POSITIONING
+        const rect = target.getBoundingClientRect();
+        const qsOverlay = document.getElementById('quick-search-overlay');
+        const qsModal = qsOverlay.querySelector('.qs-modal');
+
+        qsOverlay.classList.remove('hidden');
+
+        // Center modal relative to slot
+        const modalWidth = 400; 
+        const leftPos = Math.min(window.innerWidth - modalWidth - 20, Math.max(20, rect.left + rect.width / 2 - modalWidth / 2));
+        const topPos = Math.min(window.innerHeight - 450, Math.max(20, rect.top - 100));
+
+        qsModal.style.position = 'fixed';
+        qsModal.style.left = `${leftPos}px`;
+        qsModal.style.top = `${topPos}px`;
+        qsModal.style.width = `${modalWidth}px`;
+
+        const qsInput = document.getElementById('qs-input');
+        qsInput.value = '';
+        qsInput.focus();
+        filterQuickSearch('');
+    }
+}
+
+function closeQuickSearch() {
+    document.getElementById('quick-search-overlay').classList.add('hidden');
+}
+
+function filterQuickSearch(forcedQuery) {
+    const query = (typeof forcedQuery === 'string' ? forcedQuery : document.getElementById('qs-input').value).toLowerCase();
+    const resultsArea = document.getElementById('qs-results');
+
+    if (query.length < 1 && forcedQuery === undefined) {
+        // Show all cards initially or clear? Let's show common ones or all.
+        // For better UX, let's show ALL sorted by name initially or keep empty.
+        // User wants to "find", so maybe empty until they type.
+        resultsArea.innerHTML = '<div class="qs-empty">李얘퀬 ?띠? 移대뱶 ?대쫫???낅젰?섏꽭??..</div>';
+        return;
+    }
+
+    const filtered = tarotDataKo.filter(c =>
+        c.name.toLowerCase().includes(query) ||
+        c.keywords.some(k => k.toLowerCase().includes(query))
+    ).sort((a, b) => a.name.localeCompare(b.name));
+
+    if (filtered.length === 0) {
+        resultsArea.innerHTML = '<div class="qs-empty">?쇱튂?섎뒗 移대뱶媛 ?놁뒿?덈떎.</div>';
+        return;
+    }
+
+    resultsArea.innerHTML = filtered.map(card => {
+        const [korName] = card.name.split(' (');
+        return `
+            <div class="qs-item" onclick="selectQuickCard('${card.name.replace(/'/g, "\\'")}')">
+                <span class="qs-icon">${getSuitIcon(card.suit)}</span>
+                <span class="qs-name">${korName}</span>
+                <span class="qs-suit">${card.suit}</span>
+            </div>
+        `;
+    }).join('');
+}
+
+function selectQuickCard(cardName) {
+    const card = tarotDataKo.find(c => c.name === cardName);
+    if (card) {
+        initiateCardPlacement(card);
+        closeQuickSearch();
+    }
+}
+
+let pendingPlaceCard = null;
+
+function initiateCardPlacement(card) {
+    pendingPlaceCard = card;
+    
+    // Destroy previous instance to guarantee freshness
+    let oldOverlay = document.getElementById('direction-select-overlay-js');
+    if (oldOverlay) oldOverlay.remove();
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'direction-select-overlay-js';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
+    overlay.style.zIndex = '99999';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    
+    const korName = card.name.split(' (')[0];
+    
+    overlay.innerHTML = `
+        <div style="background: rgba(10, 10, 15, 0.95); border: 2px solid #d4af37; border-radius: 12px; padding: 3rem 2rem; text-align: center; max-width: 400px; width: 90%; box-shadow: 0 0 50px rgba(0,0,0,1);">
+            <h3 style="color: #d4af37; margin-bottom: 0.5rem; font-size: 1.4rem;">${korName}</h3>
+            <p style="color: #bbb; margin-bottom: 2.5rem;">?대뒓 諛⑺뼢?쇰줈 戮묒쑝?쒓쿋?듬땲源?</p>
+            <div style="display: flex; gap: 1rem;">
+                <button id="btn-upright" style="flex: 1; padding: 1.5rem 1rem; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; cursor: pointer; border-radius: 8px;">
+                    <div style="color: #d4af37; font-size: 1.8rem; margin-bottom: 0.5rem;">??/div>
+                    <strong style="font-size: 1.1rem;">?뺣갑??/strong>
+                </button>
+                <button id="btn-reversed" style="flex: 1; padding: 1.5rem 1rem; background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; cursor: pointer; border-radius: 8px;">
+                    <div style="color: #e74c3c; font-size: 1.8rem; margin-bottom: 0.5rem; transform: rotate(180deg);">??/div>
+                    <strong style="font-size: 1.1rem;">??갑??/strong>
+                </button>
+            </div>
+            <button id="btn-cancel-dir" style="margin-top: 1.5rem; width: 100%; border: none; background: transparent; color: #888; cursor: pointer; padding: 1rem; border-radius: 8px;">痍⑥냼 (?좏깮 痍⑥냼)</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    
+    // 諛곌꼍(?대몢??遺遺? ?대┃ ??痍⑥냼(Escape) ?곹샇?묒슜
+    overlay.onclick = (e) => {
+        if (e.target === overlay) {
+            overlay.remove();
+            pendingPlaceCard = null;
+        }
+    };
+    
+    document.getElementById('btn-upright').onclick = () => {
+        overlay.remove();
+        confirmDirection(false);
+    };
+    document.getElementById('btn-reversed').onclick = () => {
+        overlay.remove();
+        confirmDirection(true);
+    };
+    document.getElementById('btn-cancel-dir').onclick = () => {
+        overlay.remove();
+        pendingPlaceCard = null;
+    };
+}
+
+function confirmDirection(isReversed) {
+    if (pendingPlaceCard) {
+        placeCardInSlot(pendingPlaceCard, isReversed);
+        pendingPlaceCard = null;
+    }
+}
+
+function placeCardInSlot(baseCard, isReversed) {
+    let cards, prefix, max;
+    if (currentMode === 'spread3') {
+        cards = placedCards3; prefix = 's3slot'; max = 3;
+    } else if (currentMode === 'tree') {
+        cards = placedCardsTree; prefix = 'tslot'; max = 10;
+    } else if (currentMode === 'relation') {
+        cards = placedCardsRelation; prefix = 'rslot'; max = 12;
+    } else if (currentMode === 'celtic') {
+        cards = placedCardsCeltic; prefix = 'cslot'; max = 10;
+    } else if (currentMode === 'hexa') {
+        cards = placedCardsHexa; prefix = 'hslot'; max = 7;
+    } else if (currentMode === 'zodiac') {
+        cards = placedCardsZodiac; prefix = 'zslot'; max = 12;
+    } else {
+        cards = placedCards4; prefix = 'slot'; max = 4;
+    }
+
+    const card = { ...baseCard, isReversed: isReversed };
+
+    cards[activeSlotIndex] = card;
+    const slotEl = document.getElementById(`${prefix}-${activeSlotIndex}`);
+    const korNameOrigin = card.name.split(' (')[0];
+    const displayKorName = isReversed ? `${korNameOrigin} [??` : korNameOrigin;
+
+    // Remove plain background image assigned previously
+    slotEl.style.backgroundImage = 'none';
+
+    // Implement proper background layer for rotation without rotating the inner UI
+    let bgLayer = slotEl.querySelector('.slot-bg-layer');
+    if (!bgLayer) {
+        bgLayer = document.createElement('div');
+        bgLayer.className = 'slot-bg-layer';
+        slotEl.insertBefore(bgLayer, slotEl.firstChild);
+    }
+    
+    const finalImg = card.image || `images/tarot_${card.id}.png`;
+    bgLayer.style.backgroundImage = `url('${finalImg}')`;
+    bgLayer.style.transform = isReversed ? 'rotate(180deg)' : 'none';
+    bgLayer.style.opacity = '1';
+
+    slotEl.querySelector('.slot-content').innerHTML = displayKorName;
+    const tooltip = slotEl.querySelector('.slot-tooltip');
+    
+    // Switch meaning on tooltip based on orientation
+    let tipText = card.description;
+    if (card.meanings) {
+        tipText += `\n\n[?댁꽍] ${isReversed ? card.meanings.reversed : card.meanings.upright}`;
+    }
+    if (tooltip) tooltip.innerText = tipText;
+    
+    slotEl.setAttribute('data-active', 'true');
+
+    let nextIndex = activeSlotIndex + 1;
+    if (nextIndex < max) {
+        activeSlotIndex = nextIndex;
+        const slots = document.querySelectorAll('.slot');
+        slots.forEach(s => s.classList.remove('active'));
+        const nextTarget = document.getElementById(`${prefix}-${nextIndex}`);
+        if (nextTarget) nextTarget.classList.add('active');
+    } else {
+        const slots = document.querySelectorAll('.slot');
+        slots.forEach(s => s.classList.remove('active'));
+    }
+}
+
+function analyzeFullSpread(count) {
+    let cards, info, allIndices;
+    let isTree = false;
+    let isRelation = false;
+    let isCeltic = false;
+    let isZodiac = false;
+
+    if (count === 3 && currentMode === 'spread3') {
+        cards = placedCards3;
+        allIndices = [0, 1, 2];
+        info = [
+            { t: '怨쇨굅 (PAST)', m: '?먯씤怨?諛쒕떒' },
+            { t: '?꾩옱 (PRESENT)', m: '吏꾪뻾 ?곹솴怨??먮꼫吏' },
+            { t: '誘몃옒 (FUTURE)', m: '?덉긽?섎뒗 寃곌낵' }
+        ];
+    } else if (count === 10 && currentMode === 'tree') {
+        cards = placedCardsTree; isTree = true;
+        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        info = [
+            { t: '1. 耳?뚮Ⅴ (Kether)', a: '?ㅺ퀎?', m: '?⑥븘?덈뒗 ?곹샎, ?쒖닔???ㅺ퀎' },
+            { t: '2. ?명겕留?(Chokmah)', a: '湲곕줉?', m: '?우쓣 ???덈뒗 ?곸썝' },
+            { t: '3. 鍮꾨굹 (Binah)', a: '異붿텧?', m: '援대젅瑜??딅뒗 愿?? },
+            { t: '4. ?ㅼ꽭??(Chesed)', a: '蹂듭??', m: '誘우쓬??蹂대떟?섎뒗 留덉쓬' },
+            { t: '5. 寃뚮???(Geburah)', a: '吏뺢퀎?', m: '援대났?섏? ?딅뒗 ?⑷린' },
+            { t: '6. ?고럹?덊듃 (Tiphareth)', a: '以묒븰蹂몃?', m: '議댁옱??????뺤떊' },
+            { t: '7. ?ㅼ쭨??(Netzach)', a: '?덉쟾?', m: '?띠쓣 ?댁뼱媛??⑷린' },
+            { t: '8. ?몃뱶 (Hod)', a: '援먯쑁?', m: '?섏븘吏????덈뒗 ?щ쭩' },
+            { t: '9. ?덉냼??(Yesod)', a: '?뺣낫?', m: '遺꾨퀎?????덈뒗 ?댁꽦' },
+            { t: '10. 留먯퓼??(Malkuth)', a: '吏?섑?', m: '?묐컮濡??????덈뒗 ?섏?' }
+        ];
+    } else if (count === 12 && currentMode === 'relation') {
+        cards = placedCardsRelation; isRelation = true;
+        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        info = [
+            { t: '1. ??(ME)', m: '蹂몄씤???꾩옱 ?곹깭' },
+            { t: '2. ?곷? (PARTNER)', m: '?곷?諛⑹쓽 ?꾩옱 ?곹깭' },
+            { t: '3. 留뚮궓 (MEETING)', m: '留뚮굹寃????댁쑀??怨꾧린' },
+            { t: '4. 湲곗큹/怨쇨굅 (PAST)', m: '愿怨꾩쓽 湲곕컲 ?먮뒗 怨쇨굅' },
+            { t: '5. ?꾩옱 (PRESENT)', m: '?꾩옱 愿怨꾩쓽 紐⑥뒿' },
+            { t: '6. ?μ븷臾?(OBSTACLE)', m: '愿怨꾨? 諛⑺빐?섎뒗 ?붿냼' },
+            { t: '7. ?섏쓽 寃됰え??, m: '?닿? 蹂댁뿬二쇰뒗 ?대?吏' },
+            { t: '8. ?곷???寃됰え??, m: '?곷?媛 蹂댁뿬二쇰뒗 ?대?吏' },
+            { t: '9. ?섏쓽 ?띾쭏??, m: '蹂몄씤??吏꾩떖怨?臾댁쓽?? },
+            { t: '10. ?곷????띾쭏??, m: '?곷?諛⑹쓽 吏꾩떖怨?臾댁쓽?? },
+            { t: '11. 寃곌낵 (RESULT)', m: '?대젮吏?寃곕줎' },
+            { t: '12. 誘몃옒 (FUTURE)', m: '愿怨꾩쓽 理쒖쥌 ?꾨쭩' }
+        ];
+    } else if (count === 10 && currentMode === 'celtic') {
+        cards = placedCardsCeltic; isCeltic = true;
+        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+        info = [
+            { t: '1. ?꾩옱 (PRESENT)', m: '?꾩옱???곹솴怨?以묒떖 二쇱젣' },
+            { t: '2. ?μ븷臾?(CHALLENGE)', m: '諛⑺빐?섎뒗 ???먮뒗 ?꾩?' },
+            { t: '3. 紐⑺몴 (GOAL)', m: '理쒓퀬???좎옱?κ낵 紐⑺몴' },
+            { t: '4. ?좎옱?섏떇 (BASIS)', m: '湲곕컲怨?臾댁쓽?앹쟻???? },
+            { t: '5. 理쒓렐 怨쇨굅 (PAST)', m: '吏?섏삩 理쒓렐???곹뼢?? },
+            { t: '6. 媛源뚯슫 誘몃옒 (FUTURE)', m: '?욎쑝濡???利됯컖?곸씤 ?댁쓽 ?먮쫫' },
+            { t: '7. 蹂몄씤???쒕룄 (SELF)', m: '?곹솴??蹂대뒗 ?ㅼ뒪濡쒖쓽 ?쒓컖' },
+            { t: '8. ?몃? ?섍꼍 (ENV)', m: '二쇰? ?щ엺怨??섍꼍???곹뼢' },
+            { t: '9. ?щ쭩/怨듯룷 (H/F)', m: '吏??誘몃젴?대굹 ?먮젮?' },
+            { t: '10. 寃곌낵 (OUTCOME)', m: '?곹솴??留덉?留?寃곕줎' }
+        ];
+    } else if (count === 7 && currentMode === 'hexa') {
+        cards = placedCardsHexa;
+        allIndices = [0, 1, 2, 3, 4, 5, 6];
+        info = [
+            { t: '1. 怨쇨굅 (PAST)', m: '怨쇨굅???곹뼢怨??먯씤' },
+            { t: '2. ?꾩옱 (PRESENT)', m: '?몄??섎뒗 ?꾩옱 ?곹솴' },
+            { t: '3. 誘몃옒 (FUTURE)', m: '?섑???媛?쒖쟻 寃곌낵' },
+            { t: '4. 臾댁쓽??(HIDDEN)', m: '?④꺼吏??뺣쭩怨?湲곕컲' },
+            { t: '5. ?섍꼍 (ENV)', m: '二쇰????곹뼢怨???? },
+            { t: '6. 議곗뼵 (ADVICE)', m: '臾몄젣 ?닿껐???꾪븳 吏移? },
+            { t: '7. 理쒖쥌 寃곌낵 (OUTCOME)', m: '?먮쫫??理쒖쥌 寃곕줎' }
+        ];
+    } else if (count === 12 && currentMode === 'zodiac') {
+        cards = placedCardsZodiac; isZodiac = true;
+        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+        info = [
+            { t: '1沅?諛깆뼇 (Aries)', m: '?먯븘, 湲곕낯 ?깊뼢, ?≪껜???먮꼫吏' },
+            { t: '2沅??⑹냼 (Taurus)', m: '?щЪ, ?뚯쑀, ?섏쓽 媛移섍?' },
+            { t: '3沅??띿븘 (Gemini)', m: '?뚰넻, ?숈뒿, ?뺤젣???댁썐' },
+            { t: '4沅?嫄고빐 (Cancer)', m: '媛?? ?덉떇泥? 媛먯젙??湲곕컲' },
+            { t: '5沅??ъ옄 (Leo)', m: '李쎌“?? ?곗븷, ?ㅻ씫, ?먭린?쒗쁽' },
+            { t: '6沅?泥섎? (Virgo)', m: '?쇱긽???? ?섎Т, 嫄닿컯怨?遊됱궗' },
+            { t: '7沅?泥쒖묶 (Libra)', m: '?뚰듃?덉떗, 寃고샎, ?硫?愿怨? },
+            { t: '8沅?泥쒓컝 (Scorpio)', m: '蹂?? ?⑥쓽 ?먯궛, 源딆? 臾댁쓽?? },
+            { t: '9沅??몃쭏 (Sagittarius)', m: '泥좏븰, ?κ굅由??ы뻾, 怨좊벑 ?숇Ц' },
+            { t: '10沅?留덇컝 (Capricorn)', m: '?ы쉶???깆랬, 吏곸뾽, 紐낆삁' },
+            { t: '11沅?蹂대퀝 (Aquarius)', m: '?щ쭩, 移쒓뎄, 怨듬룞泥? ?댁긽' },
+            { t: '12沅??띿뼱 (Pisces)', m: '?곸쟻 ?멸퀎, 怨좊┰, ?대㈃??鍮꾨?' }
+        ];
+    } else {
+        cards = placedCards4;
+        allIndices = [0, 1, 2, 3];
+        info = [
+            { t: '怨쇨굅 (PAST)', m: '媛源뚯슫 怨쇨굅???먮꼫吏' },
+            { t: '?꾩옱 (PRESENT)', m: '吏湲??먮꼫吏媛 吏묒쨷?섎뒗 怨? },
+            { t: '誘몃옒 (FUTURE)', m: '?좎옱?곸씤 誘몃옒' },
+            { t: '?닿껐梨?(SOLUTION)', m: '?대젮???洹밸났??議곗뼵' }
+        ];
+    }
+
+    if (allIndices.some(i => cards[i] === null)) {
+        alert('紐⑤뱺 二쇱슂 ?щ’??梨꾩썙二쇱꽭??');
+        return;
+    }
+
+    const resultsContainer = document.getElementById('analysis-results');
+    resultsContainer.innerHTML = '';
+
+    allIndices.forEach(idx => {
+        const card = cards[idx];
+        const item = document.createElement('div');
+        item.className = 'analysis-item';
+
+        let color = 'var(--accent-gold)';
+        if (isTree) color = getSefirotColor(idx);
+        if (isRelation) {
+            if ([0, 2, 4, 10, 8, 6].includes(idx)) color = '#d4af37'; // ME / Shared
+            if ([1, 7, 9].includes(idx)) color = '#e74c3c'; // Partner
+            if (idx === 11) color = '#f1c40f'; // Future
+        }
+
+        item.style.borderLeft = `8px solid ${color}`;
+        let advancedHTML = '';
+        if (card.meanings) {
+            const isRev = card.isReversed || false;
+            const m = card.meanings;
+            // Get the correct set based on orientation (already standardized to objects)
+            const mSet = isRev ? (m.reversed || m) : (m.upright || m);
+            
+            const dirLabel = isRev ? '<strong style="color:#e74c3c;">[??갑??</strong>' : '<strong style="color:var(--accent-gold);">[?뺣갑??</strong>';
+            const baseMeaning = mSet.general || (isRev ? m.reversed : m.upright);
+            let contextMeaning = '';
+
+            if (currentInterpretationMode === 'all') {
+                contextMeaning = `<div style="margin-bottom:8px;">${dirLabel} ${baseMeaning}</div>`;
+                contextMeaning += `<div><strong style="color:#ff6b6b;">[?곗븷/愿怨?</strong> ${mSet.love || '?뺣낫 ?놁쓬'}</div>`;
+                contextMeaning += `<div><strong style="color:#4da8da;">[吏곸뾽/?깆랬]</strong> ${mSet.career || '?뺣낫 ?놁쓬'}</div>`;
+                contextMeaning += `<div><strong style="color:#f1c40f;">[湲덉쟾/?щЪ]</strong> ${mSet.wealth || mSet.career || '?뺣낫 ?놁쓬'}</div>`;
+                contextMeaning += `<div><strong style="color:#2ecc71;">[嫄닿컯/?쒕젰]</strong> ${mSet.health || '?뺣낫 ?놁쓬'}</div>`;
+                contextMeaning += `<div style="margin-top:4px;"><strong style="color:#2ecc71;">[?좎꽦 議곗뼵]</strong> ${mSet.advice || getMysticalAdvice(card)}</div>`;
+            } else {
+                let catLabel = '';
+                let catColor = '';
+                let catText = '';
+                
+                if (currentInterpretationMode === 'love') { catLabel = '?곗븷??; catColor = '#ff6b6b'; catText = mSet.love; }
+                else if (currentInterpretationMode === 'career') { catLabel = '吏곸뾽/?깃났'; catColor = '#4da8da'; catText = mSet.career; }
+                else if (currentInterpretationMode === 'wealth') { catLabel = '湲덉쟾/?щЪ'; catColor = '#f1c40f'; catText = mSet.wealth || mSet.career; }
+                else if (currentInterpretationMode === 'health') { catLabel = '嫄닿컯/?쒕젰'; catColor = '#2ecc71'; catText = mSet.health || "?쒓린李??먮꼫吏媛 媛?앺빀?덈떎."; }
+                else if (currentInterpretationMode === 'advice') { catLabel = '?좎꽦 議곗뼵'; catColor = '#2ecc71'; catText = mSet.advice || getMysticalAdvice(card); }
+                
+                contextMeaning = `<div style="margin-bottom:4px;">${dirLabel} <strong style="color:${catColor};">${catLabel}:</strong> ${catText || '?뺣낫 ?놁쓬'}</div>`;
+            }
+
+            advancedHTML = `
+                <div class="advanced-spread-meaning" style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.3); border-left: 3px solid ${color}; font-size: 0.85rem; line-height: 1.5;">
+                    ${contextMeaning}
+                </div>
+            `;
+        }
+
+        item.innerHTML = `
+            <div class="result-header">
+                <span class="idx-badge" style="background:${color};">${info[idx].t}</span>
+                <span class="angel-tag" style="color:${color}">${info[idx].a ? `${info[idx].a}` : ''}</span>
+            </div>
+            <p class="world-meaning" style="font-size:0.75rem; color: #999; margin: 0.5rem 0;">??${info[idx].m}</p>
+            <div class="analysis-card-info">
+                <span class="icon">${getSuitIcon(card.suit)}</span>
+                <span class="name">${card.name}</span>
+            </div>
+            <div class="keywords-wrap">
+                ${card.keywords.map(k => `<span class="tag-gold">${k}</span>`).join('')}
+            </div>
+            <p class="desc">${card.description}</p>
+            ${advancedHTML}
+        `;
+        resultsContainer.appendChild(item);
+    });
+
+    if (isTree) addWorldAnalysis(resultsContainer, cards);
+    if (isRelation) addEmotionalAnalysis(resultsContainer, cards);
+    if (isZodiac) addZodiacAnalysis(resultsContainer, cards);
+    if (isCeltic) addCelticAnalysis(resultsContainer, cards);
+
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.getElementById('interpretation').classList.add('hidden');
+    document.getElementById('full-analysis').classList.remove('hidden');
+}
+
+function addEmotionalAnalysis(container, cards) {
+    const section = document.createElement('div');
+    section.className = 'world-summary-container';
+    section.innerHTML = '<h2 class="title-lg" style="text-align:left; margin-bottom:2rem;">愿怨?媛먯젙 ?ы솕 遺꾩꽍</h2>';
+
+    const innerMe = cards[8];
+    const innerYou = cards[9];
+
+    const box = document.createElement('div');
+    box.className = 'world-summary-box';
+    box.innerHTML = `
+        <h3><span class="world-title">?ъ링 ?щ━ ?議?/span> <small style="color:#666; font-weight:300;">INNER VS INNER</small></h3>
+        <p>?섏쓽 吏꾩떖(${innerMe.name.split(' (')[0]})怨??곷???吏꾩떖(${innerYou.name.split(' (')[0]})??留뚮굹 留뚮뱶???먮꼫吏 ?먮쫫??遺꾩꽍?⑸땲??</p>
+        <div style="margin-top:1rem; font-size:0.85rem; color:var(--accent-gold);">
+            <strong>珥앺룊:</strong> ??愿怨꾩쓽 ?좎옱??誘몃옒??${cards[11].name.split(' (')[0]} 移대뱶???곹뼢??諛쏆븘 寃곗젙??寃껋엯?덈떎.
+        </div>
+    `;
+    section.appendChild(box);
+    container.appendChild(section);
+}
+
+function addWorldAnalysis(container, cards) {
+    const section = document.createElement('div');
+    section.className = 'world-summary-container';
+    
+    // Header
+    section.innerHTML = `
+        <h2 class="title-lg" style="text-align:left; margin-bottom:1rem; color: #d4af37; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.5rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">?명뵾濡쒗듃 ?ъ링(Profound) 遺꾩꽍</h2>
+        <p style="color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">?앸챸???섎Т??諛곗뿴??10?μ쓽 移대뱶???뱀떊??洹쇱썝?곸씤 ?곹샎(耳?뚮Ⅴ)?먯꽌 ?쒖옉?섏뿬 臾쇱쭏?곸씤 ?꾩떎(留먯퓼??濡??꾪쁽?섎뒗 ?곗＜???먮쫫??蹂댁뿬以띾땲??</p>
+    `;
+
+    // 1. The 4 Worlds
+    const layers = [
+        { title: 'ATZILUTH (?꾩튌猷⑦듃)', dept: '?먰삎怨?遺덉쓽 ?멸퀎 (?곸쟻 洹쇱썝)', ids: [0, 1, 2], desc: '吏덈Ц??媛??蹂몄쭏?곸씤 遺덉뵪?댁옄 ?좎꽦???섏????멸퀎?낅땲??' },
+        { title: 'BERIAH (釉뚮━??', dept: '李쎌“? 臾쇱쓽 ?멸퀎 (吏??媛먯젙)', ids: [3, 4, 5], desc: '?쒖닔???섏?媛 ?뺥깭瑜?媛뽰텛湲??꾪빐 吏?깃낵 媛먯젙???섏쓣 ?삳뒗 ?④퀎?낅땲??' },
+        { title: 'YETZIRAH (?덉튂??', dept: '?뺤꽦怨?怨듦린???멸퀎 (怨꾪쉷/?щ━)', ids: [6, 7, 8], desc: '?꾩떎濡??쒕윭?섍린 吏곸쟾, ?먮꼫吏?ㅼ씠 遺?ろ엳硫?援ъ껜?곸씤 怨꾪쉷?쇰줈 ??엯?덈떎.' },
+        { title: 'ASIYAH (?꾩떆??', dept: '?쒕룞怨??숈쓽 ?멸퀎 (臾쇱쭏???꾪쁽)', ids: [9], desc: '紐⑤뱺 ?먮꼫吏媛 留덉묠???꾨떖??臾쇱쭏??寃곌낵?댁옄 ?꾩떎?곸씤 ?됰룞?낅땲??' }
+    ];
+
+    let worldsHTML = '<h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. 4怨?Four Worlds)???먮꼫吏 ?먮쫫</h3>';
+    layers.forEach(l => {
+        const filled = l.ids.map(id => cards[id]).filter(card => card !== null);
+        if (filled.length === 0) return;
+        worldsHTML += `
+            <div class="world-summary-box" style="margin-bottom: 1rem;">
+                <h4><span class="world-title" style="color: #f1c40f;">${l.title}</span> <small style="color:#aaa; font-weight:300;">- ${l.dept}</small></h4>
+                <p style="font-size: 0.85rem; color: #ccc; margin: 0.5rem 0;">${l.desc}</p>
+                <div style="font-size:0.9rem; color: #fff; background: rgba(0,0,0,0.4); padding: 0.5rem; border-radius: 5px;">
+                    <strong style="color:var(--accent-gold);">愿?щ맂 ?먮꼫吏:</strong> ${filled.map(c => c.name.split(' (')[0]).join(', ')}
+                </div>
+            </div>
+        `;
+    });
+
+    // 2. The 3 Pillars (?곗륫/?먮퉬: 2,4,7 | 醫뚯륫/以?? 3,5,8 | 以묒븰/洹좏삎: 1,6,9,10 => 0-indexed: 1,3,6 | 2,4,7 | 0,5,8,9)
+    const pillars = [
+        { title: '?먮퉬??湲곕뫁 (?곗륫)', ids: [1, 3, 6], desc: '?쎌갹, ?⑥꽦?? 湲띿젙?곸씠怨??쒕룞?곸씤 ?먮꼫吏瑜??섎??⑸땲??' },
+        { title: '以?꾩쓽 湲곕뫁 (醫뚯륫)', ids: [2, 4, 7], desc: '?섏텞, ?ъ꽦?? ?뺥깭瑜?遺?ы븯怨??쒗븳?섎뒗 ?댁꽦???먮꼫吏瑜??섎??⑸땲??' },
+        { title: '洹좏삎??湲곕뫁 (以묒븰)', ids: [0, 5, 8, 9], desc: '?묎레?⑥쓣 議고솕?쒗궎硫??섏떇???꾩떎濡??대젮?ㅻ뒗 ?듭떖 異뺤엯?덈떎.' }
+    ];
+
+    let pillarsHTML = '<h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">II. ??湲곕뫁(Three Pillars)??洹좏삎??/h3><div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+    pillars.forEach(p => {
+        const filled = p.ids.map(id => cards[id]).filter(card => card !== null);
+        if (filled.length === 0) return;
+        pillarsHTML += `
+            <div class="world-summary-box" style="flex: 1; min-width: 200px;">
+                <h4 style="color: #f1c40f; margin-bottom: 0.5rem;">${p.title}</h4>
+                <p style="font-size: 0.8rem; color: #ccc; margin-bottom: 0.5rem;">${p.desc}</p>
+                <div style="font-size:0.85rem; color: #fff;">
+                    ${filled.map(c => `<span style="display:inline-block; margin: 2px; padding: 2px 6px; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212,175,55,0.4); border-radius: 4px;">${c.name.split(' (')[0]}</span>`).join('')}
+                </div>
+            </div>
+        `;
+    });
+    pillarsHTML += '</div>';
+
+    // 3. Grand Summary (0: Root, 5: Heart, 9: Result)
+    const rootCard = cards[0];
+    const heartCard = cards[5];
+    const resultCard = cards[9];
+    let grandSummaryHTML = '';
+    
+    if (rootCard && heartCard && resultCard) {
+        grandSummaryHTML = `
+            <h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">III. ?대챸??吏곸“ (理쒖쥌 由щ뵫)</h3>
+            <div class="world-summary-box" style="border: 1px solid rgba(212, 175, 55, 0.5); background: linear-gradient(135deg, rgba(20,15,25,0.8), rgba(10,5,15,0.9));">
+                <p style="line-height: 1.8; color: #eee; font-size: 0.95rem;">
+                    ?뱀떊??洹쇱썝?곸씤 ?섎룄? ?곹샎??肉뚮━?먮뒗 <strong>[${rootCard.name.split(' (')[0]}]</strong>??媛뺣젹???먮꼫吏媛 ?먮━?↔퀬 ?덉뒿?덈떎.<br/>
+                    ??蹂댁씠吏 ?딅뒗 ?⑥븮? ?뱀떊???먯븘? ?ъ옣??愿?듯븯??<strong>[${heartCard.name.split(' (')[0]}]</strong>???섏쓣 嫄곗튂硫?源⑤떖?뚯쓣 ?산퀬 ?뺤떊?쇰줈 蹂紐⑦빀?덈떎.<br/>
+                    寃곌뎅 ??紐⑤뱺 ?곸쟻/?뺤꽌??痢듭쐞???뚯슜?뚯씠?? 留덉묠???꾩떎???숇컮?μ뿉 <strong>[${resultCard.name.split(' (')[0]}]</strong>???뺥깭濡?李щ??섍쾶 寃곗떎??留브쾶 ??寃껋엯?덈떎.
+                </p>
+                <div style="margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center; color: #d4af37; font-weight: bold; font-size: 1.1rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.8);">
+                    "?곗＜????━媛 ?뱀떊???꾩떎濡??ъ쁺?섏뿀?듬땲??"
+                </div>
+            </div>
+        `;
+    }
+
+    section.innerHTML += worldsHTML + pillarsHTML + grandSummaryHTML;
+    container.appendChild(section);
+}
+
+function addZodiacAnalysis(container, cards) {
+    const section = document.createElement('div');
+    section.className = 'world-summary-container';
+    
+    // Header
+    section.innerHTML = `
+        <h2 class="title-lg" style="text-align:left; margin-bottom:1rem; color: #d4af37; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.5rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">議곕뵒???좎꽦(Astrological) ?듯빀 由щ뵫</h2>
+        <p style="color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">12沅곸쓽 移대뱶??媛쒕퀎?곸쑝濡쒕룄 ?섎?媛 ?덉?留? ?곗＜??愿?먯뿉???쒕줈 ?곌껐????吏꾩젙??1?꾩쓽 ?먮쫫??蹂댁뿬以띾땲??</p>
+    `;
+
+    // 1. The 4 Elements (Triplicities)
+    // Fire: 1, 5, 9 (indices 0, 4, 8)
+    // Earth: 2, 6, 10 (indices 1, 5, 9)
+    // Air: 3, 7, 11 (indices 2, 6, 10)
+    // Water: 4, 8, 12 (indices 3, 7, 11)
+    const elements = [
+        { title: '?뵦 遺덉쓽 ?쇨컖 (Fire)', desc: '?먯븘, 李쎌“, 洹몃━怨??뺤옣???먮꼫吏', ids: [0, 4, 8], color: '#e74c3c' },
+        { title: '?뙇 ?숈쓽 ?쇨컖 (Earth)', desc: '湲덉쟾, ?쇱긽, 洹몃━怨??깆랬???먮꼫吏', ids: [1, 5, 9], color: '#f1c40f' },
+        { title: '?뮜 怨듦린???쇨컖 (Air)', desc: '吏?? 愿怨? 洹몃━怨??댁긽???먮꼫吏', ids: [2, 6, 10], color: '#3498db' },
+        { title: '?뮛 臾쇱쓽 ?쇨컖 (Water)', desc: '媛먯젙, 臾댁쓽?? 洹몃━怨??곹샎???먮꼫吏', ids: [3, 7, 11], color: '#9b59b6' }
+    ];
+
+    let elementsHTML = '<h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. ?먯냼蹂??앸챸?μ쓽 ?먮쫫</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">';
+    elements.forEach(e => {
+        const filled = e.ids.map(id => cards[id]).filter(card => card !== null);
+        if (filled.length === 0) return;
+        elementsHTML += `
+            <div class="world-summary-box" style="margin-bottom:0.5rem; border-top: 2px solid ${e.color}">
+                <h4 style="color: ${e.color}; margin-bottom: 0.5rem;">${e.title}</h4>
+                <p style="font-size: 0.8rem; color: #ccc; margin-bottom: 0.5rem;">${e.desc}</p>
+                <div style="font-size:0.85rem; color: #fff; background: rgba(0,0,0,0.5); padding: 0.5rem; border-radius: 4px;">
+                    ${filled.map(c => c.name.split(' (')[0]).join(' / ')}
+                </div>
+            </div>
+        `;
+    });
+    elementsHTML += '</div>';
+
+    // 2. The Cross of Matter (Angles)
+    // 1(Self), 4(Home), 7(Partner), 10(Career) -> indices 0, 3, 6, 9
+    let crossHTML = '';
+    const crossIds = [0, 3, 6, 9];
+    const filledCross = crossIds.map(id => cards[id]).filter(card => card !== null);
+    
+    if (filledCross.length === 4) {
+        crossHTML = `
+            <h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">II. ?대챸????옄媛 (The Major Angles)</h3>
+            <div class="world-summary-box" style="background: rgba(20, 20, 30, 0.8); border: 1px solid rgba(255, 255, 255, 0.1);">
+                <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 1rem;">
+                    ?몄깮??吏?깊븯????媛쒖쓽 湲곕뫁(?? 媛?? 諛곗슦?? 吏곸뾽)???볦씤 移대뱶?ㅼ엯?덈떎. ????옄媛媛 ?ы빐 ?대챸??堉덈? ??븷???⑸땲??
+                </p>
+                <ul style="list-style:none; line-height: 1.8; color: #eee; font-size: 0.95rem; text-align: left; display: inline-block; margin: 0 auto; padding-left: 0;">
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">??(1)</strong> : ${cards[0].name.split(' (')[0]}</li>
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">媛??(4)</strong> : ${cards[3].name.split(' (')[0]}</li>
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">愿怨?(7)</strong> : ${cards[6].name.split(' (')[0]}</li>
+                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">?ы쉶 (10)</strong>: ${cards[9].name.split(' (')[0]}</li>
+                </ul>
+            </div>
+        `;
+    }
+
+    // 3. Cosmic Verdict
+    let verdictHTML = `
+        <h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">III. ?곗＜??珥앺룊 (Cosmic Verdict)</h3>
+        <div class="world-summary-box" style="text-align:center; background: linear-gradient(135deg, rgba(20,15,25,0.8), rgba(10,5,15,0.9)); border: 1px solid rgba(212,175,55,0.3);">
+            <p style="font-size: 1rem; color: #fff; line-height: 1.8; font-weight: 300;">
+                媛????蹂?붽? ?μ튌 ?곸뿭? ??옄媛媛 媛由ы궎??諛⑺뼢???덉쑝硫?<br>
+                ?뱀떊??臾댁쓽??12沅????볦씤 <strong>[${cards[11] ? cards[11].name.split(' (')[0] : '誘몄????곹샎'}]</strong> 移대뱶媛 ???댁쓽 ?④꺼吏??뚮쭏媛 ??寃껋엯?덈떎.<br>
+                ?곗＜媛 洹몃━????洹몃┝ ?덉뿉???뱀떊????븷??李얠쑝??떆??
+            </p>
+            <div style="margin-top: 1rem; color: #d4af37; font-weight: 700; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">"THE STARS INCLINE, BUT DO NOT BIND."</div>
+        </div>
+    `;
+
+    section.innerHTML += elementsHTML + crossHTML + verdictHTML;
+    container.appendChild(section);
+}
+
+function addCelticAnalysis(container, cards) {
+    const section = document.createElement('div');
+    section.className = 'world-summary-container';
+    
+    // Header
+    section.innerHTML = `
+        <h2 class="title-lg" style="text-align:left; margin-bottom:1rem; color: #d4af37; border-bottom: 1px solid rgba(212, 175, 55, 0.3); padding-bottom: 0.5rem; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);">耳덊떛 ?щ줈??Celtic Cross) ?덉뼵???듭같</h2>
+        <p style="color: #aaa; margin-bottom: 2rem; font-size: 0.95rem; line-height: 1.6;">?⑦렪?곸씤 ??듭쓣 ?섏뼱, ?섎굹??吏덈Ц???섎윭??'?먯씤-?곹솴-寃곌낵'??嫄곕????대챸??援대젅瑜?3媛쒖쓽 異뺤쑝濡?議곕쭩?⑸땲??</p>
+    `;
+
+    // 1. The Core (1 & 2)
+    let coreHTML = `
+        <h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. ?대챸???섎젅諛뷀?異?(The Core)</h3>
+        <div class="world-summary-box" style="margin-bottom: 1.5rem; border: 1px solid rgba(212, 175, 55, 0.2); background: rgba(15, 10, 20, 0.7);">
+            <p style="font-size: 0.9rem; color: #ccc; margin-bottom: 1rem;">?꾩옱 ?뱀떊???щ줈?↔퀬 ?덈뒗 媛??媛뺣젰??以묒떖 ?먮꼫吏? 洹멸쾬??留됱븘?쒕뒗(?뱀? 援먯감?섎뒗) ?꾩쟾 怨쇱젣?낅땲??</p>
+            <div style="font-size: 0.95rem; color: #fff; line-height: 1.8;">
+                <strong style="color:var(--accent-gold);">?꾩옱 ?곹솴:</strong> [${cards[0].name.split(' (')[0]}]??湲곗슫??吏諛고븯怨??덉뒿?덈떎.<br>
+                <strong style="color:#e74c3c;">?꾩쟾/援먯감:</strong> 洹??꾨줈 [${cards[1].name.split(' (')[0]}]???섏씠 ??뼱?곗뿬 媛덈벑?대굹 ??룞???쇱쑝?듬땲??
+            </div>
+        </div>
+    `;
+
+    // 2. The Horizontal/Vertical Axes (3,4,5,6)
+    let axisHTML = `
+        <h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">II. ?쒓컙怨?臾댁쓽?앹쓽 ??옄媛</h3>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+            <div class="world-summary-box" style="flex: 1; min-width: 250px; background: rgba(0,0,0,0.5);">
+                <h4 style="color: #3498db; margin-bottom: 0.5rem;">臾댁쓽?앹뿉???섏떇?쇰줈 (?섏쭅)</h4>
+                <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">
+                    ?뱀떊??洹쇱썝?곸씤 <strong>臾댁쓽??[${cards[3].name.split(' (')[0]}])</strong>??
+                    ?대뼸寃??쒕㈃?곸씤 <strong>紐⑺몴/?섏떇([${cards[2].name.split(' (')[0]}])</strong>?쇰줈 ?먮씪?섍퀬 ?덈뒗吏瑜?蹂댁뿬以띾땲?? ?댁긽怨??꾩떎??媛꾧레???섎??⑸땲??
+                </p>
+            </div>
+            <div class="world-summary-box" style="flex: 1; min-width: 250px; background: rgba(0,0,0,0.5);">
+                <h4 style="color: #f1c40f; margin-bottom: 0.5rem;">怨쇨굅?먯꽌 誘몃옒濡?(?섑룊)</h4>
+                <p style="font-size: 0.85rem; color: #ccc; line-height: 1.6;">
+                    ?뱀떊 ???ㅻ줈 ?⑹뼱吏??<strong>怨쇨굅([${cards[4].name.split(' (')[0]}])</strong>???ъ슫??
+                    怨??ㅺ???<strong>誘몃옒([${cards[5].name.split(' (')[0]}])</strong>???먮쫫???대뼡 諛⑺뼢?깆쓣 ?쒖떆?섍퀬 ?덈뒗吏 蹂댁뿬以띾땲??
+                </p>
+            </div>
+        </div>
+    `;
+
+    // 3. The Staff (7,8,9,10)
+    let staffHTML = `
+        <h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">III. ?대챸??吏?≪씠 (The Staff)</h3>
+        <div class="world-summary-box" style="background: linear-gradient(135deg, rgba(20,15,25,0.8), rgba(10,5,15,0.9)); border: 1px solid rgba(212,175,55,0.3);">
+            <p style="line-height: 1.8; color: #eee; font-size: 0.95rem;">
+                ?뱀떊??吏덈Ц? ?ㅼ뒪濡쒖쓽 <strong>[${cards[6].name.split(' (')[0]}]</strong> 媛숈? ?쒕룄? 
+                二쇰? ?섍꼍 <strong>[${cards[7].name.split(' (')[0]}]</strong>???곹뼢 ?ъ씠?먯꽌 吏꾨룞?⑸땲??<br><br>
+                ?뱀떊??源딆씠 ?덉? ?먮젮? ?뱀? ?щ쭩??<strong>[${cards[8].name.split(' (')[0]}]</strong>???섏뼱???? 
+                留덉묠???곗＜媛 ?쒖떆?섎뒗 理쒖쥌 寃곌낵 <strong>[${cards[9].name.split(' (')[0]}]</strong>??臾몄씠 ?대┫ 寃껋엯?덈떎.
+            </p>
+            <div style="margin-top: 1.5rem; color: #d4af37; font-weight: 700; text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); text-align: center;">
+                "?섎젅諛뷀대뒗 ?뚭퀬, ??옄媛??吏?쒗븯硫? 吏?≪씠??湲몄쓣 ?쎈땲??"
+            </div>
+        </div>
+    `;
+
+    section.innerHTML += coreHTML + axisHTML + staffHTML;
+    container.appendChild(section);
+}
+
+function getSefirotColor(idx) {
+    const colors = ['#ffffff', '#999999', '#443322', '#3498db', '#e74c3c', '#f1c40f', '#2ecc71', '#e67e22', '#9b59b6', '#f39c12', '#555555'];
+    return colors[idx];
+}
+
+
+
+
+function clearBoard(count) {
+    let cards, prefix, boardId;
+    if (count === 3 && currentMode === 'spread3') {
+        cards = placedCards3; prefix = 's3slot'; boardId = 'spread3-board';
+    } else if (count === 12 && currentMode === 'relation') {
+        cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board';
+    } else if (count === 10 && currentMode === 'tree') {
+        cards = placedCardsTree; prefix = 'tslot'; boardId = 'tree-board';
+    } else if (count === 10 && currentMode === 'celtic') {
+        cards = placedCardsCeltic; prefix = 'cslot'; boardId = 'celtic-board';
+    } else if (count === 7 && currentMode === 'hexa') {
+        cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board';
+    } else if (count === 12 && currentMode === 'zodiac') {
+        cards = placedCardsZodiac; prefix = 'zslot'; boardId = 'zodiac-board';
+
+    } else {
+        cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
+    }
+    cards.fill(null);
+    document.querySelectorAll(`#${boardId} .slot`).forEach(slot => {
+        let bgLayer = slot.querySelector('.slot-bg-layer');
+        if (bgLayer) {
+            bgLayer.style.backgroundImage = 'none';
+            bgLayer.style.transform = 'none';
+            bgLayer.style.opacity = '0';
+        }
+        slot.style.backgroundImage = 'none';
+        
+        slot.querySelector('.slot-content').innerHTML = '?좏깮';
+        slot.removeAttribute('data-active');
+    });
+    activateSlot(0);
+}
+
+function clearCurrentBoard() {
+    if (currentMode === 'spread3') clearBoard(3);
+    else if (currentMode === 'tree') clearBoard(10);
+    else if (currentMode === 'relation') clearBoard(12);
+    else if (currentMode === 'celtic') clearBoard(10);
+    else if (currentMode === 'hexa') clearBoard(7);
+    else if (currentMode === 'zodiac') clearBoard(12);
+    else clearBoard(4);
+}
+
+function filterCards() {
+    const query = document.getElementById('universal-search').value.toLowerCase();
+    const filtered = tarotDataKo.filter(card => {
+        const matchesQuery = card.name.toLowerCase().includes(query) ||
+            card.keywords.some(k => k.toLowerCase().includes(query));
+        const matchesSuit = currentFilter === 'all' || card.suit === currentFilter;
+        return matchesQuery && matchesSuit;
+    });
+    setupGrid(filtered);
+}
+
+function setFilter(el, suit) {
+    currentFilter = suit;
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    el.classList.add('active');
+    filterCards();
+}
+
+function getSuitIcon(suit) {
+    switch (suit) {
+        case 'Wands': return '?챷';
+        case 'Cups': return '?뜼';
+        case 'Swords': return '?뷂툘';
+        case 'Pentacles': return '?첌';
+        case 'Major Arcana': return '?빉截?;
+        default: return '??;
+    }
+}
+
+function getMysticalAdvice(card) {
+    if (!card.meanings) return "洹몃???吏곴???誘욧퀬 ?섏븘媛??떆??";
+    
+    const isRev = card.isReversed || false;
+    const mSet = isRev ? (card.meanings.reversed || card.meanings) : (card.meanings.upright || card.meanings);
+    const rawAdvice = mSet.advice || "洹몃???吏곴???誘욧퀬 ?섏븘媛??떆??";
+    
+    const intros = [
+        "?대챸???ㅽ??섍? ?뱀떊?먭쾶 議곗슜???띿궘?낅땲?? ",
+        "蹂꾨뱾??湲몄쓣 媛由ы궎??吏?쒖쓽 ?깅텋? ?대젃寃?留먰빀?덈떎. ",
+        "洹몃????곹샎??媛꾩쭅???좎꽦??怨꾩떆瑜?寃쎌껌?섏떗?쒖삤. ",
+        "?ъ뿰?먯꽌 ?몃젮 ?쇱???吏?쒖쓽 紐⑹냼由ш? ?ㅻ━?섏슂? ",
+        "?곗＜????━??吏湲????쒓컙 ?뱀떊?먭쾶 ?쇰윭以띾땲?? "
+    ];
+    const outros = [
+        " ??湲몄쓽 ?앹뿉???뱀떊??吏꾩젙??鍮쏆쓣 諛쒓껄?섍쾶 ??寃껋엯?덈떎.",
+        " 洹몃???吏곴???媛由ы궎??洹멸납?쇰줈 ?⑷린 ?덇쾶 諛쒖쓣 ?대뵒?붿꽭??",
+        " ?섎뒛? ?ㅼ뒪濡??뺣뒗 ?먮? 寃곗퐫 ?몃㈃?섏? ?딆뒿?덈떎.",
+        " ?뱀떊???대㈃?먮뒗 ?대? 紐⑤뱺 ?대떟??源껊뱾???덉뒿?덈떎.",
+        " 蹂꾨뱾? ?뱀떊???좏깮??異뺣났?섍퀬 ?덉뒿?덈떎."
+    ];
+
+    const pick = (arr) => arr[card.id % arr.length]; // Deterministic based on card ID for consistency
+    const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+    
+    // For Major Arcana, make it even more grand
+    if (card.suit === 'Major Arcana') {
+        return `??${pick(intros)} <strong>"${rawAdvice}"</strong> ${pickRandom(outros)} ??;
+    }
+    
+    return `??${rawAdvice} ${pickRandom(outros)} ??;
+}
+
+function showInterpretation(card) {
+    document.getElementById('card-suit-tag').textContent = card.suit === 'Major Arcana' ? '硫붿씠?' : card.suit;
+    document.getElementById('card-name').textContent = card.name;
+    document.getElementById('card-desc').textContent = card.description;
+    const keywordsList = document.getElementById('keywords-list');
+    keywordsList.innerHTML = '';
+    card.keywords.forEach(keyword => {
+        const tag = document.createElement('span');
+        tag.className = 'keyword-tag';
+        tag.textContent = keyword;
+        keywordsList.appendChild(tag);
+    });
+
+    const advContainer = document.getElementById('card-advanced-meanings');
+    if (advContainer) {
+        if (card.meanings) {
+            const isRev = card.isReversed || false;
+            const m = card.meanings;
+            // Get the correct set based on orientation
+            const mSet = isRev ? (m.reversed || m) : (m.upright || m);
+            const mode = currentInterpretationMode;
+            const refinedAdvice = getMysticalAdvice(card);
+            
+            let html = '';
+            const wrap = (title, content, color, active) => `
+                <div style="margin-bottom: 0.8rem; padding: 0.5rem; border-radius: 6px; ${active ? `background:rgba(${color}, 0.15); border:1px solid rgba(${color}, 0.3);` : 'opacity: 0.6;'}">
+                    <strong style="color:rgb(${color});">[${title}]</strong> ${content || '?뺣낫媛 ?놁뒿?덈떎.'}
+                </div>`;
+
+            if (mode === 'all' || mode === 'love') html += wrap('?곗븷/愿怨?, mSet.love, '255, 107, 107', mode === 'love');
+            if (mode === 'all' || mode === 'career') html += wrap('吏곸뾽/?깆랬', mSet.career, '77, 168, 218', mode === 'career');
+            if (mode === 'all' || mode === 'wealth') html += wrap('湲덉쟾/?щЪ', mSet.wealth || mSet.career, '241, 196, 15', mode === 'wealth');
+            if (mode === 'all' || mode === 'health') html += wrap('嫄닿컯/?쒕젰', mSet.health, '46, 204, 113', mode === 'health');
+            
+            if (mode === 'all' || mode === 'advice') {
+                html += `
+                    <div style="background: rgba(46, 204, 113, ${mode === 'advice' ? '0.2' : '0.05'}); padding: 1rem; border-left: 4px solid #2ecc71; margin-top: 1rem; ${mode !== 'all' && mode !== 'advice' ? 'display:none;' : ''}">
+                        <strong style="color:#2ecc71; display: block; margin-bottom: 0.4rem;">?뵰 ?좎꽦??議곗뼵 (Oracle)</strong> 
+                        <span style="color: #eee; line-height: 1.6;">${refinedAdvice}</span>
+                    </div>
+                `;
+            }
+            
+            // Highlight current orientation meaning prominently
+            advContainer.innerHTML = `
+                <div style="font-size: 0.95rem; margin-bottom: 1.5rem; color: #fff; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.2); padding: 1rem; border-radius: 8px;">
+                    <div style="color: ${isRev ? '#e74c3c' : '#d4af37'}; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
+                        ${isRev ? '??갑??(REVERSED)' : '?뺣갑??(UPRIGHT)'} ?곸꽭 ?댁꽍
+                    </div>
+                    <div style="line-height: 1.6;">${mSet.general || (isRev ? m.reversed : m.upright)}</div>
+                </div>
+                ${html}
+            `;
+        } else {
+            advContainer.innerHTML = '';
+        }
+    }
+
+    document.getElementById('modal-overlay').classList.remove('hidden');
+    document.getElementById('full-analysis').classList.add('hidden');
+    document.getElementById('interpretation').classList.remove('hidden');
+}
+
+function closeInterpretation() { document.getElementById('modal-overlay').classList.add('hidden'); }
+function closeFullAnalysis() { document.getElementById('modal-overlay').classList.add('hidden'); }
+function closeAllModals() { document.getElementById('modal-overlay').classList.add('hidden'); }
+
+function showOBSGuide() {
+    document.getElementById('obs-guide-modal').classList.remove('hidden');
+}
+function closeOBSGuide() {
+    document.getElementById('obs-guide-modal').classList.add('hidden');
+}
+
+function copyOBSUrl() {
+    const rawKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value.trim() : '';
+    const secretKey = rawKey !== '' ? rawKey : 'default';
+    
+    // Create the full absolute url for obs.html based on current environment
+    let basePath = window.location.href;
+    if (basePath.includes('index.html')) {
+        basePath = basePath.replace('index.html', '');
+    }
+    if (!basePath.endsWith('/')) {
+        basePath += '/';
+    }
+    
+    const obsUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}/obs.html?key=${encodeURIComponent(secretKey)}`;
+    
+    navigator.clipboard.writeText(obsUrl).then(() => {
+        alert("OBS 釉뚮씪?곗? ?뚯뒪??URL??蹂듭궗?섏뿀?듬땲??\nOBS??遺숈뿬?ｊ린 ?섏꽭??\n\n蹂듭궗??二쇱냼:\n" + obsUrl);
+    }).catch(err => {
+        alert("?대┰蹂대뱶 蹂듭궗???ㅽ뙣?덉뒿?덈떎. 沅뚰븳???뺤씤?댁＜?몄슂.");
+    });
+}
+
+function copyFullAnalysis() {
+    const results = document.getElementById('analysis-results').innerText;
+    // Fallback for non-https/localhost
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(results).then(() => {
+            alert('遺꾩꽍 寃곌낵媛 ?대┰蹂대뱶??蹂듭궗?섏뿀?듬땲??');
+        }).catch(err => copyFallback(results));
+    } else {
+        copyFallback(results);
+    }
+}
+
+function copyFallback(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+        document.execCommand('copy');
+        alert('遺꾩꽍 寃곌낵媛 ?대┰蹂대뱶??蹂듭궗?섏뿀?듬땲??');
+    } catch (err) {
+        alert('蹂듭궗???ㅽ뙣?덉뒿?덈떎. ?섎룞?쇰줈 ?좏깮?섏뿬 蹂듭궗??二쇱꽭??');
+    }
+    document.body.removeChild(textArea);
+}
+
+function showInterpretationOnTop(index, mode) {
+    let cards;
+    if (mode === 'tree') cards = placedCardsTree;
+    else if (mode === 'relation') cards = placedCardsRelation;
+    else if (mode === 'celtic') cards = placedCardsCeltic;
+    else if (mode === 'hexa') cards = placedCardsHexa;
+    else if (mode === 'zodiac') cards = placedCardsZodiac;
+    else if (mode === 'spread3') cards = placedCards3;
+    else cards = placedCards4;
+
+    const card = cards[index];
+    const topBar = document.getElementById('top-interpretation');
+
+    if (card && card.name) {
+        topBar.classList.remove('hidden');
+        topBar.innerHTML = `
+            <div class="top-inter-inner">
+                <span class="top-tag">??AETHER SYNC ??/span>
+                <span class="top-name">${card.name}</span>
+                <span class="top-desc">${card.description}</span>
+            </div>
+        `;
+    } else {
+        topBar.classList.add('hidden');
+    }
+}
+
+function clearTopInterpretation() {
+    document.getElementById('top-interpretation').classList.add('hidden');
+}
+
+function drawRandom() {
+    const randomIndex = Math.floor(Math.random() * tarotDataKo.length);
+    showInterpretation(tarotDataKo[randomIndex]);
+}
+
+function fillSpreadRandomly() {
+    let cards, max;
+    if (currentMode === 'spread3') {
+        cards = placedCards3; max = 3;
+    } else if (currentMode === 'tree') {
+        cards = placedCardsTree; max = 10;
+    } else if (currentMode === 'relation') {
+        cards = placedCardsRelation; max = 12;
+    } else if (currentMode === 'celtic') {
+        cards = placedCardsCeltic; max = 10;
+    } else if (currentMode === 'hexa') {
+        cards = placedCardsHexa; max = 7;
+    } else if (currentMode === 'zodiac') {
+        cards = placedCardsZodiac; max = 12;
+    } else {
+        cards = placedCards4; max = 4;
+    }
+
+    let placedIds = cards.filter(c => c !== null).map(c => c.id);
+
+    const isReversedAllowed = document.getElementById('toggle-reversed').checked;
+    const isMinorAllowed = document.getElementById('toggle-minor').checked;
+
+    for (let i = 0; i < max; i++) {
+        if (cards[i] === null) {
+            let availableCards = tarotDataKo.filter(c => {
+                // ?대? 戮묓엺 移대뱶 ?쒖쇅
+                if (placedIds.includes(c.id)) return false;
+                // 留덉씠???쒖쇅 ?듭뀡 泥댄겕
+                if (!isMinorAllowed && c.suit !== "Major Arcana") return false;
+                return true;
+            });
+
+            if (availableCards.length === 0) break;
+
+            const randomIndex = Math.floor(Math.random() * availableCards.length);
+            const card = availableCards[randomIndex];
+            placedIds.push(card.id);
+
+            activeSlotIndex = i;
+            // 50% chance for reverse only if allowed
+            const isReversed = isReversedAllowed ? (Math.random() < 0.5) : false;
+            placeCardInSlot(card, isReversed);
+        }
+    }
+}
+
+function updateSpreadGuide(mode) {
+    const guideBox = document.getElementById('spread-guide-box');
+    const titleEl = document.getElementById('spread-guide-title');
+    const descEl = document.getElementById('spread-guide-desc');
+
+    if (!guideBox || !titleEl || !descEl) return;
+
+    const guides = {
+        'spread': {
+            title: "??移대뱶 (Four Card)",
+            desc: "怨쇨굅, ?꾩옱, 誘몃옒, 洹몃━怨?臾몄젣瑜??닿껐??議곗뼵源뚯? ?낆껜?곸쑝濡??뚯븙?⑸땲??"
+        },
+        'spread3': {
+            title: "?곕━ 移대뱶 (Three Card)",
+            desc: "怨쇨굅, ?꾩옱, 誘몃옒???먮쫫??援곕뜑?붽린 ?놁씠 紐낇솗?섍쾶 轅곕슟??遊낅땲??"
+        },
+        'relation': {
+            title: "愿怨꾩쓽 而?(Relationship Cup)",
+            desc: "???щ엺 ?ъ씠???먮꼫吏? ?먮쫫, ?좎옱?곸씤 留덉같怨?議고솕??媛?μ꽦???쎌뼱?낅땲?? ?щ옉怨??묐젰??源딆씠瑜??먭뎄?섏꽭??"
+        },
+        'tree': {
+            title: "?앸챸???섎Т (Tree of Life)",
+            desc: "10媛쒖쓽 ?명뵾?쇰? ?듯빐 ?뱀떊???곹샎???섏븘媛?濡쒕뱶留듦낵 ?꾩옱 ?꾨떖???깆랬???④퀎瑜??깆같?섎뒗 嫄곗떆?곸씤 ?ㅽ봽?덈뱶?낅땲??"
+        },
+        'celtic': {
+            title: "耳덊떛 ?щ줈??(Celtic Cross)",
+            desc: "媛??怨좎쟾?곸씠怨?媛뺣젰??湲곕쾿?낅땲?? 臾몄젣???듭떖遺??怨쇨굅???먯씤, 誘몃옒??寃곌낵源뚯? ?뱀떊???섎윭???대챸???낆껜?곸쑝濡?遺꾩꽍?⑸땲??"
+        },
+        'hexa': {
+            title: "?μ궗洹몃옩 (Hexagram)",
+            desc: "?곷컲???먮꼫吏 ?ъ씠??洹좏삎?먯쓣 李얠뒿?덈떎. 蹂듭옟???곹솴?먯꽌??議곗뼵怨?理쒖쥌?곸씤 議고솕??媛?μ꽦???곸쭠?⑸땲??"
+        },
+        'zodiac': {
+            title: "議곕뵒??12沅?(Zodiac Spread)",
+            desc: "?곗＜媛 ?좎궗??12媛쒖쓽 諛?House)???듯빐 ?먯븘, ?щЪ, ?뚰넻 ???몄깮??紐⑤뱺 ?곸뿭???꾩슦瑜대뒗 嫄곕????대챸???먮쫫??議곕쭩?⑸땲??"
+        }
+    };
+
+    if (guides[mode]) {
+        guideBox.classList.remove('hidden');
+        titleEl.textContent = guides[mode].title;
+        descEl.textContent = guides[mode].desc;
+        
+        // Trigger animation reset
+        guideBox.style.animation = 'none';
+        guideBox.offsetHeight; // trigger reflow
+        guideBox.style.animation = null;
+    } else {
+        guideBox.classList.add('hidden');
+    }
+}
+
+// --- STARDUST PARTICLE SYSTEM ---
+const canvas = document.getElementById('stardust-canvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let w, h;
+
+function initCanvas() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+}
+
+window.addEventListener('resize', initCanvas);
+initCanvas();
+
+class Particle {
+    constructor() {
+        this.reset();
+        // Pre-warm the stars so they don't start totally black
+        this.opacity = Math.random() * this.maxOpacity;
+        this.fadingOut = Math.random() > 0.5;
+    }
+    reset() {
+        // Create a galaxy band effect (diagonal clustering)
+        const isBand = Math.random() < 0.6; // 60% of stars in a cluster band
+        if (isBand) {
+            const t = Math.random();
+            const baseX = t * w;
+            const baseY = t * h;
+            const spread = (Math.random() - 0.5) * (w * 0.4); 
+            this.x = baseX - spread + (Math.random() * 200 - 100);
+            this.y = (h - baseY) - spread + (Math.random() * 200 - 100);
+        } else {
+            // Scattered randomly in deep space
+            this.x = Math.random() * w;
+            this.y = Math.random() * h;
+        }
+
+        this.size = Math.random() * 1.5 + 0.1;
+        
+        // Very slow, uniform cosmic drift
+        this.speedX = Math.random() * 0.03 + 0.01;
+        this.speedY = Math.random() * 0.03 - 0.015;
+
+        // Twinkling effect setup
+        this.opacity = 0;
+        this.maxOpacity = Math.random() * 0.8 + 0.2;
+        this.fadeStep = Math.random() * 0.005 + 0.001; // Slower fade for starlight
+        this.fadingOut = false;
+
+        // Cosmic color palette
+        const colors = [
+            '212, 175, 55',  // Gold
+            '255, 255, 255', // Pure white
+            '220, 230, 255', // Pale blue
+            '230, 210, 255'  // Pale lavender
+        ];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+    update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        // Twinkling (Breathing opacity)
+        if (this.fadingOut) {
+            this.opacity -= this.fadeStep;
+            if (this.opacity <= 0) {
+                this.opacity = 0;
+                this.fadingOut = false;
+                // Once entirely faded, give it a chance to relocate for a dynamic galaxy
+                if (Math.random() < 0.1) this.reset();
+            }
+        } else {
+            this.opacity += this.fadeStep;
+            if (this.opacity >= this.maxOpacity) {
+                this.opacity = this.maxOpacity;
+                this.fadingOut = true;
+            }
+        }
+
+        // Loop bounds smoothly
+        if (this.x < 0) this.x = w;
+        if (this.x > w) this.x = 0;
+        if (this.y < 0) this.y = h;
+        if (this.y > h) this.y = 0;
+    }
+    draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+        ctx.fill();
+        
+        // Add subtle glow for brighter/larger stars
+        if (this.size > 1.0) {
+            ctx.shadowBlur = this.size * 4;
+            ctx.shadowColor = `rgba(${this.color}, ${this.opacity})`;
+        } else {
+            ctx.shadowBlur = 0;
+        }
+    }
+}
+
+function createParticles() {
+    // Increase density slightly for a richer galaxy (divide by 6000 instead of 10000)
+    const count = Math.floor((w * h) / 6000);
+    for (let i = 0; i < count; i++) {
+        particles.push(new Particle());
+    }
+}
+
+function animateParticles() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => {
+        p.update();
+        p.draw();
+    });
+    requestAnimationFrame(animateParticles);
+}
+
+createParticles();
+animateParticles();
+
+// Global initialization call
+document.addEventListener('DOMContentLoaded', () => {
+    updateSpreadGuide(currentMode);
+});
+
+// OBS Multi-Broadcast
+const obsChannel = new BroadcastChannel('tarot_obs_channel');
+function broadcastState() {
+    let cards;
+    if (currentMode === 'spread3') cards = placedCards3;
+    else if (currentMode === 'tree') cards = placedCardsTree;
+    else if (currentMode === 'relation') cards = placedCardsRelation;
+    else if (currentMode === 'celtic') cards = placedCardsCeltic;
+    else if (currentMode === 'hexa') cards = placedCardsHexa;
+    else if (currentMode === 'zodiac') cards = placedCardsZodiac;
+    else cards = placedCards4;
+
+    const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
+    
+    const payload = {
+        type: 'update_spread',
+        mode: currentMode,
+        cards: cards,
+        key: secretKey // ?대씪?곕뱶 ?곸뿉??諛⑹쓣 遺꾨━?섍린 ?꾪븳 鍮꾨???
+    };
+
+    // 1. BroadcastChannel (For Chrome-to-Chrome Window Capture)
+    obsChannel.postMessage(payload);
+
+    // 2. HTTP Server Sync (For pure OBS Browser Source via server.py)
+    fetch('/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(e => { /* Ignore if server is not running */ });
+}
+
+function clearOBSBoard() {
+    const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
+    
+    const payload = {
+        type: 'update_spread',
+        mode: currentMode,
+        cards: [], // empty array to clear
+        key: secretKey
+    };
+
+    obsChannel.postMessage(payload);
+
+    fetch('/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    }).catch(e => { /* Ignore */ });
+}

@@ -1,0 +1,50 @@
+﻿let currentInterpretationMode = 'all'; // 'all', 'love', 'career', 'advice'
+
+document.addEventListener('DOMContentLoaded', () => {
+    setupGrid(tarotDataKo);
+    switchMode('spread'); // Star-Birth with Spread
+});
+
+function setupGrid(cards) {
+    const grid = document.getElementById('cards-grid');
+    grid.innerHTML = '';
+
+    cards.forEach(card => {
+        const [korName, engName] = card.name.split(' (');
+        const cardEl = document.createElement('div');
+        cardEl.className = 'grid-card';
+        if (card.image) cardEl.style.backgroundImage = `url('${card.image}')`;
+        cardEl.innerHTML = `<div class="name">${korName}</div>`;
+
+        cardEl.onclick = () => {
+            if (currentMode === 'search') {
+                showInterpretation(card);
+            } else {
+                initiateCardPlacement(card);
+            }
+        };
+        grid.appendChild(cardEl);
+    });
+}
+
+function switchMode(mode) {
+    currentMode = mode;
+    document.getElementById('spread-board').classList.toggle('hidden', mode !== 'spread');
+    document.getElementById('spread3-board').classList.toggle('hidden', mode !== 'spread3');
+    document.getElementById('tree-board').classList.toggle('hidden', mode !== 'tree');
+    document.getElementById('relation-board').classList.toggle('hidden', mode !== 'relation');
+    document.getElementById('celtic-board').classList.toggle('hidden', mode !== 'celtic');
+    document.getElementById('hexa-board').classList.toggle('hidden', mode !== 'hexa');
+    document.getElementById('zodiac-board').classList.toggle('hidden', mode !== 'zodiac');
+
+
+    updateSpreadGuide(mode);
+
+    // UI Tab Sync (Check for null to prevent errors)
+    const btns = ['view-spread3', 'view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
+    const modes = ['spread3', 'spread', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
+
+    btns.forEach((id, i) => {
+        const btn = document.getElementById(id);
+        if (btn) btn.classList.toggle('active', mode === modes[i]);
+    });

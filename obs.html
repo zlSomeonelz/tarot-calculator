@@ -48,15 +48,37 @@
         const container = document.getElementById('obs-container');
         let lastStateStr = "";
 
+        let currentBroadcastMode = 'spread';
+
         // 화면 해상도에 맞춰 가장 예쁜 비율로 자동 확대/축소 (4K, 1440p, 1080p 모두 대응)
         function resizeLayout() {
             const mainEl = document.querySelector('main');
             if (!mainEl) return;
-            // 관계 배열(가장 큼)이 1300px 정도이므로 기준 높이를 1350으로 넉넉히 잡습니다.
-            const scaleHeight = window.innerHeight / 1350;
-            const scaleWidth = window.innerWidth / 1450;
-            // 브라우저 소스의 크기에 맞게 딱 들어맞도록 스케일 조정 (최대 2.0x 줌 제한)
-            const finalScale = Math.min(scaleHeight, scaleWidth, 2.0);
+
+            let refW = 1450;
+            let refH = 1350;
+
+            // 각 스프레드별 최적 기준 해상도 설정 (거대화된 레이아웃 대응)
+            if (currentBroadcastMode === 'spread' || currentBroadcastMode === 'spread3') {
+                refW = 1000; refH = 900;
+            } else if (currentBroadcastMode === 'hexa') {
+                refW = 1100; refH = 1550;
+            } else if (currentBroadcastMode === 'celtic') {
+                refW = 1100; refH = 1500;
+            } else if (currentBroadcastMode === 'zodiac') {
+                refW = 1200; refH = 2000;
+            } else if (currentBroadcastMode === 'tree') {
+                refW = 1100; refH = 2300;
+            } else if (currentBroadcastMode === 'relation') {
+                refW = 1300; refH = 2500;
+            }
+
+
+
+            const scaleHeight = window.innerHeight / refH;
+            const scaleWidth = window.innerWidth / refW;
+            // 브라우저 소스의 크기에 맞게 딱 들어맞도록 스케일 조정 (최소 0.5x ~ 최대 3.0x)
+            const finalScale = Math.min(scaleHeight, scaleWidth, 3.0);
             
             mainEl.style.transform = `scale(${finalScale})`;
         }
@@ -116,7 +138,11 @@
         }
 
         function renderCards(mode, cards) {
+            currentBroadcastMode = mode;
+            resizeLayout(); // 배율 업데이트
+
             if (cards.length === 0) {
+
                 // Completely hide all
                 document.querySelectorAll('#obs-container main section').forEach(sec => sec.classList.add('hidden'));
                 return;
@@ -166,6 +192,115 @@
                     slotEl.removeAttribute('data-active');
                 }
             });
+
+            // Sync dynamic lines after rendering cards
+            requestAnimationFrame(syncAllLines);
+        }
+
+        // Shared Drawing Logic (Mirrored from app.js)
+        function getSlotCenter(id, mode) {
+            const slot = document.getElementById(id);
+            if (!slot) return null;
+            let svgContainer;
+            if (mode === 'tree') svgContainer = document.querySelector('#tree-board .tree-bg-overlay svg');
+            else if (mode === 'relation') svgContainer = document.querySelector('#relation-board .relation-bg-overlay svg');
+            else if (mode === 'spread') svgContainer = document.querySelector('#spread-board .spread-bg-overlay svg');
+            else if (mode === 'spread3') svgContainer = document.querySelector('#spread3-board .spread3-bg-overlay svg');
+            else if (mode === 'zodiac') svgContainer = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
+            if (!svgContainer) return null;
+            const rect = slot.getBoundingClientRect();
+            const svgRect = svgContainer.getBoundingClientRect();
+            const x = (rect.left + rect.width / 2) - svgRect.left;
+            const y = (rect.top + rect.height / 2) - svgRect.top;
+            const viewBox = svgContainer.viewBox.baseVal;
+            if (viewBox.width > 0 && viewBox.height > 0) {
+                return { x: x * (viewBox.width/svgRect.width), y: y * (viewBox.height/svgRect.height) };
+            }
+            return { x, y };
+        }
+
+        function syncAllLines() {
+            if (currentBroadcastMode === 'tree') drawTreeLines();
+            else if (currentBroadcastMode === 'relation') drawRelationLines();
+            else if (currentBroadcastMode === 'spread') drawFourCardLines();
+            else if (currentBroadcastMode === 'spread3') drawThreeCardLines();
+            else if (currentBroadcastMode === 'zodiac') drawZodiacLines();
+        }
+
+        function drawTreeLines() {
+            const container = document.querySelector('#tree-board .tree-bg-overlay svg');
+            if (!container) return;
+            const connections = [[0, 1], [0, 2], [1, 2], [1, 3], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5], [3, 6], [4, 5], [4, 7], [5, 6], [5, 7], [5, 8], [6, 7], [6, 8], [7, 8], [8, 9], [0, 5], [5, 9]];
+            let html = `<defs><filter id="tree-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            connections.forEach(([s, e]) => {
+                const p1 = getSlotCenter(`tslot-${s}`, 'tree');
+                const p2 = getSlotCenter(`tslot-${e}`, 'tree');
+                if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+            });
+            for(let i=0; i<10; i++) {
+                const p = getSlotCenter(`tslot-${i}`, 'tree');
+                if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#tree-star-glow)" />`;
+            }
+            container.innerHTML = html;
+        }
+
+        function drawRelationLines() {
+            const container = document.querySelector('#relation-board .relation-bg-overlay svg');
+            if (!container) return;
+            const connections = [
+                [0, 2], [1, 2],                            // Base
+                [2, 3], [3, 5], [5, 4], [4, 10], [10, 11], // Spine
+                [4, 6], [4, 7],                            // Hearts
+                [10, 6], [10, 7], [10, 8], [10, 9],        // Result
+                [6, 8], [7, 9]                             // Inner Mind
+            ];
+            let html = `<defs><filter id="star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            connections.forEach(([s, e]) => {
+                const p1 = getSlotCenter(`rslot-${s}`, 'relation');
+                const p2 = getSlotCenter(`rslot-${e}`, 'relation');
+                if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+            });
+            for(let i=0; i<12; i++) {
+                const p = getSlotCenter(`rslot-${i}`, 'relation');
+                if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#star-glow)" />`;
+            }
+            container.innerHTML = html;
+        }
+
+        function drawFourCardLines() {
+            const container = document.querySelector('#spread-board .spread-bg-overlay svg');
+            if (!container) return;
+            let html = `<defs><filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let centers = [];
+            for(let i=0; i<4; i++) { const p = getSlotCenter(`slot-${i}`, 'spread'); if(p) centers.push(p); }
+            if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+            container.innerHTML = html;
+        }
+
+        function drawThreeCardLines() {
+            const container = document.querySelector('#spread3-board .spread3-bg-overlay svg');
+            if (!container) return;
+            let html = `<defs><filter id="spread3-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let centers = [];
+            for(let i=0; i<3; i++) { const p = getSlotCenter(`s3slot-${i}`, 'spread3'); if(p) centers.push(p); }
+            if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+            container.innerHTML = html;
+        }
+
+        function drawZodiacLines() {
+            const container = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
+            if (!container) return;
+            let html = `<defs><filter id="zodiac-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            for(let i=0; i<12; i++) {
+                const p1 = getSlotCenter(`zslot-${i}`, 'zodiac');
+                const p2 = getSlotCenter(`zslot-${(i+1)%12}`, 'zodiac');
+                if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.4)" stroke-width="1.2" />`;
+            }
+            for(let i=0; i<12; i++) {
+                const p = getSlotCenter(`zslot-${i}`, 'zodiac');
+                if (p) html += `<line x1="${p.x}" y1="${p.y}" x2="500" y2="500" stroke="rgba(212,175,55,0.2)" stroke-width="1" />`;
+            }
+            container.innerHTML = html;
         }
 
         initLayout();

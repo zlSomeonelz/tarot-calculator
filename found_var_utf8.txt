@@ -1,0 +1,5 @@
+﻿439:        let color = 'var(--accent-gold)';
+455:            const dirLabel = isRev ? '<strong style="color:#e74c3c;">[??갑??</strong>' : '<strong style="color:var(--accent-gold);">[?뺣갑??</strong>';
+529:        <div style="margin-top:1rem; font-size:0.85rem; color:var(--accent-gold);">
+564:                    <strong style="color:var(--accent-gold);">愿?щ맂 ?먮꼫吏:</strong> ${filled.map(c => c.name.split(' (')[0]).join(', ')}
+713:                <strong style="color:var(--accent-gold);">?꾩옱 ?곹솴:</strong> [${cards[0].name.split(' (')[0]}]??湲곗슫??吏諛고븯怨??덉뒿?덈떎.<br>

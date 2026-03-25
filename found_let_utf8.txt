@@ -1,0 +1,45 @@
+﻿1:let currentInterpretationMode = 'all'; // 'all', 'love', 'career', 'advice'
+57:        let prefix = 'slot';
+83:    let prefix = 'slot';
+150:        // For better UX, let's show ALL sorted by name initially or keep empty.
+186:let pendingPlaceCard = null;
+192:    let oldOverlay = document.getElementById('direction-select-overlay-js');
+259:    let cards, prefix, max;
+287:    let bgLayer = slotEl.querySelector('.slot-bg-layer');
+303:    let tipText = card.description;
+311:    let nextIndex = activeSlotIndex + 1;
+325:    let cards, info, allIndices;
+326:    let isTree = false;
+327:    let isRelation = false;
+328:    let isCeltic = false;
+329:    let isZodiac = false;
+439:        let color = 'var(--accent-gold)';
+448:        let advancedHTML = '';
+457:            let contextMeaning = '';
+467:                let catLabel = '';
+468:                let catColor = '';
+469:                let catText = '';
+555:    let worldsHTML = '<h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. 4怨?Four Worlds)???먮꼫吏 ?먮쫫</h3>';
+577:    let pillarsHTML = '<h3 style="color: #fff; margin: 2rem 0 1rem 0; border-left: 3px solid #d4af37; padding-left: 10px;">II. ??湲곕뫁(Three Pillars)??洹좏삎??/h3><div style="display: flex; gap: 1rem; flex-wrap: wrap;">';
+597:    let grandSummaryHTML = '';
+641:    let elementsHTML = '<h3 style="color: #fff; margin-bottom: 1rem; border-left: 3px solid #d4af37; padding-left: 10px;">I. ?먯냼蹂??앸챸?μ쓽 ?먮쫫</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">';
+659:    let crossHTML = '';
+681:    let verdictHTML = `
+708:    let coreHTML = `
+720:    let axisHTML = `
+741:    let staffHTML = `
+769:    let cards, prefix, boardId;
+788:        let bgLayer = slot.querySelector('.slot-bg-layer');
+897:            let html = '';
+920:                    <div style="color: ${isRev ? '#e74c3c' : '#d4af37'}; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
+953:    let basePath = window.location.href;
+997:    let cards;
+1033:    let cards, max;
+1050:    let placedIds = cards.filter(c => c !== null).map(c => c.id);
+1055:    for (let i = 0; i < max; i++) {
+1057:            let availableCards = tarotDataKo.filter(c => {
+1134:let particles = [];
+1135:let w, h;
+1180:        // Cosmic color palette
+1235:    for (let i = 0; i < count; i++) {
+1260:    let cards;

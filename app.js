@@ -1,15 +1,18 @@
-let currentFilter = 'all';
+let currentInterpretationMode = 'all'; // 'all', 'love', 'career', 'advice'
 let currentMode = 'spread';
 let activeSlotIndex = 0;
-let placedCards4 = [null, null, null, null];
-let placedCards3 = [null, null, null];
-let placedCardsTree = new Array(10).fill(null);
-let placedCardsRelation = new Array(12).fill(null);
-let placedCardsCeltic = new Array(10).fill(null);
-let placedCardsHexa = new Array(7).fill(null);
-let placedCardsZodiac = new Array(12).fill(null);
+let placedCards3 = Array(3).fill(null);
+let placedCards4 = Array(4).fill(null);
+let placedCardsTree = Array(10).fill(null);
+let placedCardsRelation = Array(12).fill(null);
+let placedCardsCeltic = Array(10).fill(null);
+let placedCardsHexa = Array(7).fill(null);
+let placedCardsZodiac = Array(12).fill(null);
+let currentFilter = 'all';
+
 
 document.addEventListener('DOMContentLoaded', () => {
+
     setupGrid(tarotDataKo);
     switchMode('spread'); // Star-Birth with Spread
 });
@@ -70,22 +73,54 @@ function switchMode(mode) {
         if (mode === 'celtic') prefix = 'cslot';
         if (mode === 'hexa') prefix = 'hslot';
         if (mode === 'zodiac') prefix = 'zslot';
-        if (mode === 'zodiac') prefix = 'zslot';
         const target = document.getElementById(`${prefix}-0`);
         if (target) target.classList.add('active');
     }
+    
+    // Ensure SVG lines are synced after mode switch
+    requestAnimationFrame(() => {
+        if (typeof syncAllLines === 'function') syncAllLines();
+    });
+}
+
+function setInterpretationMode(mode) {
+    currentInterpretationMode = mode;
+    // UI 업데이트: 모든 .inter-mode-btn에서 active 클래스 제거 후 클릭된 것에 추가
+    document.querySelectorAll('.inter-mode-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
+    });
+    
+    // 이미 열려있는 분석 보고서가 있다면 실시간 반영을 위해 다시 렌더링할 수도 있지만, 
+    // 우선은 다음 번 분석 시 적용되도록 합니다.
 }
 
 function activateSlot(index, mode = currentMode) {
     activeSlotIndex = index;
     let prefix = 'slot';
     if (mode === 'spread3') prefix = 's3slot';
-    if (mode === 'tree') prefix = 'tslot';
-    if (mode === 'relation') prefix = 'rslot';
-    if (mode === 'celtic') prefix = 'cslot';
-    if (mode === 'hexa') prefix = 'hslot';
-    if (mode === 'zodiac') prefix = 'zslot';
-    if (mode === 'zodiac') prefix = 'zslot';
+    else if (mode === 'tree') prefix = 'tslot';
+    else if (mode === 'relation') prefix = 'rslot';
+    else if (mode === 'celtic') prefix = 'cslot';
+    else if (mode === 'hexa') prefix = 'hslot';
+    else if (mode === 'zodiac') prefix = 'zslot';
+
+    const boards = {
+        'spread': placedCards4,
+        'spread3': placedCards3,
+        'tree': placedCardsTree,
+        'relation': placedCardsRelation,
+        'celtic': placedCardsCeltic,
+        'hexa': placedCardsHexa,
+        'zodiac': placedCardsZodiac
+    };
+    
+    const cards = boards[mode];
+    
+    // 만약 이미 카드가 놓여있다면 해석 모달을 띄웁니다.
+    if (cards && cards[index]) {
+        showInterpretation(cards[index]);
+        return;
+    }
 
     const slots = document.querySelectorAll('.slot');
     slots.forEach(slot => slot.classList.remove('active'));
@@ -102,9 +137,9 @@ function activateSlot(index, mode = currentMode) {
         qsOverlay.classList.remove('hidden');
 
         // Center modal relative to slot
-        const modalWidth = 400; // Updated for compact look
+        const modalWidth = 400; 
         const leftPos = Math.min(window.innerWidth - modalWidth - 20, Math.max(20, rect.left + rect.width / 2 - modalWidth / 2));
-        const topPos = Math.min(window.innerHeight - 450, Math.max(20, rect.top - 100)); // Up slightly
+        const topPos = Math.min(window.innerHeight - 450, Math.max(20, rect.top - 100));
 
         qsModal.style.position = 'fixed';
         qsModal.style.left = `${leftPos}px`;
@@ -283,9 +318,12 @@ function placeCardInSlot(baseCard, isReversed) {
     // Switch meaning on tooltip based on orientation
     let tipText = card.description;
     if (card.meanings) {
-        tipText += `\n\n[해석] ${isReversed ? card.meanings.reversed : card.meanings.upright}`;
+        const mSet = isReversed ? (card.meanings.reversed || card.meanings) : (card.meanings.upright || card.meanings);
+        const meaningText = mSet.general || (isReversed ? card.meanings.reversed : card.meanings.upright);
+        tipText += `\n\n[해석] ${meaningText}`;
     }
     if (tooltip) tooltip.innerText = tipText;
+
     
     slotEl.setAttribute('data-active', 'true');
 
@@ -428,21 +466,34 @@ function analyzeFullSpread(count) {
         item.style.borderLeft = `8px solid ${color}`;
         let advancedHTML = '';
         if (card.meanings) {
-            const dirLabel = card.isReversed ? '<strong style="color:#e74c3c;">[역방향]</strong>' : '<strong style="color:var(--accent-gold);">[정방향]</strong>';
-            const baseMeaning = card.isReversed ? card.meanings.reversed : card.meanings.upright;
-            let contextMeaning = `<div style="margin-bottom:4px;">${dirLabel} ${baseMeaning}</div>`;
+            const isRev = card.isReversed || false;
+            const m = card.meanings;
+            // Get the correct set based on orientation (already standardized to objects)
+            const mSet = isRev ? (m.reversed || m) : (m.upright || m);
             
-            if (isRelation && info[idx].t !== '11. 결과 (RESULT)') {
-                // 관계 배열일 때는 기본적으로 연애운 해석을 포함
-                contextMeaning += `<div><strong style="color:#ff6b6b;">관계:</strong> ${card.meanings.love}</div>`;
-            } else if (!isTree && !isRelation && idx === 3 && currentMode === 'spread') { // Only for 4-card spread's solution slot
-                // 4카드 중 '해결책' 위치일 땐 조언 해석을 표시
-                contextMeaning += `<div><strong style="color:#2ecc71;">조언:</strong> ${getMysticalAdvice(card)}</div>`;
-            } else if (isTree || info[idx].t === '11. 결과 (RESULT)') {
-                // 트리이거나 관계운 결과일 경우, 기본 의미만 표시 (이미 위에서 처리됨)
+            const dirLabel = isRev ? '<strong style="color:#e74c3c;">[역방향]</strong>' : '<strong style="color:var(--accent-gold);">[정방향]</strong>';
+            const baseMeaning = mSet.general || (isRev ? m.reversed : m.upright);
+            let contextMeaning = '';
+
+            if (currentInterpretationMode === 'all') {
+                contextMeaning = `<div style="margin-bottom:8px;">${dirLabel} ${baseMeaning}</div>`;
+                contextMeaning += `<div><strong style="color:#ff6b6b;">[연애/관계]</strong> ${mSet.love || '정보 없음'}</div>`;
+                contextMeaning += `<div><strong style="color:#4da8da;">[직업/성취]</strong> ${mSet.career || '정보 없음'}</div>`;
+                contextMeaning += `<div><strong style="color:#f1c40f;">[금전/재물]</strong> ${mSet.wealth || mSet.career || '정보 없음'}</div>`;
+                contextMeaning += `<div><strong style="color:#2ecc71;">[건강/활력]</strong> ${mSet.health || '정보 없음'}</div>`;
+                contextMeaning += `<div style="margin-top:4px;"><strong style="color:#2ecc71;">[신성 조언]</strong> ${mSet.advice || getMysticalAdvice(card)}</div>`;
             } else {
-                // 일반 카드 (과거, 현재, 미래)
-                // contextMeaning = `<div style="margin-bottom:4px;"><strong style="color:var(--accent-gold);">핵심:</strong> ${card.meanings.upright}</div>`; // Already handled by baseMeaning
+                let catLabel = '';
+                let catColor = '';
+                let catText = '';
+                
+                if (currentInterpretationMode === 'love') { catLabel = '연애운'; catColor = '#ff6b6b'; catText = mSet.love; }
+                else if (currentInterpretationMode === 'career') { catLabel = '직업/성공'; catColor = '#4da8da'; catText = mSet.career; }
+                else if (currentInterpretationMode === 'wealth') { catLabel = '금전/재물'; catColor = '#f1c40f'; catText = mSet.wealth || mSet.career; }
+                else if (currentInterpretationMode === 'health') { catLabel = '건강/활력'; catColor = '#2ecc71'; catText = mSet.health || "활기찬 에너지가 가득합니다."; }
+                else if (currentInterpretationMode === 'advice') { catLabel = '신성 조언'; catColor = '#2ecc71'; catText = mSet.advice || getMysticalAdvice(card); }
+                
+                contextMeaning = `<div style="margin-bottom:4px;">${dirLabel} <strong style="color:${catColor};">${catLabel}:</strong> ${catText || '정보 없음'}</div>`;
             }
 
             advancedHTML = `
@@ -806,10 +857,13 @@ function getSuitIcon(suit) {
     }
 }
 
-function getMysticalAdvice(card, isReversed = false) {
-    if (!card.meanings || !card.meanings.advice) return "그대의 직관을 믿고 나아가십시오.";
+function getMysticalAdvice(card) {
+    if (!card.meanings) return "그대의 직관을 믿고 나아가십시오.";
     
-    const rawAdvice = card.meanings.advice;
+    const isRev = card.isReversed || false;
+    const mSet = isRev ? (card.meanings.reversed || card.meanings) : (card.meanings.upright || card.meanings);
+    const rawAdvice = mSet.advice || "그대의 직관을 믿고 나아가십시오.";
+    
     const intros = [
         "운명의 실타래가 당신에게 조용히 속삭입니다: ",
         "별들의 길을 가리키는 지혜의 등불은 이렇게 말합니다. ",
@@ -837,9 +891,18 @@ function getMysticalAdvice(card, isReversed = false) {
 }
 
 function showInterpretation(card) {
+    const isRev = card.isReversed || false;
+    const finalImg = card.image || `images/tarot_${card.id}.png`;
+    const imgEl = document.getElementById('modal-card-img');
+    if (imgEl) {
+        imgEl.style.backgroundImage = `url('${finalImg}')`;
+        imgEl.style.transform = isRev ? 'rotate(180deg)' : 'none';
+    }
+
     document.getElementById('card-suit-tag').textContent = card.suit === 'Major Arcana' ? '메이저' : card.suit;
     document.getElementById('card-name').textContent = card.name;
     document.getElementById('card-desc').textContent = card.description;
+
     const keywordsList = document.getElementById('keywords-list');
     keywordsList.innerHTML = '';
     card.keywords.forEach(keyword => {
@@ -852,16 +915,42 @@ function showInterpretation(card) {
     const advContainer = document.getElementById('card-advanced-meanings');
     if (advContainer) {
         if (card.meanings) {
+            const isRev = card.isReversed || false;
+            const m = card.meanings;
+            // Get the correct set based on orientation
+            const mSet = isRev ? (m.reversed || m) : (m.upright || m);
+            const mode = currentInterpretationMode;
             const refinedAdvice = getMysticalAdvice(card);
+            
+            let html = '';
+            const wrap = (title, content, color, active) => `
+                <div style="margin-bottom: 0.8rem; padding: 0.5rem; border-radius: 6px; ${active ? `background:rgba(${color}, 0.15); border:1px solid rgba(${color}, 0.3);` : 'opacity: 0.6;'}">
+                    <strong style="color:rgb(${color});">[${title}]</strong> ${content || '정보가 없습니다.'}
+                </div>`;
+
+            if (mode === 'all' || mode === 'love') html += wrap('연애/관계', mSet.love, '255, 107, 107', mode === 'love');
+            if (mode === 'all' || mode === 'career') html += wrap('직업/성취', mSet.career, '77, 168, 218', mode === 'career');
+            if (mode === 'all' || mode === 'wealth') html += wrap('금전/재물', mSet.wealth || mSet.career, '241, 196, 15', mode === 'wealth');
+            if (mode === 'all' || mode === 'health') html += wrap('건강/활력', mSet.health, '46, 204, 113', mode === 'health');
+            
+            if (mode === 'all' || mode === 'advice') {
+                html += `
+                    <div style="background: rgba(46, 204, 113, ${mode === 'advice' ? '0.2' : '0.05'}); padding: 1rem; border-left: 4px solid #2ecc71; margin-top: 1rem; ${mode !== 'all' && mode !== 'advice' ? 'display:none;' : ''}">
+                        <strong style="color:#2ecc71; display: block; margin-bottom: 0.4rem;">🔮 신성한 조언 (Oracle)</strong> 
+                        <span style="color: #eee; line-height: 1.6;">${refinedAdvice}</span>
+                    </div>
+                `;
+            }
+            
+            // Highlight current orientation meaning prominently
             advContainer.innerHTML = `
-                <div style="margin-bottom: 0.8rem;"><strong style="color:var(--accent-gold);">[정방향]</strong> ${card.meanings.upright}</div>
-                <div style="margin-bottom: 0.8rem;"><strong style="color:#aaa;">[역방향]</strong> ${card.meanings.reversed}</div>
-                <div style="margin-bottom: 0.8rem;"><strong style="color:#ff6b6b;">[연애/관계]</strong> ${card.meanings.love}</div>
-                <div style="margin-bottom: 0.8rem;"><strong style="color:#4da8da;">[직업/성취]</strong> ${card.meanings.career}</div>
-                <div style="background: rgba(46, 204, 113, 0.05); padding: 1rem; border-left: 4px solid #2ecc71; margin-top: 1rem;">
-                    <strong style="color:#2ecc71; display: block; margin-bottom: 0.4rem;">🔮 신성한 조언 (Oracle)</strong> 
-                    <span style="color: #eee; line-height: 1.6;">${refinedAdvice}</span>
+                <div style="font-size: 0.95rem; margin-bottom: 1.5rem; color: #fff; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.2); padding: 1rem; border-radius: 8px;">
+                    <div style="color: ${isRev ? '#e74c3c' : '#d4af37'}; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
+                        ${isRev ? '역방향 (REVERSED)' : '정방향 (UPRIGHT)'} 상세 해석
+                    </div>
+                    <div style="line-height: 1.6;">${mSet.general || (isRev ? m.reversed : m.upright)}</div>
                 </div>
+                ${html}
             `;
         } else {
             advContainer.innerHTML = '';
@@ -986,13 +1075,13 @@ function fillSpreadRandomly() {
         cards = placedCards4; max = 4;
     }
 
-    let placedIds = cards.filter(c => c !== null).map(c => c.id);
+    let placedIds = cards.filter(c => c).map(c => c.id);
 
     const isReversedAllowed = document.getElementById('toggle-reversed').checked;
     const isMinorAllowed = document.getElementById('toggle-minor').checked;
 
     for (let i = 0; i < max; i++) {
-        if (cards[i] === null) {
+        if (!cards[i]) {
             let availableCards = tarotDataKo.filter(c => {
                 // 이미 뽑힌 카드 제외
                 if (placedIds.includes(c.id)) return false;
@@ -1006,6 +1095,7 @@ function fillSpreadRandomly() {
             const randomIndex = Math.floor(Math.random() * availableCards.length);
             const card = availableCards[randomIndex];
             placedIds.push(card.id);
+
 
             activeSlotIndex = i;
             // 50% chance for reverse only if allowed
@@ -1191,7 +1281,154 @@ animateParticles();
 // Global initialization call
 document.addEventListener('DOMContentLoaded', () => {
     updateSpreadGuide(currentMode);
+    requestAnimationFrame(syncAllLines);
 });
+
+// --- DYNAMIC SVG LINE SYSTEM ---
+function syncAllLines() {
+    if (currentMode === 'tree') drawTreeLines();
+    else if (currentMode === 'relation') drawRelationLines();
+    else if (currentMode === 'spread') drawFourCardLines();
+    else if (currentMode === 'spread3') drawThreeCardLines();
+    else if (currentMode === 'zodiac') drawZodiacLines();
+}
+
+function getSlotCenter(id, mode) {
+    const slot = document.getElementById(id);
+    if (!slot) return null;
+    
+    let svgContainer;
+    if (mode === 'tree') svgContainer = document.querySelector('#tree-board .tree-bg-overlay svg');
+    else if (mode === 'relation') svgContainer = document.querySelector('#relation-board .relation-bg-overlay svg');
+    else if (mode === 'spread') svgContainer = document.querySelector('#spread-board .spread-bg-overlay svg');
+    else if (mode === 'spread3') svgContainer = document.querySelector('#spread3-board .spread3-bg-overlay svg');
+    else if (mode === 'zodiac') svgContainer = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
+    
+    if (!svgContainer) return null;
+
+    const rect = slot.getBoundingClientRect();
+    const svgRect = svgContainer.getBoundingClientRect();
+    
+    const x = (rect.left + rect.width / 2) - svgRect.left;
+    const y = (rect.top + rect.height / 2) - svgRect.top;
+
+    const viewBox = svgContainer.viewBox.baseVal;
+    if (viewBox.width > 0 && viewBox.height > 0) {
+        return {
+            x: x * (viewBox.width / svgRect.width),
+            y: y * (viewBox.height / svgRect.height)
+        };
+    }
+    return { x, y };
+}
+
+function drawTreeLines() {
+    const container = document.querySelector('#tree-board .tree-bg-overlay svg');
+    if (!container) return;
+    const connections = [[0, 1], [0, 2], [1, 2], [1, 3], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5], [3, 6], [4, 5], [4, 7], [5, 6], [5, 7], [5, 8], [6, 7], [6, 8], [7, 8], [8, 9], [0, 5], [5, 9]];
+    let html = `<defs><filter id="tree-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    connections.forEach(([s, e]) => {
+        const p1 = getSlotCenter(`tslot-${s}`, 'tree');
+        const p2 = getSlotCenter(`tslot-${e}`, 'tree');
+        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+    });
+    for(let i=0; i<10; i++) {
+        const p = getSlotCenter(`tslot-${i}`, 'tree');
+        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#tree-star-glow)" />`;
+    }
+    container.innerHTML = html;
+}
+
+function drawRelationLines() {
+    const container = document.querySelector('#relation-board .relation-bg-overlay svg');
+    if (!container) return;
+    
+    // Core logic mapping based on screenshot:
+    // 1(ID 0), 2(ID 1), 3(ID 2), 4(ID 3), 5(ID 4), 6(ID 5), 7(ID 6), 8(ID 7), 9(ID 8), 10(ID 9), 11(ID 10), 12(ID 11)
+    const connections = [
+        [0, 2], [1, 2],                            // Base to Reason (1, 2 -> 3)
+        [2, 3], [3, 5], [5, 4], [4, 10], [10, 11], // Spine: 3-4-6-5-11-12
+        [4, 6], [4, 7],                            // Hearts: 5 to 7, 8
+        [10, 6], [10, 7], [10, 8], [10, 9],        // Result: 11 to 7, 8, 9, 10
+        [6, 8], [7, 9]                             // Flow: 7-9, 8-10
+    ];
+
+    let html = `<defs><filter id="star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    connections.forEach(([s, e]) => {
+        const p1 = getSlotCenter(`rslot-${s}`, 'relation');
+        const p2 = getSlotCenter(`rslot-${e}`, 'relation');
+        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+    });
+    for(let i=0; i<12; i++) {
+        const p = getSlotCenter(`rslot-${i}`, 'relation');
+        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#star-glow)" />`;
+    }
+    container.innerHTML = html;
+}
+
+function drawFourCardLines() {
+    const container = document.querySelector('#spread-board .spread-bg-overlay svg');
+    if (!container) return;
+    let html = `<defs><filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    let centers = [];
+    for(let i=0; i<4; i++) {
+        const p = getSlotCenter(`slot-${i}`, 'spread');
+        if (p) {
+            centers.push(p);
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />`;
+        }
+    }
+    if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+    container.innerHTML = html;
+}
+
+function drawThreeCardLines() {
+    const container = document.querySelector('#spread3-board .spread3-bg-overlay svg');
+    if (!container) return;
+    let html = `<defs><filter id="spread3-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    let centers = [];
+    for(let i=0; i<3; i++) {
+        const p = getSlotCenter(`s3slot-${i}`, 'spread3');
+        if (p) {
+            centers.push(p);
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#spread3-star-glow)" />`;
+        }
+    }
+    if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+    container.innerHTML = html;
+}
+
+function drawZodiacLines() {
+    const container = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
+    if (!container) return;
+    let html = `<defs><filter id="zodiac-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    
+    // Circle connections
+    for(let i=0; i<12; i++) {
+        const p1 = getSlotCenter(`zslot-${i}`, 'zodiac');
+        const p2 = getSlotCenter(`zslot-${(i+1)%12}`, 'zodiac');
+        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.4)" stroke-width="1.2" />`;
+    }
+    
+    // Spokes to Center (500, 500)
+    for(let i=0; i<12; i++) {
+        const p = getSlotCenter(`zslot-${i}`, 'zodiac');
+        if (p) html += `<line x1="${p.x}" y1="${p.y}" x2="500" y2="500" stroke="rgba(212,175,55,0.2)" stroke-width="1" />`;
+    }
+    
+    // Center glow
+    html += `<circle cx="500" cy="500" r="10" fill="#d4af37" filter="url(#zodiac-star-glow)" opacity="1" />`;
+    html += `<circle cx="500" cy="500" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />`;
+
+    for(let i=0; i<12; i++) {
+        const p = getSlotCenter(`zslot-${i}`, 'zodiac');
+        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />`;
+    }
+    container.innerHTML = html;
+}
+
+// Dynamic Sync on Window Resize
+window.addEventListener('resize', syncAllLines);
 
 // OBS Multi-Broadcast
 const obsChannel = new BroadcastChannel('tarot_obs_channel');
@@ -1206,40 +1443,14 @@ function broadcastState() {
     else cards = placedCards4;
 
     const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
-    
-    const payload = {
-        type: 'update_spread',
-        mode: currentMode,
-        cards: cards,
-        key: secretKey // 클라우드 상에서 방을 분리하기 위한 비밀키
-    };
-
-    // 1. BroadcastChannel (For Chrome-to-Chrome Window Capture)
+    const payload = { type: 'update_spread', mode: currentMode, cards: cards, key: secretKey };
     obsChannel.postMessage(payload);
-
-    // 2. HTTP Server Sync (For pure OBS Browser Source via server.py)
-    fetch('/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    }).catch(e => { /* Ignore if server is not running */ });
+    fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
 }
 
 function clearOBSBoard() {
     const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
-    
-    const payload = {
-        type: 'update_spread',
-        mode: currentMode,
-        cards: [], // empty array to clear
-        key: secretKey
-    };
-
+    const payload = { type: 'update_spread', mode: currentMode, cards: [], key: secretKey };
     obsChannel.postMessage(payload);
-
-    fetch('/update', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-    }).catch(e => { /* Ignore */ });
+    fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
 }

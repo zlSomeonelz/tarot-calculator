@@ -1,0 +1,110 @@
+﻿
+app.js:20:            if (curr
+entMode === 'search') {
+app.js:31:    currentMode = mo
+de;
+app.js:81:function activateSlo
+t(index, mode = currentMode) {
+app.js:260:    if (currentMode
+ === 'spread3') {
+app.js:262:    } else if (curr
+entMode === 'tree') {
+app.js:264:    } else if (curr
+entMode === 'relation') {
+app.js:266:    } else if (curr
+entMode === 'celtic') {
+app.js:268:    } else if (curr
+entMode === 'hexa') {
+app.js:270:    } else if (curr
+entMode === 'zodiac') {
+app.js:331:    if (count === 3
+ && currentMode === 'spread3')
+ {
+app.js:339:    } else if (coun
+t === 10 && currentMode === 't
+ree') {
+app.js:354:    } else if (coun
+t === 12 && currentMode === 'r
+elation') {
+app.js:371:    } else if (coun
+t === 10 && currentMode === 'c
+eltic') {
+app.js:386:    } else if (coun
+t === 7 && currentMode === 'he
+xa') {
+app.js:398:    } else if (coun
+t === 12 && currentMode === 'z
+odiac') {
+app.js:770:    if (count === 3
+ && currentMode === 'spread3')
+ {
+app.js:772:    } else if (coun
+t === 12 && currentMode === 'r
+elation') {
+app.js:774:    } else if (coun
+t === 10 && currentMode === 't
+ree') {
+app.js:776:    } else if (coun
+t === 10 && currentMode === 'c
+eltic') {
+app.js:778:    } else if (coun
+t === 7 && currentMode === 'he
+xa') {
+app.js:780:    } else if (coun
+t === 12 && currentMode === 'z
+odiac') {
+app.js:803:    if (currentMode
+ === 'spread3') clearBoard(3);
+app.js:804:    else if (curren
+tMode === 'tree') clearBoard(1
+0);
+app.js:805:    else if (curren
+tMode === 'relation') clearBoa
+rd(12);
+app.js:806:    else if (curren
+tMode === 'celtic') clearBoard
+(10);
+app.js:807:    else if (curren
+tMode === 'hexa') clearBoard(7
+);
+app.js:808:    else if (curren
+tMode === 'zodiac') clearBoard
+(12);
+app.js:1034:    if (currentMod
+e === 'spread3') {
+app.js:1036:    } else if (cur
+rentMode === 'tree') {
+app.js:1038:    } else if (cur
+rentMode === 'relation') {
+app.js:1040:    } else if (cur
+rentMode === 'celtic') {
+app.js:1042:    } else if (cur
+rentMode === 'hexa') {
+app.js:1044:    } else if (cur
+rentMode === 'zodiac') {
+app.js:1254:    updateSpreadGu
+ide(currentMode);
+app.js:1261:    if (currentMod
+e === 'spread3') cards = place
+dCards3;
+app.js:1262:    else if (curre
+ntMode === 'tree') cards = pla
+cedCardsTree;
+app.js:1263:    else if (curre
+ntMode === 'relation') cards =
+ placedCardsRelation;
+app.js:1264:    else if (curre
+ntMode === 'celtic') cards = p
+lacedCardsCeltic;
+app.js:1265:    else if (curre
+ntMode === 'hexa') cards = pla
+cedCardsHexa;
+app.js:1266:    else if (curre
+ntMode === 'zodiac') cards = p
+lacedCardsZodiac;
+app.js:1273:        mode: curr
+entMode,
+app.js:1294:        mode: curr
+entMode,
+
+

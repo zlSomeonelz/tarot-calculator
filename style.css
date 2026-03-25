@@ -107,6 +107,41 @@ section {
     box-shadow: inset 0 0 20px rgba(212, 175, 55, 0.1);
 }
 
+/* --- Interpretation Mode Tabs --- */
+.inter-mode-tabs {
+    display: flex;
+    background: rgba(0,0,0,0.6);
+    padding: 4px;
+    border-radius: 12px;
+    border: 1px solid rgba(212,175,55,0.3);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+.inter-mode-btn {
+    background: transparent;
+    border: none;
+    color: #888;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
+}
+
+.inter-mode-btn:hover {
+    color: #fff;
+    background: rgba(255,255,255,0.05);
+}
+
+.inter-mode-btn.active {
+    background: var(--accent-gold);
+    color: #000;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+    transform: translateY(-1px);
+}
+
 .reversed-toggle {
     display: inline-flex;
     align-items: center;
@@ -165,14 +200,16 @@ section {
 
 .tree-grid-refined {
     display: grid;
-    grid-template-columns: 220px 220px 220px; 
-    grid-template-rows: repeat(22, 50px); /* Tighter 50px rows */
-    gap: 10px;
+    grid-template-columns: 230px 230px 230px; 
+    grid-template-rows: repeat(22, 85px); 
+    gap: 0;
+    justify-content: center;
+    justify-items: center; /* Center cards in columns */
+    align-items: center;   /* Center cards in rows */
     position: relative;
-    z-index: 10;
-    justify-items: center;
+    z-index: 5;
+    margin: -5px auto 0 auto; /* Added -5px to align Row 2 center (122.5px) with SVG node */
     width: fit-content;
-    margin: 0 auto;
 }
 
 /* World Sidebar - Outside on the left */
@@ -219,10 +256,10 @@ section {
 }
 
 /* World Alignment with 50px Rows (60px gap-inclusive step, 85px offset) */
-.world-top { top: 85px; transform: translateY(-50%); } 
-.world-mid { top: 385px; transform: translateY(-50%); } 
-.world-low { top: 625px; transform: translateY(-50%); } 
-.world-bottom { top: 985px; transform: translateY(-50%); } 
+.world-top { top: 165px; transform: translateY(-50%); } 
+.world-mid { top: 632.5px; transform: translateY(-50%); } 
+.world-low { top: 972.5px; transform: translateY(-50%); } 
+.world-bottom { top: 1397.5px; transform: translateY(-50%); } 
 
 /* --- Compact Tree Slot Placement (Independent Column-Spacing) --- */
 .pos-center-1 { grid-column: 2; grid-row: 1 / 4; }         /* Kether: Center 85 */
@@ -245,7 +282,7 @@ section {
 .tree-bg-overlay {
     position: absolute;
     top: 0; left: 50%;
-    width: 680px; height: 1200px;
+    width: 680px; height: 1900px;
     transform: translateX(-50%);
     opacity: 0.25;
     pointer-events: none;
@@ -256,7 +293,7 @@ section {
 
 .slot {
     width: 140px;
-    height: 180px;
+    aspect-ratio: 1024 / 1792;
     background: rgba(10, 10, 10, 0.9);
     border: 1.5px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -271,6 +308,7 @@ section {
     flex-direction: column;
     justify-content: center;
 }
+
 
 .slot-bg-layer {
     position: absolute;
@@ -314,7 +352,7 @@ section {
 
 .slot-content {
     position: absolute;
-    bottom: 35px;
+    bottom: 20%;
     left: 0;
     width: 100%;
     z-index: 10;
@@ -324,6 +362,7 @@ section {
     text-shadow: 0 2px 10px #000, 0 0 20px #000;
     text-align: center;
 }
+
 
 .slot-hint {
     position: absolute;
@@ -429,43 +468,43 @@ section {
 
 .relation-grid {
     display: grid;
-    grid-template-columns: repeat(5, 160px); 
-    grid-template-rows: repeat(7, 150px);  
-    gap: 20px;
-    width: 880px; /* Locked width for precision registration */
+    grid-template-columns: 200px 200px 200px 200px 200px; 
+    grid-template-rows: repeat(8, 220px); /* Increased to prevent overlap */
+    gap: 0;
+    width: 1000px; 
     margin: 0 auto;
     position: relative;
     z-index: 10;
     justify-content: center;
 }
 
-/* Spine: Column 3 */
-.pos-bond-6 { grid-column: 3; grid-row: 1; } /* 12. 미래 */
-.pos-bond-5 { grid-column: 3; grid-row: 2; } /* 11. 결과 */
-.pos-bond-3 { grid-column: 3; grid-row: 4; } /* 5. 현재 */
+/* Position Definitions (Perfect 9-7-5-8-10 Cup Arc) */
+.pos-bond-6 { grid-column: 3; grid-row: 1; }    /* 12. 미래 */
+.pos-bond-5 { grid-column: 3; grid-row: 2; }    /* 11. 결과 */
+
+.pos-me-3   { grid-column: 1; grid-row: 2; }    /* 9. 나의 속마음 (Rim - Highest) */
+.pos-you-3  { grid-column: 5; grid-row: 2; }    /* 10. 상대의 속마음 (Rim - Highest) */
+
+.pos-me-2   { grid-column: 2; grid-row: 3; }    /* 7. 나의 겉모습 (Arc Middle - Row 3) */
+.pos-you-2  { grid-column: 4; grid-row: 3; }    /* 8. 상대의 겉모습 (Arc Middle - Row 3) */
+
+.pos-bond-3 { grid-column: 3; grid-row: 4; }    /* 5. 현재 (Arc Center - Lowest) */
+
 .pos-bond-4 { 
     grid-column: 3; grid-row: 5; 
-    transform: rotate(90deg); 
-    border-color: #e74c3c !important; 
-    box-shadow: 0 0 40px rgba(231, 76, 60, 0.1);
-} /* 6. 장애물 (Crossed-Horizontal) */
-.pos-bond-2 { grid-column: 3; grid-row: 6; } /* 4. 기초/과거 */
-.pos-bond-1 { grid-column: 3; grid-row: 7; } /* 3. 이유 */
+    transform: rotate(90deg) !important; 
+    z-index: 20 !important;
+}                                                   /* 6. 장애물 (Horizontal) */
+.pos-bond-2 { grid-column: 3; grid-row: 6; }   /* 4. 기초/과거 */
+.pos-bond-1 { grid-column: 3; grid-row: 7; }  /* 3. 만남 (Base Center) */
 
-/* Cup Arc */
-.pos-me-3  { grid-column: 1; grid-row: 2; transform: translateY(-40px); } /* 9. 내 속마음 */
-.pos-you-3 { grid-column: 5; grid-row: 2; transform: translateY(-40px); } /* 10. 상대 속마음 */
-.pos-me-2  { grid-column: 2; grid-row: 3; transform: translateY(-20px); } /* 7. 내 겉모습 */
-.pos-you-2 { grid-column: 4; grid-row: 3; transform: translateY(-20px); } /* 8. 상대 겉모습 */
-
-/* Base Support: Reasoning flank (LIFTED to R7) */
-.pos-me-1  { grid-column: 2; grid-row: 7; } /* 1. 나 */
-.pos-you-1 { grid-column: 4; grid-row: 7; } /* 2. 상대 */
+.pos-me-1  { grid-column: 2; grid-row: 7; }  /* 1. 나 */
+.pos-you-1 { grid-column: 4; grid-row: 7; }  /* 2. 상대 */
 
 .relation-bg-overlay {
     position: absolute;
     top: 3rem; left: 50%; /* Synced with container padding */
-    width: 880px; height: 1300px;
+    width: 880px; height: 2100px;
     transform: translateX(-50%);
     opacity: 0.18;
     pointer-events: none;
@@ -476,55 +515,56 @@ section {
 
 .relation-grid .slot {
     width: 140px; /* Standardized Tree size */
-    height: 180px; /* Standardized Tree size */
 }
 
 /* --- Celtic Cross Spread (10 Cards) --- */
 .celtic-container {
     position: relative;
     width: 776px;
-    height: 800px;
+    height: 1300px; /* Adjusted for 300px spacing */
     margin: 3rem auto;
 }
 
 .celtic-bg-overlay {
     position: absolute;
     top: 0; left: 0;
-    width: 776px; height: 800px;
+    width: 776px; height: 1300px;
     pointer-events: none;
     z-index: 1;
-    opacity: 0.85; /* Increased for golden glow visibility */
+    opacity: 0.85;
 }
 
 /* Absolute Positioning for 10 Slots */
 .celtic-pos-1, .celtic-pos-2, .celtic-pos-3, .celtic-pos-4, .celtic-pos-5, 
 .celtic-pos-6, .celtic-pos-7, .celtic-pos-8, .celtic-pos-9, .celtic-pos-10 {
     position: absolute !important;
-    width: 140px; height: 180px; /* Enforce rigid size */
+    width: 140px;
 }
 
+
 /* 1. Present (Center) */
-.celtic-pos-1 { left: 164px; top: 204px; z-index: 10; }
+.celtic-pos-1 { left: 164px; top: 300px; z-index: 10; }
 
 /* 2. Challenge (Crossed) */
 .celtic-pos-2 {
-    left: 164px; top: 204px;
+    left: 164px; top: 300px;
     transform: rotate(90deg) !important;
     z-index: 20 !important;
 }
 .celtic-pos-2:hover { transform: rotate(90deg) scale(1.08) !important; }
 
-/* The Cross extensions */
+/* The Cross extensions (Spacing = 300px) */
 .celtic-pos-3 { left: 164px; top: 0px; }   /* 3. Goal (Top) */
-.celtic-pos-4 { left: 164px; top: 408px; } /* 4. Basis (Bottom) */
-.celtic-pos-5 { left: 0px; top: 204px; }   /* 5. Past (Left) */
-.celtic-pos-6 { left: 328px; top: 204px; } /* 6. Future (Right) */
+.celtic-pos-4 { left: 164px; top: 600px; } /* 4. Basis (Bottom) */
+.celtic-pos-5 { left: 0px; top: 300px; }   /* 5. Past (Left) */
+.celtic-pos-6 { left: 328px; top: 300px; } /* 6. Future (Right) */
 
 /* The Staff Column (Right side) */
-.celtic-pos-10 { left: 636px; top: 0px; }   /* 10. Outcome */
-.celtic-pos-9 { left: 636px; top: 204px; }  /* 9. Hopes */
-.celtic-pos-8 { left: 636px; top: 408px; }  /* 8. Env */
-.celtic-pos-7 { left: 636px; top: 612px; }  /* 7. Self */
+.celtic-pos-10 { left: 636px; top: 0px; }    /* 10. Outcome */
+.celtic-pos-9 { left: 636px; top: 300px; }   /* 9. Hopes */
+.celtic-pos-8 { left: 636px; top: 600px; }   /* 8. Env */
+.celtic-pos-7 { left: 636px; top: 900px; }   /* 7. Self */
+
 
 /* --- Hexagram Spread (7 Cards) --- */
 .hexa-container {
@@ -545,22 +585,25 @@ section {
 
 .hexa-pos-1, .hexa-pos-2, .hexa-pos-3, .hexa-pos-4, .hexa-pos-5, .hexa-pos-6, .hexa-pos-7 {
     position: absolute !important;
-    width: 140px; height: 180px;
+    width: 140px;
     z-index: 10;
 }
 
-/* Center = cx: 450, cy: 450 => left: 380, top: 360 */
-.hexa-pos-7 { left: 380px; top: 360px; z-index: 20; } /* Center (Outcome) */
 
-/* Upward Triangle: 1(Top), 2(BRight), 3(BLeft) */
-.hexa-pos-1 { left: 380px; top: 40px; }  /* Top: cx=450, cy=130 */
-.hexa-pos-2 { left: 657px; top: 520px; } /* B-Right: cx=727, cy=610 */
-.hexa-pos-3 { left: 103px; top: 520px; } /* B-Left: cx=173, cy=610 */
+/* Hexagram (Outcome Center Slot) - Center 450,450 */
+.hexa-pos-7 { left: 380px; top: 327.5px; z-index: 20; } 
 
-/* Downward Triangle: 4(Bottom), 5(TLeft), 6(TRight) */
-.hexa-pos-4 { left: 380px; top: 680px; } /* Bottom: cx=450, cy=770 */
-.hexa-pos-5 { left: 103px; top: 200px; } /* T-Left: cx=173, cy=290 */
-.hexa-pos-6 { left: 657px; top: 200px; } /* T-Right: cx=727, cy=290 */
+/* Upward Triangle: 1(Top 450,130), 2(BRight 727,610), 3(BLeft 173,610) */
+.hexa-pos-1 { left: 380px; top: 7.5px; }  
+.hexa-pos-2 { left: 657px; top: 487.5px; } 
+.hexa-pos-3 { left: 103px; top: 487.5px; } 
+
+/* Downward Triangle: 4(Bottom 450,770), 5(TLeft 173,290), 6(TRight 727,290) */
+.hexa-pos-4 { left: 380px; top: 525px; } /* Adjusted mid-point for visual balance if needed, or stick to 647.5 */
+.hexa-pos-4 { left: 380px; top: 647.5px; } 
+.hexa-pos-5 { left: 103px; top: 167.5px; } 
+.hexa-pos-6 { left: 657px; top: 167.5px; }
+
 
 /* --- Zodiac Spread (12 Cards) --- */
 .zodiac-container {
@@ -578,27 +621,34 @@ section {
     opacity: 0.85; /* Same premium golden glow */
 }
 
-/* Center = 500,500. R = 340. Slot = 140x200 */
+/* Center = 500,500. R = 340. Slot = 140x245 
+   Left = cx - 70, Top = cy - 122.5 */
 .zodiac-pos-1, .zodiac-pos-2, .zodiac-pos-3, .zodiac-pos-4, 
 .zodiac-pos-5, .zodiac-pos-6, .zodiac-pos-7, .zodiac-pos-8, 
 .zodiac-pos-9, .zodiac-pos-10, .zodiac-pos-11, .zodiac-pos-12 {
     position: absolute !important;
-    width: 140px; height: 180px;
+    width: 140px;
     z-index: 10;
 }
 
-.zodiac-pos-1 { left: 600px; top: 106px; } /* 1 o'clock (30) */
-.zodiac-pos-2 { left: 724px; top: 230px; } /* 2 o'clock (60) */
-.zodiac-pos-3 { left: 770px; top: 400px; } /* 3 o'clock (90) */
-.zodiac-pos-4 { left: 724px; top: 570px; } /* 4 o'clock (120) */
-.zodiac-pos-5 { left: 600px; top: 694px; } /* 5 o'clock (150) */
-.zodiac-pos-6 { left: 430px; top: 740px; } /* 6 o'clock (180) */
-.zodiac-pos-7 { left: 260px; top: 694px; } /* 7 o'clock (210) */
-.zodiac-pos-8 { left: 136px; top: 570px; } /* 8 o'clock (240) */
-.zodiac-pos-9 { left: 90px;  top: 400px; } /* 9 o'clock (270) */
-.zodiac-pos-10 { left: 136px; top: 230px; } /* 10 o'clock (300) */
-.zodiac-pos-11 { left: 260px; top: 106px; } /* 11 o'clock (330) */
-.zodiac-pos-12 { left: 430px; top: 60px;  } /* 12 o'clock (0) */
+
+/* Perfect Circle Radius 340px, Center (500, 500) */
+.zodiac-pos-1  { left: 600px; top: 83.5px; }   /* 1 o'clock (Aries) */
+.zodiac-pos-2  { left: 724px; top: 207.5px; }  /* 2 o'clock (Taurus) */
+.zodiac-pos-3  { left: 770px; top: 377.5px; }  /* 3 o'clock (Gemini) */
+.zodiac-pos-4  { left: 724px; top: 547.5px; }  /* 4 o'clock (Cancer) */
+.zodiac-pos-5  { left: 600px; top: 671.5px; }  /* 5 o'clock (Leo) */
+.zodiac-pos-6  { left: 430px; top: 717.5px; }  /* 6 o'clock (Virgo) */
+.zodiac-pos-7  { left: 260px; top: 671.5px; }  /* 7 o'clock (Libra) */
+.zodiac-pos-8  { left: 136px; top: 547.5px; }  /* 8 o'clock (Scorpio) */
+.zodiac-pos-9  { left: 90px;  top: 377.5px; }  /* 9 o'clock (Sagittarius) */
+.zodiac-pos-10 { left: 136px; top: 207.5px; }  /* 10 o'clock (Capricorn) */
+.zodiac-pos-11 { left: 260px; top: 83.5px; }   /* 11 o'clock (Aquarius) */
+.zodiac-pos-12 { left: 430px; top: 37.5px; }   /* 12 o'clock (Pisces) */
+
+
+
+
 
 /* Hide obsolete side-labels in relation mode */
 #relation-board .side-label { display: none; }
@@ -622,7 +672,7 @@ section {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 656px; height: 180px;
+    width: 656px; height: 260px;
     pointer-events: none;
     z-index: 1;
     opacity: 0.6;
@@ -631,7 +681,7 @@ section {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 484px; height: 180px;
+    width: 484px; height: 260px;
     pointer-events: none;
     z-index: 1;
     opacity: 0.6;
@@ -773,14 +823,16 @@ section {
 /* Grid Styling */
 .cards-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.2rem;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 1.5rem;
     padding: 1rem;
     overflow: visible;
 }
 
+
 .grid-card {
-    aspect-ratio: 2/3.2;
+    aspect-ratio: 1024 / 1792;
+
     background: rgba(10, 10, 10, 0.9);
     border: 1.5px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
@@ -832,17 +884,47 @@ section {
 }
 
 .modal-content {
-    background: var(--glass-solid);
-    border: 4px solid var(--accent-gold);
-    border-radius: 24px;
-    max-width: 800px;
-    width: 100%;
+    background: rgba(5, 5, 8, 0.95);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 20px;
+    max-width: 900px;
+    width: 95%;
     max-height: 90vh;
-    padding: 4rem;
+    padding: 3rem;
     position: relative;
     overflow-y: auto;
-    box-shadow: 0 0 100px rgba(0,0,0,1);
+    box-shadow: 0 0 100px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
 }
+
+@media (min-width: 800px) {
+    .modal-layout {
+        display: flex;
+        gap: 3rem;
+        align-items: flex-start;
+    }
+}
+
+.modal-left {
+    flex: 0 0 300px;
+}
+
+.modal-right {
+    flex: 1;
+}
+
+.modal-card-img {
+    width: 100%;
+    aspect-ratio: 1024 / 1792;
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    border: 2px solid var(--accent-gold);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
 
 .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; }
 .close-icon { background: transparent; border: none; font-size: 2.5rem; color: #fff; cursor: pointer; line-height: 0.5; }

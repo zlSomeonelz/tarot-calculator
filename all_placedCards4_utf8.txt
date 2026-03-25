@@ -1,0 +1,7 @@
+﻿app.js:        'spread': placedCards4,
+app.js:        cards = placedCards4; prefix = 'slot'; max = 4;
+app.js:        cards = placedCards4;
+app.js:        cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
+app.js:    else cards = placedCards4;
+app.js:        cards = placedCards4; max = 4;
+app.js:    else cards = placedCards4;

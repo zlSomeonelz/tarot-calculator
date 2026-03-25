@@ -1,0 +1,49 @@
+﻿92:        'spread': placedCards4,
+93:        'spread3': placedCards3,
+94:        'tree': placedCardsTree,
+95:        'relation': placedCardsRelation,
+96:        'celtic': placedCardsCeltic,
+97:        'hexa': placedCardsHexa,
+98:        'zodiac': placedCardsZodiac
+261:        cards = placedCards3; prefix = 's3slot'; max = 3;
+263:        cards = placedCardsTree; prefix = 'tslot'; max = 10;
+265:        cards = placedCardsRelation; prefix = 'rslot'; max = 12;
+267:        cards = placedCardsCeltic; prefix = 'cslot'; max = 10;
+269:        cards = placedCardsHexa; prefix = 'hslot'; max = 7;
+271:        cards = placedCardsZodiac; prefix = 'zslot'; max = 12;
+273:        cards = placedCards4; prefix = 'slot'; max = 4;
+332:        cards = placedCards3;
+340:        cards = placedCardsTree; isTree = true;
+355:        cards = placedCardsRelation; isRelation = true;
+372:        cards = placedCardsCeltic; isCeltic = true;
+387:        cards = placedCardsHexa;
+399:        cards = placedCardsZodiac; isZodiac = true;
+416:        cards = placedCards4;
+771:        cards = placedCards3; prefix = 's3slot'; boardId = 'spread3-board';
+773:        cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board';
+775:        cards = placedCardsTree; prefix = 'tslot'; boardId = 'tree-board';
+777:        cards = placedCardsCeltic; prefix = 'cslot'; boardId = 'celtic-board';
+779:        cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board';
+781:        cards = placedCardsZodiac; prefix = 'zslot'; boardId = 'zodiac-board';
+784:        cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
+998:    if (mode === 'tree') cards = placedCardsTree;
+999:    else if (mode === 'relation') cards = placedCardsRelation;
+1000:    else if (mode === 'celtic') cards = placedCardsCeltic;
+1001:    else if (mode === 'hexa') cards = placedCardsHexa;
+1002:    else if (mode === 'zodiac') cards = placedCardsZodiac;
+1003:    else if (mode === 'spread3') cards = placedCards3;
+1004:    else cards = placedCards4;
+1035:        cards = placedCards3; max = 3;
+1037:        cards = placedCardsTree; max = 10;
+1039:        cards = placedCardsRelation; max = 12;
+1041:        cards = placedCardsCeltic; max = 10;
+1043:        cards = placedCardsHexa; max = 7;
+1045:        cards = placedCardsZodiac; max = 12;
+1047:        cards = placedCards4; max = 4;
+1261:    if (currentMode === 'spread3') cards = placedCards3;
+1262:    else if (currentMode === 'tree') cards = placedCardsTree;
+1263:    else if (currentMode === 'relation') cards = placedCardsRelation;
+1264:    else if (currentMode === 'celtic') cards = placedCardsCeltic;
+1265:    else if (currentMode === 'hexa') cards = placedCardsHexa;
+1266:    else if (currentMode === 'zodiac') cards = placedCardsZodiac;
+1267:    else cards = placedCards4;

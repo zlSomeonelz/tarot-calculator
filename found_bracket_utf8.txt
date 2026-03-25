@@ -1,0 +1,105 @@
+﻿13:        const [korName, engName] = card.name.split(' (');
+44:    const btns = ['view-spread3', 'view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
+45:    const modes = ['spread3', 'spread', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
+49:        if (btn) btn.classList.toggle('active', mode === modes[i]);
+101:    const cards = boards[mode];
+104:    if (cards && cards[index]) {
+105:        showInterpretation(cards[index]);
+167:        const [korName] = card.name.split(' (');
+208:    const korName = card.name.split(' (')[0];
+278:    cards[activeSlotIndex] = card;
+280:    const korNameOrigin = card.name.split(' (')[0];
+281:    const displayKorName = isReversed ? `${korNameOrigin} [??` : korNameOrigin;
+305:        tipText += `\n\n[?댁꽍] ${isReversed ? card.meanings.reversed : card.meanings.upright}`;
+333:        allIndices = [0, 1, 2];
+334:        info = [
+341:        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+342:        info = [
+356:        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+357:        info = [
+373:        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+374:        info = [
+388:        allIndices = [0, 1, 2, 3, 4, 5, 6];
+389:        info = [
+400:        allIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+401:        info = [
+417:        allIndices = [0, 1, 2, 3];
+418:        info = [
+426:    if (allIndices.some(i => cards[i] === null)) {
+435:        const card = cards[idx];
+442:            if ([0, 2, 4, 10, 8, 6].includes(idx)) color = '#d4af37'; // ME / Shared
+443:            if ([1, 7, 9].includes(idx)) color = '#e74c3c'; // Partner
+455:            const dirLabel = isRev ? '<strong style="color:#e74c3c;">[??갑??</strong>' : '<strong style="color:var(--accent-gold);">[?뺣갑??</strong>';
+461:                contextMeaning += `<div><strong style="color:#ff6b6b;">[?곗븷/愿怨?</strong> ${mSet.love || '?뺣낫 ?놁쓬'}</div>`;
+462:                contextMeaning += `<div><strong style="color:#4da8da;">[吏곸뾽/?깆랬]</strong> ${mSet.career || '?뺣낫 ?놁쓬'}</div>`;
+463:                contextMeaning += `<div><strong style="color:#f1c40f;">[湲덉쟾/?щЪ]</strong> ${mSet.wealth || mSet.career || '?뺣낫 ?놁쓬'}</div>`;
+464:                contextMeaning += `<div><strong style="color:#2ecc71;">[嫄닿컯/?쒕젰]</strong> ${mSet.health || '?뺣낫 ?놁쓬'}</div>`;
+465:                contextMeaning += `<div style="margin-top:4px;"><strong style="color:#2ecc71;">[?좎꽦 議곗뼵]</strong> ${mSet.advice || getMysticalAdvice(card)}</div>`;
+489:                <span class="idx-badge" style="background:${color};">${info[idx].t}</span>
+490:                <span class="angel-tag" style="color:${color}">${info[idx].a ? `${info[idx].a}` : ''}</span>
+492:            <p class="world-meaning" style="font-size:0.75rem; color: #999; margin: 0.5rem 0;">??${info[idx].m}</p>
+521:    const innerMe = cards[8];
+522:    const innerYou = cards[9];
+528:        <p>?섏쓽 吏꾩떖(${innerMe.name.split(' (')[0]})怨??곷???吏꾩떖(${innerYou.name.split(' (')[0]})??留뚮굹 留뚮뱶???먮꼫吏 ?먮쫫??遺꾩꽍?⑸땲??</p>
+530:            <strong>珥앺룊:</strong> ??愿怨꾩쓽 ?좎옱??誘몃옒??${cards[11].name.split(' (')[0]} 移대뱶???곹뼢??諛쏆븘 寃곗젙??寃껋엯?덈떎.
+548:    const layers = [
+549:        { title: 'ATZILUTH (?꾩튌猷⑦듃)', dept: '?먰삎怨?遺덉쓽 ?멸퀎 (?곸쟻 洹쇱썝)', ids: [0, 1, 2], desc: '吏덈Ц??媛??蹂몄쭏?곸씤 遺덉뵪?댁옄 ?좎꽦???섏????멸퀎?낅땲??' },
+550:        { title: 'BERIAH (釉뚮━??', dept: '李쎌“? 臾쇱쓽 ?멸퀎 (吏??媛먯젙)', ids: [3, 4, 5], desc: '?쒖닔???섏?媛 ?뺥깭瑜?媛뽰텛湲??꾪빐 吏?깃낵 媛먯젙???섏쓣 ?삳뒗 ?④퀎?낅땲??' },
+551:        { title: 'YETZIRAH (?덉튂??', dept: '?뺤꽦怨?怨듦린???멸퀎 (怨꾪쉷/?щ━)', ids: [6, 7, 8], desc: '?꾩떎濡??쒕윭?섍린 吏곸쟾, ?먮꼫吏?ㅼ씠 遺?ろ엳硫?援ъ껜?곸씤 怨꾪쉷?쇰줈 ??엯?덈떎.' },
+552:        { title: 'ASIYAH (?꾩떆??', dept: '?쒕룞怨??숈쓽 ?멸퀎 (臾쇱쭏???꾪쁽)', ids: [9], desc: '紐⑤뱺 ?먮꼫吏媛 留덉묠???꾨떖??臾쇱쭏??寃곌낵?댁옄 ?꾩떎?곸씤 ?됰룞?낅땲??' }
+557:        const filled = l.ids.map(id => cards[id]).filter(card => card !== null);
+564:                    <strong style="color:var(--accent-gold);">愿?щ맂 ?먮꼫吏:</strong> ${filled.map(c => c.name.split(' (')[0]).join(', ')}
+571:    const pillars = [
+572:        { title: '?먮퉬??湲곕뫁 (?곗륫)', ids: [1, 3, 6], desc: '?쎌갹, ?⑥꽦?? 湲띿젙?곸씠怨??쒕룞?곸씤 ?먮꼫吏瑜??섎??⑸땲??' },
+573:        { title: '以?꾩쓽 湲곕뫁 (醫뚯륫)', ids: [2, 4, 7], desc: '?섏텞, ?ъ꽦?? ?뺥깭瑜?遺?ы븯怨??쒗븳?섎뒗 ?댁꽦???먮꼫吏瑜??섎??⑸땲??' },
+574:        { title: '洹좏삎??湲곕뫁 (以묒븰)', ids: [0, 5, 8, 9], desc: '?묎레?⑥쓣 議고솕?쒗궎硫??섏떇???꾩떎濡??대젮?ㅻ뒗 ?듭떖 異뺤엯?덈떎.' }
+579:        const filled = p.ids.map(id => cards[id]).filter(card => card !== null);
+586:                    ${filled.map(c => `<span style="display:inline-block; margin: 2px; padding: 2px 6px; background: rgba(212, 175, 55, 0.15); border: 1px solid rgba(212,175,55,0.4); border-radius: 4px;">${c.name.split(' (')[0]}</span>`).join('')}
+594:    const rootCard = cards[0];
+595:    const heartCard = cards[5];
+596:    const resultCard = cards[9];
+604:                    ?뱀떊??洹쇱썝?곸씤 ?섎룄? ?곹샎??肉뚮━?먮뒗 <strong>[${rootCard.name.split(' (')[0]}]</strong>??媛뺣젹???먮꼫吏媛 ?먮━?↔퀬 ?덉뒿?덈떎.<br/>
+605:                    ??蹂댁씠吏 ?딅뒗 ?⑥븮? ?뱀떊???먯븘? ?ъ옣??愿?듯븯??<strong>[${heartCard.name.split(' (')[0]}]</strong>???섏쓣 嫄곗튂硫?源⑤떖?뚯쓣 ?산퀬 ?뺤떊?쇰줈 蹂紐⑦빀?덈떎.<br/>
+606:                    寃곌뎅 ??紐⑤뱺 ?곸쟻/?뺤꽌??痢듭쐞???뚯슜?뚯씠?? 留덉묠???꾩떎???숇컮?μ뿉 <strong>[${resultCard.name.split(' (')[0]}]</strong>???뺥깭濡?李щ??섍쾶 寃곗떎??留브쾶 ??寃껋엯?덈떎.
+634:    const elements = [
+635:        { title: '?뵦 遺덉쓽 ?쇨컖 (Fire)', desc: '?먯븘, 李쎌“, 洹몃━怨??뺤옣???먮꼫吏', ids: [0, 4, 8], color: '#e74c3c' },
+636:        { title: '?뙇 ?숈쓽 ?쇨컖 (Earth)', desc: '湲덉쟾, ?쇱긽, 洹몃━怨??깆랬???먮꼫吏', ids: [1, 5, 9], color: '#f1c40f' },
+637:        { title: '?뮜 怨듦린???쇨컖 (Air)', desc: '吏?? 愿怨? 洹몃━怨??댁긽???먮꼫吏', ids: [2, 6, 10], color: '#3498db' },
+638:        { title: '?뮛 臾쇱쓽 ?쇨컖 (Water)', desc: '媛먯젙, 臾댁쓽?? 洹몃━怨??곹샎???먮꼫吏', ids: [3, 7, 11], color: '#9b59b6' }
+643:        const filled = e.ids.map(id => cards[id]).filter(card => card !== null);
+650:                    ${filled.map(c => c.name.split(' (')[0]).join(' / ')}
+660:    const crossIds = [0, 3, 6, 9];
+661:    const filledCross = crossIds.map(id => cards[id]).filter(card => card !== null);
+671:                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">??(1)</strong> : ${cards[0].name.split(' (')[0]}</li>
+672:                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">媛??(4)</strong> : ${cards[3].name.split(' (')[0]}</li>
+673:                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">愿怨?(7)</strong> : ${cards[6].name.split(' (')[0]}</li>
+674:                    <li><strong style="color:#d4af37; width: 60px; display:inline-block;">?ы쉶 (10)</strong>: ${cards[9].name.split(' (')[0]}</li>
+686:                ?뱀떊??臾댁쓽??12沅????볦씤 <strong>[${cards[11] ? cards[11].name.split(' (')[0] : '誘몄????곹샎'}]</strong> 移대뱶媛 ???댁쓽 ?④꺼吏??뚮쭏媛 ??寃껋엯?덈떎.<br>
+713:                <strong style="color:var(--accent-gold);">?꾩옱 ?곹솴:</strong> [${cards[0].name.split(' (')[0]}]??湲곗슫??吏諛고븯怨??덉뒿?덈떎.<br>
+714:                <strong style="color:#e74c3c;">?꾩쟾/援먯감:</strong> 洹??꾨줈 [${cards[1].name.split(' (')[0]}]???섏씠 ??뼱?곗뿬 媛덈벑?대굹 ??룞???쇱쑝?듬땲??
+726:                    ?뱀떊??洹쇱썝?곸씤 <strong>臾댁쓽??[${cards[3].name.split(' (')[0]}])</strong>??
+727:                    ?대뼸寃??쒕㈃?곸씤 <strong>紐⑺몴/?섏떇([${cards[2].name.split(' (')[0]}])</strong>?쇰줈 ?먮씪?섍퀬 ?덈뒗吏瑜?蹂댁뿬以띾땲?? ?댁긽怨??꾩떎??媛꾧레???섎??⑸땲??
+733:                    ?뱀떊 ???ㅻ줈 ?⑹뼱吏??<strong>怨쇨굅([${cards[4].name.split(' (')[0]}])</strong>???ъ슫??
+734:                    怨??ㅺ???<strong>誘몃옒([${cards[5].name.split(' (')[0]}])</strong>???먮쫫???대뼡 諛⑺뼢?깆쓣 ?쒖떆?섍퀬 ?덈뒗吏 蹂댁뿬以띾땲??
+745:                ?뱀떊??吏덈Ц? ?ㅼ뒪濡쒖쓽 <strong>[${cards[6].name.split(' (')[0]}]</strong> 媛숈? ?쒕룄? 
+746:                二쇰? ?섍꼍 <strong>[${cards[7].name.split(' (')[0]}]</strong>???곹뼢 ?ъ씠?먯꽌 吏꾨룞?⑸땲??<br><br>
+747:                ?뱀떊??源딆씠 ?덉? ?먮젮? ?뱀? ?щ쭩??<strong>[${cards[8].name.split(' (')[0]}]</strong>???섏뼱???? 
+748:                留덉묠???곗＜媛 ?쒖떆?섎뒗 理쒖쥌 寃곌낵 <strong>[${cards[9].name.split(' (')[0]}]</strong>??臾몄씠 ?대┫ 寃껋엯?덈떎.
+761:    const colors = ['#ffffff', '#999999', '#443322', '#3498db', '#e74c3c', '#f1c40f', '#2ecc71', '#e67e22', '#9b59b6', '#f39c12', '#555555'];
+762:    return colors[idx];
+848:    const intros = [
+855:    const outros = [
+863:    const pick = (arr) => arr[card.id % arr.length]; // Deterministic based on card ID for consistency
+864:    const pickRandom = (arr) => arr[Math.floor(Math.random() * arr.length)];
+900:                    <strong style="color:rgb(${color});">[${title}]</strong> ${content || '?뺣낫媛 ?놁뒿?덈떎.'}
+1006:    const card = cards[index];
+1029:    showInterpretation(tarotDataKo[randomIndex]);
+1056:        if (cards[i] === null) {
+1068:            const card = availableCards[randomIndex];
+1117:    if (guides[mode]) {
+1119:        titleEl.textContent = guides[mode].title;
+1120:        descEl.textContent = guides[mode].desc;
+1134:let particles = [];
+1181:        const colors = [
+1187:        this.color = colors[Math.floor(Math.random() * colors.length)];
+1295:        cards: [], // empty array to clear
