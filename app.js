@@ -1291,6 +1291,7 @@ function syncAllLines() {
     else if (currentMode === 'spread') drawFourCardLines();
     else if (currentMode === 'spread3') drawThreeCardLines();
     else if (currentMode === 'zodiac') drawZodiacLines();
+    else if (currentMode === 'celtic') drawCelticLines();
 }
 
 function getSlotCenter(id, mode) {
@@ -1303,6 +1304,7 @@ function getSlotCenter(id, mode) {
     else if (mode === 'spread') svgContainer = document.querySelector('#spread-board .spread-bg-overlay svg');
     else if (mode === 'spread3') svgContainer = document.querySelector('#spread3-board .spread3-bg-overlay svg');
     else if (mode === 'zodiac') svgContainer = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
+    else if (mode === 'celtic') svgContainer = document.querySelector('#celtic-board .celtic-bg-overlay svg');
     
     if (!svgContainer) return null;
 
@@ -1413,7 +1415,7 @@ function drawZodiacLines() {
     // Spokes to Center (500, 500)
     for(let i=0; i<12; i++) {
         const p = getSlotCenter(`zslot-${i}`, 'zodiac');
-        if (p) html += `<line x1="${p.x}" y1="${p.y}" x2="500" y2="500" stroke="rgba(212,175,55,0.2)" stroke-width="1" />`;
+        if (p) html += `<line x1="500" y1="500" x2="${p.x}" y2="${p.y}" stroke="rgba(212,175,55,0.2)" stroke-width="1" />`;
     }
     
     // Center glow
@@ -1424,6 +1426,38 @@ function drawZodiacLines() {
         const p = getSlotCenter(`zslot-${i}`, 'zodiac');
         if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />`;
     }
+    container.innerHTML = html;
+}
+
+function drawCelticLines() {
+    const container = document.querySelector('#celtic-board .celtic-bg-overlay svg');
+    if (!container) return;
+    
+    // Connections: IDs cover 0-9 for 10 cards
+    const connections = [
+        [2, 0], [0, 3], [4, 0], [0, 5], // Main Cross: Goal-Present-Basis and Past-Present-Future
+        [6, 7], [7, 8], [8, 9]         // Staff Vertical: Self-Env-Hopes-Outcome
+    ];
+    
+    let html = `<defs><filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    
+    // Circle at center
+    const pCenter = getSlotCenter('cslot-0', 'celtic');
+    if (pCenter) {
+        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="150" fill="none" stroke="rgba(212,175,55,0.2)" stroke-width="1.5" stroke-dasharray="8 4" />`;
+    }
+
+    connections.forEach(([s, e]) => {
+        const p1 = getSlotCenter(`cslot-${s}`, 'celtic');
+        const p2 = getSlotCenter(`cslot-${e}`, 'celtic');
+        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+    });
+    
+    for(let i=0; i<10; i++) {
+        const p = getSlotCenter(`cslot-${i}`, 'celtic');
+        if(p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#celtic-star-glow)" />`;
+    }
+    
     container.innerHTML = html;
 }
 

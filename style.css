@@ -514,56 +514,55 @@ section {
 /* Cleaned up decoration classes */
 
 .relation-grid .slot {
-    width: 140px; /* Standardized Tree size */
+    width: 140px;
 }
 
 /* --- Celtic Cross Spread (10 Cards) --- */
 .celtic-container {
     position: relative;
-    width: 776px;
-    height: 1300px; /* Adjusted for 300px spacing */
-    margin: 3rem auto;
+    width: 1000px;
+    height: 1400px;
+    margin: 2rem auto;
 }
 
 .celtic-bg-overlay {
     position: absolute;
     top: 0; left: 0;
-    width: 776px; height: 1300px;
+    width: 1000px; height: 1400px;
     pointer-events: none;
     z-index: 1;
     opacity: 0.85;
 }
 
-/* Absolute Positioning for 10 Slots */
-.celtic-pos-1, .celtic-pos-2, .celtic-pos-3, .celtic-pos-4, .celtic-pos-5, 
-.celtic-pos-6, .celtic-pos-7, .celtic-pos-8, .celtic-pos-9, .celtic-pos-10 {
+.celtic-pos-1, .celtic-pos-2, .celtic-pos-3, .celtic-pos-4,
+.celtic-pos-5, .celtic-pos-6, .celtic-pos-7, .celtic-pos-8,
+.celtic-pos-9, .celtic-pos-10 {
     position: absolute !important;
     width: 140px;
 }
 
-
-/* 1. Present (Center) */
-.celtic-pos-1 { left: 164px; top: 300px; z-index: 10; }
+/* 1. Present (Center shifted right slightly) */
+.celtic-pos-1 { left: 280px; top: 430px; z-index: 10; }
 
 /* 2. Challenge (Crossed) */
 .celtic-pos-2 {
-    left: 164px; top: 300px;
+    left: 280px; top: 430px;
     transform: rotate(90deg) !important;
     z-index: 20 !important;
 }
 .celtic-pos-2:hover { transform: rotate(90deg) scale(1.08) !important; }
 
-/* The Cross extensions (Spacing = 300px) */
-.celtic-pos-3 { left: 164px; top: 0px; }   /* 3. Goal (Top) */
-.celtic-pos-4 { left: 164px; top: 600px; } /* 4. Basis (Bottom) */
-.celtic-pos-5 { left: 0px; top: 300px; }   /* 5. Past (Left) */
-.celtic-pos-6 { left: 328px; top: 300px; } /* 6. Future (Right) */
+/* The Cross extensions (Increased spacing to 380-400px) */
+.celtic-pos-3 { left: 280px; top:  50px; }   /* 3. Goal (Top) */
+.celtic-pos-4 { left: 280px; top: 810px; }  /* 4. Basis (Bottom) */
+.celtic-pos-5 { left:  30px; top: 430px; }  /* 5. Past (Left) */
+.celtic-pos-6 { left: 530px; top: 430px; }  /* 6. Future (Right) */
 
-/* The Staff Column (Right side) */
-.celtic-pos-10 { left: 636px; top: 0px; }    /* 10. Outcome */
-.celtic-pos-9 { left: 636px; top: 300px; }   /* 9. Hopes */
-.celtic-pos-8 { left: 636px; top: 600px; }   /* 8. Env */
-.celtic-pos-7 { left: 636px; top: 900px; }   /* 7. Self */
+/* The Staff Column (Shifted right to accommodate wider cross) */
+.celtic-pos-10 { left: 810px; top:  50px; }   /* 10. Outcome */
+.celtic-pos-9 { left: 810px; top: 430px; }   /* 9. Hopes */
+.celtic-pos-8 { left: 810px; top: 810px; }   /* 8. Env */
+.celtic-pos-7 { left: 810px; top: 1190px; }  /* 7. Self */
 
 
 /* --- Hexagram Spread (7 Cards) --- */
