@@ -80,9 +80,6 @@ function switchMode(mode) {
     // Ensure SVG lines are synced after mode switch
     requestAnimationFrame(() => {
         if (typeof syncAllLines === 'function') syncAllLines();
-        if (typeof isCaptureMode !== 'undefined' && isCaptureMode && typeof updateCaptureScale === 'function') {
-            updateCaptureScale();
-        }
     });
 }
 
@@ -1499,89 +1496,48 @@ function clearOBSBoard() {
 }
 
 // ============================================================
-// 📸 CAPTURE MODE (아이패드/태블릿 화면 자동 맞춤 및 고화질 캡처)
+// 📸 고화질 스프레드 이미지 내보내기 & 클립보드 복사
 // ============================================================
-let isCaptureMode = false;
-
-const captureRefSizes = {
-    spread3:  { w: 620,  h: 380 },
-    spread:   { w: 780,  h: 380 },
-    hexa:     { w: 940,  h: 940 },
-    celtic:   { w: 1040, h: 1460 },
-    zodiac:   { w: 1040, h: 1040 },
-    tree:     { w: 760,  h: 1960 },
-    relation: { w: 1040, h: 1860 }
-};
-
-function toggleCaptureMode(forceState) {
-    isCaptureMode = (typeof forceState === 'boolean') ? forceState : !isCaptureMode;
-    document.body.classList.toggle('capture-mode-active', isCaptureMode);
-    
-    const toolbar = document.getElementById('capture-toolbar');
-    if (toolbar) toolbar.classList.toggle('hidden', !isCaptureMode);
-
-    updateCaptureScale();
-}
-
-function updateCaptureScale() {
-    const allSections = document.querySelectorAll('main > section');
-    if (!isCaptureMode) {
-        allSections.forEach(sec => {
-            sec.style.transform = '';
-        });
-        requestAnimationFrame(() => {
-            if (typeof syncAllLines === 'function') syncAllLines();
-        });
-        return;
-    }
-
-    const activeSection = document.querySelector('main > section:not(.hidden)');
-    if (!activeSection) return;
-
-    // 현재 모드에 따른 타깃 해상도 기준점
-    const ref = captureRefSizes[currentMode] || { w: 1000, h: 1200 };
-
-    // 가용 영역: 상단 툴바(약 75px)와 좌우 안전 여백 고려
-    const availW = Math.max(300, window.innerWidth - 30);
-    const availH = Math.max(300, window.innerHeight - 85);
-
-    // 최적 스케일 비율 계산
-    const scale = Math.min(availW / ref.w, availH / ref.h);
-    const finalScale = Math.min(scale, 1.8); // 최대 1.8배까지 확대
-
-    activeSection.style.transform = `scale(${finalScale.toFixed(4)})`;
-
-    // 스케일 변경 후 SVG 연결 선 위치 재동기화
-    requestAnimationFrame(() => {
-        if (typeof syncAllLines === 'function') syncAllLines();
-    });
-}
-
-// 윈도우 리사이즈 및 회전 시 자동 맞춤
-window.addEventListener('resize', () => {
-    if (isCaptureMode) updateCaptureScale();
-});
-window.addEventListener('orientationchange', () => {
-    if (isCaptureMode) setTimeout(updateCaptureScale, 150);
-});
-
-// ESC 키로 캡처 모드 종료
-window.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && isCaptureMode) {
-        toggleCaptureMode(false);
-    }
-});
-
-// 💾 스프레드 고화질 이미지로 저장 (PNG)
-async function saveSpreadAsImage() {
+async function generateSpreadCanvas() {
     if (typeof html2canvas === 'undefined') {
-        alert("이미지 캡처 라이브러리를 불러오지 못했습니다. 아이패드의 기본 화면 캡처(전원+볼륨)를 이용해 주세요!");
-        return;
+        throw new Error("html2canvas 라이브러리를 불러오지 못했습니다.");
     }
 
     const activeSection = document.querySelector('main > section:not(.hidden)');
-    if (!activeSection) return;
+    if (!activeSection) {
+        throw new Error("활성화된 스프레드를 찾을 수 없습니다.");
+    }
 
+    // 캡처할 타깃: section 내부의 래퍼 또는 section 자체
+    const targetEl = activeSection.querySelector('.board-wrapper, .celtic-container, .relation-container, .tree-container, .hexa-container, .zodiac-container, .board-slots-3, .board-slots-4') || activeSection;
+
+    // 캡처 시 하단 버튼바(.board-actions) 일시 숨김
+    const actions = activeSection.querySelectorAll('.board-actions');
+    const prevActionsDisplay = [];
+    actions.forEach(a => {
+        prevActionsDisplay.push(a.style.display);
+        a.style.display = 'none';
+    });
+
+    try {
+        const canvas = await html2canvas(targetEl, {
+            backgroundColor: '#07070b',
+            scale: 2, // 2x 레티나 초고해상도
+            useCORS: true,
+            logging: false,
+            windowWidth: document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight
+        });
+        return canvas;
+    } finally {
+        // 버튼바 복구
+        actions.forEach((a, idx) => {
+            a.style.display = prevActionsDisplay[idx] || '';
+        });
+    }
+}
+
+async function saveSpreadAsImage() {
     const btn = document.querySelector('.btn-save-img');
     const originalText = btn ? btn.textContent : '';
     if (btn) {
@@ -1589,46 +1545,27 @@ async function saveSpreadAsImage() {
         btn.disabled = true;
     }
 
-    // 캡처 중 왜곡 방지를 위해 일시적으로 transform 리셋 후 최고 해상도로 캡처
-    const prevTransform = activeSection.style.transform;
-    activeSection.style.transform = 'none';
-
     try {
-        const canvas = await html2canvas(activeSection, {
-            backgroundColor: '#0a0a12',
-            scale: 2, // 2x 레티나 초고화질
-            useCORS: true,
-            logging: false
-        });
-
+        const canvas = await generateSpreadCanvas();
         const link = document.createElement('a');
         const now = new Date();
         const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}${String(now.getMinutes()).padStart(2, '0')}`;
         link.download = `타로_${currentMode}_${dateStr}.png`;
         link.href = canvas.toDataURL('image/png');
         link.click();
+        
+        if (btn) btn.textContent = '✨ 저장 완료!';
+        setTimeout(() => { if (btn) btn.textContent = originalText; }, 2000);
     } catch (err) {
-        console.error("캡처 실패:", err);
-        alert("이미지 저장 중 오류가 발생했습니다. 아이패드의 기본 화면 캡처를 이용해 주세요!");
+        console.error("이미지 저장 실패:", err);
+        alert("이미지 저장 중 오류가 발생했습니다: " + err.message);
+        if (btn) btn.textContent = originalText;
     } finally {
-        activeSection.style.transform = prevTransform;
-        if (btn) {
-            btn.textContent = originalText;
-            btn.disabled = false;
-        }
+        if (btn) btn.disabled = false;
     }
 }
 
-// 📋 스프레드 클립보드에 이미지 복사
 async function copySpreadToClipboard() {
-    if (typeof html2canvas === 'undefined') {
-        alert("클립보드 복사 기능을 지원하지 않는 환경입니다.");
-        return;
-    }
-
-    const activeSection = document.querySelector('main > section:not(.hidden)');
-    if (!activeSection) return;
-
     const btn = document.querySelector('.btn-copy-img');
     const originalText = btn ? btn.textContent : '';
     if (btn) {
@@ -1636,37 +1573,31 @@ async function copySpreadToClipboard() {
         btn.disabled = true;
     }
 
-    const prevTransform = activeSection.style.transform;
-    activeSection.style.transform = 'none';
-
     try {
-        const canvas = await html2canvas(activeSection, {
-            backgroundColor: '#0a0a12',
-            scale: 2,
-            useCORS: true,
-            logging: false
-        });
-
+        const canvas = await generateSpreadCanvas();
         canvas.toBlob(async (blob) => {
             try {
                 if (navigator.clipboard && navigator.clipboard.write) {
                     await navigator.clipboard.write([
                         new ClipboardItem({ 'image/png': blob })
                     ]);
-                    alert("✨ 클립보드에 고화질 이미지가 복사되었습니다! 원하는 곳에 붙여넣기(Ctrl+V / Paste)하세요.");
+                    if (btn) btn.textContent = '✨ 복사 완료!';
+                    setTimeout(() => { if (btn) btn.textContent = originalText; }, 2000);
                 } else {
-                    alert("브라우저에서 클립보드 이미지 복사를 지원하지 않습니다. [이미지 저장]을 이용해 주세요!");
+                    alert("이 브라우저에서는 클립보드 이미지 복사를 지원하지 않습니다. [이미지 저장] 버튼을 이용해 주세요!");
+                    if (btn) btn.textContent = originalText;
                 }
             } catch (clipErr) {
-                console.error("클립보드 에러:", clipErr);
-                alert("클립보드 복사에 실패했습니다. [이미지 저장]을 이용해 주세요!");
+                console.error("클립보드 쓰기 실패:", clipErr);
+                alert("클립보드 복사에 실패했습니다. [이미지 저장] 버튼을 이용해 주세요!");
+                if (btn) btn.textContent = originalText;
+            } finally {
+                if (btn) btn.disabled = false;
             }
         }, 'image/png');
     } catch (err) {
-        console.error("캡처 실패:", err);
-        alert("이미지 생성 중 오류가 발생했습니다.");
-    } finally {
-        activeSection.style.transform = prevTransform;
+        console.error("이미지 복사 실패:", err);
+        alert("이미지 생성 중 오류가 발생했습니다: " + err.message);
         if (btn) {
             btn.textContent = originalText;
             btn.disabled = false;
@@ -1674,25 +1605,8 @@ async function copySpreadToClipboard() {
     }
 }
 
-// Global window exposure and fallback event binding
-window.toggleCaptureMode = toggleCaptureMode;
+// Global window exposure
 window.saveSpreadAsImage = saveSpreadAsImage;
 window.copySpreadToClipboard = copySpreadToClipboard;
 
-function bindCaptureButton() {
-    const btnCap = document.getElementById('btn-capture-mode');
-    if (btnCap) {
-        btnCap.onclick = () => toggleCaptureMode(true);
-        btnCap.addEventListener('click', (e) => {
-            e.preventDefault();
-            toggleCaptureMode(true);
-        });
-    }
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', bindCaptureButton);
-} else {
-    bindCaptureButton();
-}
 
