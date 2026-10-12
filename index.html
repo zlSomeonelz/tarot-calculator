@@ -16,7 +16,18 @@
 <body>
     <div id="noise-overlay"></div>
     <!-- BACKGROUND STARDUST CANVAS -->
-    <canvas id="stardust-canvas"></canvas>
+    <!-- 캡처 모드 전용 플로팅 툴바 -->
+    <div id="capture-toolbar" class="capture-toolbar hidden">
+        <div class="capture-toolbar-left">
+            <span class="capture-badge">📸 캡처 모드 (화면 맞춤)</span>
+            <span class="capture-tip">💡 아이패드/태블릿 화면 크기에 맞게 전체 스프레드가 자동으로 조절됩니다.</span>
+        </div>
+        <div class="capture-toolbar-actions">
+            <button class="btn-cap-action btn-save-img" onclick="saveSpreadAsImage()">💾 고화질 이미지 저장</button>
+            <button class="btn-cap-action btn-copy-img" onclick="copySpreadToClipboard()">📋 클립보드 복사</button>
+            <button class="btn-cap-action btn-exit-cap" onclick="toggleCaptureMode(false)">✕ 닫기 (ESC)</button>
+        </div>
+    </div>
 
     <div id="app-container">
         <header>
@@ -38,6 +49,7 @@
                 <div class="global-actions" style="display: flex; flex-direction: column; gap: 1rem; margin-top: 1.5rem; align-items: center;">
                     <div style="display: flex; gap: 1rem; align-items: center;">
                         <button class="btn-main-gold" style="min-width: 220px; font-weight: 700;" onclick="fillSpreadRandomly()">✨ 빈칸 랜덤 채우기 (Auto-Fill)</button>
+                        <button class="btn-main-gold" id="btn-capture-mode" style="min-width: 160px; font-weight: 700; background: linear-gradient(135deg, #f39c12, #d4af37); color: #000; box-shadow: 0 0 15px rgba(243,156,18,0.4);" onclick="toggleCaptureMode(true)">📸 캡처 모드</button>
                         <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; min-width: 120px;" onclick="clearCurrentBoard()">🗑️ 전체 초기화</button>
                         
                         <!-- 랜덤 설정 토글 -->
@@ -814,6 +826,7 @@
 
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="data_ko.js"></script>
     <script src="app.js"></script>
 </body>
