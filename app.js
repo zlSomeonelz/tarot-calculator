@@ -1674,3 +1674,25 @@ async function copySpreadToClipboard() {
     }
 }
 
+// Global window exposure and fallback event binding
+window.toggleCaptureMode = toggleCaptureMode;
+window.saveSpreadAsImage = saveSpreadAsImage;
+window.copySpreadToClipboard = copySpreadToClipboard;
+
+function bindCaptureButton() {
+    const btnCap = document.getElementById('btn-capture-mode');
+    if (btnCap) {
+        btnCap.onclick = () => toggleCaptureMode(true);
+        btnCap.addEventListener('click', (e) => {
+            e.preventDefault();
+            toggleCaptureMode(true);
+        });
+    }
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bindCaptureButton);
+} else {
+    bindCaptureButton();
+}
+
