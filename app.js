@@ -1525,8 +1525,8 @@ async function generateSpreadCanvas() {
             scale: 2, // 2x 레티나 초고해상도
             useCORS: true,
             logging: false,
-            windowWidth: document.documentElement.scrollWidth,
-            windowHeight: document.documentElement.scrollHeight
+            width: targetEl.offsetWidth,
+            height: targetEl.offsetHeight
         });
         return canvas;
     } finally {

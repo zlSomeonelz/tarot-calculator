@@ -166,10 +166,13 @@ section {
 }
 
 /* --- Tree of Life Map (Expanded) --- */
-/* --- Tree of Life 3-Pillar Refined (Centered & Spaced) --- */.tree-container {
-    padding: 3rem 1rem 5rem; /* Increased top padding to accommodate pillar labels */
+/* --- Tree of Life 3-Pillar Refined (Centered & Spaced) --- */
+.tree-container {
+    padding: 3rem 1rem 5rem;
     position: relative;
-    width: 100%;
+    width: 1040px;
+    max-width: 95vw;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -212,13 +215,13 @@ section {
     width: fit-content;
 }
 
-/* World Sidebar - Outside on the left */
+/* World Sidebar - Placed compactly on the left of cards */
 .world-sidebar {
     position: absolute;
-    left: 0;
+    left: 10px;
     top: 0;
     height: 100%;
-    width: 250px;
+    width: 165px;
     display: flex;
     flex-direction: column;
     z-index: 15;
