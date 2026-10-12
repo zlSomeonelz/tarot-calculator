@@ -1162,17 +1162,20 @@ function updateSpreadGuide(mode) {
 
 // --- STARDUST PARTICLE SYSTEM ---
 const canvas = document.getElementById('stardust-canvas');
-const ctx = canvas.getContext('2d');
+const ctx = canvas ? canvas.getContext('2d') : null;
 let particles = [];
-let w, h;
+let w = window.innerWidth, h = window.innerHeight;
 
 function initCanvas() {
+    if (!canvas) return;
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
 }
 
-window.addEventListener('resize', initCanvas);
-initCanvas();
+if (canvas) {
+    window.addEventListener('resize', initCanvas);
+    initCanvas();
+}
 
 class Particle {
     constructor() {
@@ -1246,6 +1249,7 @@ class Particle {
         if (this.y > h) this.y = 0;
     }
     draw() {
+        if (!ctx) return;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
@@ -1262,6 +1266,7 @@ class Particle {
 }
 
 function createParticles() {
+    if (!canvas || !ctx) return;
     // Increase density slightly for a richer galaxy (divide by 6000 instead of 10000)
     const count = Math.floor((w * h) / 6000);
     for (let i = 0; i < count; i++) {
@@ -1270,6 +1275,7 @@ function createParticles() {
 }
 
 function animateParticles() {
+    if (!canvas || !ctx) return;
     ctx.clearRect(0, 0, w, h);
     particles.forEach(p => {
         p.update();
