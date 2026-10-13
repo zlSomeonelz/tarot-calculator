@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Tarot Broadcast</title>
-    <link rel="stylesheet" href="style.css?v=20261014_v29">
+    <link rel="stylesheet" href="style.css?v=20261014_v30">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         html, body {
@@ -74,6 +74,30 @@
         /* 방송 화면에서 위아래 불필요한 공백 마진 최소화하여 화면 잘림 방지 */
         .board-wrapper, .tree-container, .relation-container, .celtic-container, .choice-container, .hexa-container, .zodiac-container {
             margin: 0 auto !important;
+        }
+
+        /* 조디악 12궁 방송 화면 최적화: 여백을 최소화하여 원형 휠을 화면 가득 거대하게 확장 */
+        #zodiac-board .board-wrapper {
+            padding: 1.2rem 1.2rem !important;
+            max-width: 1060px !important;
+        }
+        #zodiac-board .spread-world-guide {
+            margin-bottom: 0.5rem !important;
+        }
+        #zodiac-board .spread-world-guide small {
+            display: none !important;
+        }
+
+        /* 헥사그램 7카드 방송 화면 최적화 */
+        #hexa-board .board-wrapper {
+            padding: 1.5rem 1.5rem !important;
+            max-width: 1000px !important;
+        }
+        #hexa-board .spread-world-guide {
+            margin-bottom: 0.6rem !important;
+        }
+        #hexa-board .spread-world-guide small {
+            display: none !important;
         }
     </style>
 </head>
@@ -891,20 +915,21 @@
             } else if (currentBroadcastMode === 'spread' || currentBroadcastMode === 'spread3') {
                 refW = 1150; refH = 680;
             } else if (currentBroadcastMode === 'hexa') {
-                refW = 1150; refH = 1150;
+                refW = 1000; refH = 1040;
             } else if (currentBroadcastMode === 'celtic') {
                 refW = 1150; refH = 1950;
             } else if (currentBroadcastMode === 'zodiac') {
-                refW = 1150; refH = 1250;
+                refW = 1040; refH = 1060;
             } else if (currentBroadcastMode === 'tree') {
                 refW = 1150; refH = 2250;
             } else if (currentBroadcastMode === 'relation') {
                 refW = 1250; refH = 2650;
             }
 
-            // 상하좌우 안전 여백(Safe Margin) 10%를 확보하여 화면 경계에서 절대 잘리지 않도록 계산
-            const availableW = window.innerWidth * 0.90;
-            const availableH = window.innerHeight * 0.90;
+            // 상하좌우 안전 여백: 조디악/헥사그램은 화면에 꽉 차고 거대하게 보이도록 97% 활용
+            const safeRatio = (currentBroadcastMode === 'zodiac' || currentBroadcastMode === 'hexa') ? 0.97 : 0.90;
+            const availableW = window.innerWidth * safeRatio;
+            const availableH = window.innerHeight * safeRatio;
 
             const scaleHeight = availableH / refH;
             const scaleWidth = availableW / refW;
