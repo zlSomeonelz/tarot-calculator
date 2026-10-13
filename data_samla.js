@@ -5,7 +5,7 @@ const tarotDataSamla = [
     "name_ko": "바보",
     "name_en": "The Fool",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_0.png",
+    "image": "images_samla/major_arcana/tarot_0.webp",
     "quote": "이 몸, 어디로든 훌쩍 떠나 새로운 길을 걸어보겠노라!",
     "symbol": "",
     "keywords": [
@@ -53,7 +53,7 @@ const tarotDataSamla = [
     "name_ko": "마법사",
     "name_en": "The Magician",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_1.png",
+    "image": "images_samla/major_arcana/tarot_1.webp",
     "quote": "세상 만사, 음양과 천지조화의 힘으로 모든 것을 창조하겠소!",
     "symbol": "",
     "keywords": [
@@ -103,7 +103,7 @@ const tarotDataSamla = [
     "name_ko": "여사제",
     "name_en": "The High Priestess",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_2.png",
+    "image": "images_samla/major_arcana/tarot_2.webp",
     "quote": "감춰진 정보와 세상의 비밀을 알고 있지만, 말하지 않겠습니다.",
     "symbol": "",
     "keywords": [
@@ -151,7 +151,7 @@ const tarotDataSamla = [
     "name_ko": "여황제",
     "name_en": "The Empress",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_3.png",
+    "image": "images_samla/major_arcana/tarot_3.webp",
     "quote": "풍요와 권위로 이 세상을 더욱 풍요롭게 다스리리라.",
     "symbol": "",
     "keywords": [
@@ -201,7 +201,7 @@ const tarotDataSamla = [
     "name_ko": "황제",
     "name_en": "The Emperor",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_4.png",
+    "image": "images_samla/major_arcana/tarot_4.webp",
     "quote": "계획, 통제, 권위, 규칙만이 세상을 유지하게 한다.",
     "symbol": "",
     "keywords": [
@@ -252,7 +252,7 @@ const tarotDataSamla = [
     "name_ko": "교황",
     "name_en": "The Hierophant",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_5.png",
+    "image": "images_samla/major_arcana/tarot_5.webp",
     "quote": "신의 가르침인 지혜와 교육을 제자와 인간군상들에게 알리리라.",
     "symbol": "",
     "keywords": [
@@ -303,7 +303,7 @@ const tarotDataSamla = [
     "name_ko": "연인",
     "name_en": "The Lovers",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_6.png",
+    "image": "images_samla/major_arcana/tarot_6.webp",
     "quote": "너 없이는 나도 존재하지 않아.",
     "symbol": "",
     "keywords": [
@@ -355,7 +355,7 @@ const tarotDataSamla = [
     "name_ko": "전차",
     "name_en": "The Chariot",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_7.png",
+    "image": "images_samla/major_arcana/tarot_7.webp",
     "quote": "전진하라! 끝내 승리를 거머쥐겠노라!",
     "symbol": "",
     "keywords": [
@@ -405,7 +405,7 @@ const tarotDataSamla = [
     "name_ko": "힘",
     "name_en": "Strength",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_8.png",
+    "image": "images_samla/major_arcana/tarot_8.webp",
     "quote": "",
     "symbol": "",
     "keywords": [
@@ -455,7 +455,7 @@ const tarotDataSamla = [
     "name_ko": "은둔자",
     "name_en": "The Hermit",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_9.png",
+    "image": "images_samla/major_arcana/tarot_9.webp",
     "quote": "세상의 소음에서 벗어나, 홀로 진리를 찾고자 하노라.",
     "symbol": "",
     "keywords": [
@@ -507,7 +507,7 @@ const tarotDataSamla = [
     "name_ko": "운명의 수레바퀴",
     "name_en": "Wheel of Fortune",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_10.png",
+    "image": "images_samla/major_arcana/tarot_10.webp",
     "quote": "운명이란 끝없이 돌고 도는 수레바퀴와도 같은 것이니라.",
     "symbol": "",
     "keywords": [
@@ -555,7 +555,7 @@ const tarotDataSamla = [
     "name_ko": "정의",
     "name_en": "Justice",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_11.png",
+    "image": "images_samla/major_arcana/tarot_11.webp",
     "quote": "선과 악, 옳고 그름을 공평하게 심판하겠노라.",
     "symbol": "",
     "keywords": [
@@ -605,7 +605,7 @@ const tarotDataSamla = [
     "name_ko": "매달린 남자",
     "name_en": "The Hanged Man",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_12.png",
+    "image": "images_samla/major_arcana/tarot_12.webp",
     "quote": "잠시 멈추어야만 비로소 보이는 진실도 있는 법이외다.",
     "symbol": "",
     "keywords": [
@@ -656,7 +656,7 @@ const tarotDataSamla = [
     "name_ko": "죽음",
     "name_en": "Death",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_13.png",
+    "image": "images_samla/major_arcana/tarot_13.webp",
     "quote": "나를 두려워하지 말라. 끝은 곧 또 다른 새로운 시작이니라.",
     "symbol": "",
     "keywords": [
@@ -706,7 +706,7 @@ const tarotDataSamla = [
     "name_ko": "절제",
     "name_en": "Temperance",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_14.png",
+    "image": "images_samla/major_arcana/tarot_14.webp",
     "quote": "지나침도 모자람도 없이, 모든 것은 조화를 이루어야 하느니라.",
     "symbol": "",
     "keywords": [
@@ -759,7 +759,7 @@ const tarotDataSamla = [
     "name_ko": "악마",
     "name_en": "The Devil",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_15.png",
+    "image": "images_samla/major_arcana/tarot_15.webp",
     "quote": "욕망에서 벗어나지 못하는 것도 결국 인간의 선택이니라.",
     "symbol": "",
     "keywords": [
@@ -810,7 +810,7 @@ const tarotDataSamla = [
     "name_ko": "탑",
     "name_en": "The Tower",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_16.png",
+    "image": "images_samla/major_arcana/tarot_16.webp",
     "quote": "대충 쌓아 올린 것은 결국 무너져 내릴 수밖에 없도다!",
     "symbol": "",
     "keywords": [
@@ -863,7 +863,7 @@ const tarotDataSamla = [
     "name_ko": "별",
     "name_en": "The Star",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_17.png",
+    "image": "images_samla/major_arcana/tarot_17.webp",
     "quote": "희망의 빛은 어둠 속에서도 결코 사라지지 않으리라.",
     "symbol": "",
     "keywords": [
@@ -914,7 +914,7 @@ const tarotDataSamla = [
     "name_ko": "달",
     "name_en": "The Moon",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_18.png",
+    "image": "images_samla/major_arcana/tarot_18.webp",
     "quote": "",
     "symbol": "",
     "keywords": [
@@ -964,7 +964,7 @@ const tarotDataSamla = [
     "name_ko": "태양",
     "name_en": "The Sun",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_19.png",
+    "image": "images_samla/major_arcana/tarot_19.webp",
     "quote": "찬란한 태양의 빛 아래, 모든 기쁨과 축복이 함께하리라!",
     "symbol": "",
     "keywords": [
@@ -1016,7 +1016,7 @@ const tarotDataSamla = [
     "name_ko": "심판",
     "name_en": "Judgement",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_20.png",
+    "image": "images_samla/major_arcana/tarot_20.webp",
     "quote": "심판의 나팔 소리에, 자신의 과거와 마주하게 될 것이니라.",
     "symbol": "",
     "keywords": [
@@ -1066,7 +1066,7 @@ const tarotDataSamla = [
     "name_ko": "세계",
     "name_en": "The World",
     "suit": "Major Arcana",
-    "image": "images_samla/major_arcana/tarot_21.png",
+    "image": "images_samla/major_arcana/tarot_21.webp",
     "quote": "긴 여정 끝에 마침내 모든 것이 완성되었도다.",
     "symbol": "",
     "keywords": [
@@ -1114,7 +1114,7 @@ const tarotDataSamla = [
     "name_ko": "한 개의 막대기",
     "name_en": "Ace of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_22.png",
+    "image": "images_samla/wands/tarot_22.webp",
     "quote": "뜨거운 불꽃이 다시금 타오르기 시작하는구나!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1164,7 +1164,7 @@ const tarotDataSamla = [
     "name_ko": "두 개의 막대기",
     "name_en": "Two of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_23.png",
+    "image": "images_samla/wands/tarot_23.webp",
     "quote": "더 넓은 세상으로 나아갈 때가 다가오고 있도다.",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1213,7 +1213,7 @@ const tarotDataSamla = [
     "name_ko": "세 개의 막대기",
     "name_en": "Three of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_24.png",
+    "image": "images_samla/wands/tarot_24.webp",
     "quote": "저 멀리서 새로운 기회가 찾아오게 될 것이외다.",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1262,7 +1262,7 @@ const tarotDataSamla = [
     "name_ko": "네 개의 막대기",
     "name_en": "Four of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_25.png",
+    "image": "images_samla/wands/tarot_25.webp",
     "quote": "모두 함께 기쁨과 축제를 즐겨보세!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1311,7 +1311,7 @@ const tarotDataSamla = [
     "name_ko": "다섯 개의 막대기",
     "name_en": "Five of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_26.png",
+    "image": "images_samla/wands/tarot_26.webp",
     "quote": "서로 이기겠다 싸우고 있으나, 아직은 진정한 승부가 아니로다!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1363,7 +1363,7 @@ const tarotDataSamla = [
     "name_ko": "여섯 개의 막대기",
     "name_en": "Six of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_27.png",
+    "image": "images_samla/wands/tarot_27.webp",
     "quote": "마침내 승리를 거두었으니, 모두가 내 이름을 찬양하는구나!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1412,7 +1412,7 @@ const tarotDataSamla = [
     "name_ko": "일곱 개의 막대기",
     "name_en": "Seven of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_28.png",
+    "image": "images_samla/wands/tarot_28.webp",
     "quote": "쉽게 물러설 수는 없소. 끝까지 이 자리를 지켜내겠소이다!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1460,7 +1460,7 @@ const tarotDataSamla = [
     "name_ko": "여덟 개의 막대기",
     "name_en": "Eight of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_29.png",
+    "image": "images_samla/wands/tarot_29.webp",
     "quote": "하늘에서 빠르게 내려오는 신성한 막대기, 하늘의 메신저!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1509,7 +1509,7 @@ const tarotDataSamla = [
     "name_ko": "아홉 개의 막대기",
     "name_en": "Nine of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_30.png",
+    "image": "images_samla/wands/tarot_30.webp",
     "quote": "상처투성이가 되었어도, 아직 쓰러질 수는 없도다.",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1557,7 +1557,7 @@ const tarotDataSamla = [
     "name_ko": "열 개의 막대기",
     "name_en": "Ten of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_31.png",
+    "image": "images_samla/wands/tarot_31.webp",
     "quote": "혼자 짊어지기엔 너무도 무겁고 버거운 짐이로구나…",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1604,7 +1604,7 @@ const tarotDataSamla = [
     "name_ko": "완즈 시종",
     "name_en": "Page of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_32.png",
+    "image": "images_samla/wands/tarot_32.webp",
     "quote": "열정과 가능성이, 내 안에서 피어오르고 있소이다!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1650,7 +1650,7 @@ const tarotDataSamla = [
     "name_ko": "완즈 기사",
     "name_en": "Knight of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_33.png",
+    "image": "images_samla/wands/tarot_33.webp",
     "quote": "망설일 틈이 어디 있겠소! 지금 당장 앞으로 돌진하겠소이다!",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1696,7 +1696,7 @@ const tarotDataSamla = [
     "name_ko": "완즈 여왕",
     "name_en": "Queen of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_34.png",
+    "image": "images_samla/wands/tarot_34.webp",
     "quote": "카리스마와 자신감으로 모두를 이끌어가겠노라.",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1741,7 +1741,7 @@ const tarotDataSamla = [
     "name_ko": "완즈 왕",
     "name_en": "King of Wands",
     "suit": "Wands",
-    "image": "images_samla/wands/tarot_35.png",
+    "image": "images_samla/wands/tarot_35.webp",
     "quote": "강한 의지와 불꽃 같은 열정으로 세상을 움직이겠노라.",
     "symbol": "주작 (불의 열정과 창의)",
     "keywords": [
@@ -1788,7 +1788,7 @@ const tarotDataSamla = [
     "name_ko": "한 잔의 컵",
     "name_en": "Ace of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_36.png",
+    "image": "images_samla/cups/tarot_36.webp",
     "quote": "가득 차오르는 이 감정이, 마침내 넘쳐흐르기 시작하는구나…",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -1836,7 +1836,7 @@ const tarotDataSamla = [
     "name_ko": "두 잔의 컵",
     "name_en": "Two of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_37.png",
+    "image": "images_samla/cups/tarot_37.webp",
     "quote": "그대와 나의 마음이 서로 이어지고 있소이다.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -1887,7 +1887,7 @@ const tarotDataSamla = [
     "name_ko": "세 잔의 컵",
     "name_en": "Three of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_38.png",
+    "image": "images_samla/cups/tarot_38.webp",
     "quote": "오늘만큼은 함께 웃고 즐기며 기쁨을 나누어봅시다!",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -1938,7 +1938,7 @@ const tarotDataSamla = [
     "name_ko": "네 잔의 컵",
     "name_en": "Four of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_39.png",
+    "image": "images_samla/cups/tarot_39.webp",
     "quote": "모든 것이 시들하고 지루하다.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -1989,7 +1989,7 @@ const tarotDataSamla = [
     "name_ko": "다섯 잔의 컵",
     "name_en": "Five of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_40.png",
+    "image": "images_samla/cups/tarot_40.webp",
     "quote": "잃어버린 것만 바라보다 남은 것을 놓쳤다.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2039,7 +2039,7 @@ const tarotDataSamla = [
     "name_ko": "여섯 잔의 컵",
     "name_en": "Six of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_41.png",
+    "image": "images_samla/cups/tarot_41.webp",
     "quote": "그 시절의 추억은 아직도 따스히 남아 있도다.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2090,7 +2090,7 @@ const tarotDataSamla = [
     "name_ko": "일곱 잔의 컵",
     "name_en": "Seven of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_42.png",
+    "image": "images_samla/cups/tarot_42.webp",
     "quote": "무엇을 선택해야 할지 모르겠구나.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2140,7 +2140,7 @@ const tarotDataSamla = [
     "name_ko": "여덟 잔의 컵",
     "name_en": "Eight of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_43.png",
+    "image": "images_samla/cups/tarot_43.webp",
     "quote": "아쉬움이 남더라도, 이제는 이곳을 떠나야 할 때인 듯하오.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2188,7 +2188,7 @@ const tarotDataSamla = [
     "name_ko": "아홉 잔의 컵",
     "name_en": "Nine of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_44.png",
+    "image": "images_samla/cups/tarot_44.webp",
     "quote": "원하던 모든 것이 이루어졌으니, 더 만족스러울 수가 없구나!",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2239,7 +2239,7 @@ const tarotDataSamla = [
     "name_ko": "열 잔의 컵",
     "name_en": "Ten of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_45.png",
+    "image": "images_samla/cups/tarot_45.webp",
     "quote": "사랑과 행복이 가득한 이 순간이 오래도록 이어지기를 바라노라.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2285,7 +2285,7 @@ const tarotDataSamla = [
     "name_ko": "컵 시종",
     "name_en": "Page of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_46.png",
+    "image": "images_samla/cups/tarot_46.webp",
     "quote": "내 마음속 작은 감정을, 용기 내어 전해보고 싶소이다…",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2334,7 +2334,7 @@ const tarotDataSamla = [
     "name_ko": "컵 기사",
     "name_en": "Knight of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_47.png",
+    "image": "images_samla/cups/tarot_47.webp",
     "quote": "이 마음과 사랑을 그대에게 바치고 싶소이다.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2380,7 +2380,7 @@ const tarotDataSamla = [
     "name_ko": "컵 여왕",
     "name_en": "Queen of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_48.png",
+    "image": "images_samla/cups/tarot_48.webp",
     "quote": "사람의 마음과 감정을 헤아리는 것 또한 중요한 힘이니라.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2428,7 +2428,7 @@ const tarotDataSamla = [
     "name_ko": "컵 왕",
     "name_en": "King of Cups",
     "suit": "Cups",
-    "image": "images_samla/cups/tarot_49.png",
+    "image": "images_samla/cups/tarot_49.webp",
     "quote": "거센 감정의 파도 속에서도, 나는 끝내 중심을 잃지 않노라.",
     "symbol": "청룡 (물의 감성과 관계)",
     "keywords": [
@@ -2476,7 +2476,7 @@ const tarotDataSamla = [
     "name_ko": "한 자루의 검",
     "name_en": "Ace of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_50.png",
+    "image": "images_samla/swords/tarot_50.webp",
     "quote": "명료하게 거짓을 베어내고, 진실만을 밝혀내겠노라!",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2523,7 +2523,7 @@ const tarotDataSamla = [
     "name_ko": "두 자루의 검",
     "name_en": "Two of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_51.png",
+    "image": "images_samla/swords/tarot_51.webp",
     "quote": "어느 쪽도 쉽게 선택할 수 없으니, 마음이 깊이 흔들리는구나…",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2571,7 +2571,7 @@ const tarotDataSamla = [
     "name_ko": "세 자루의 검",
     "name_en": "Three of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_52.png",
+    "image": "images_samla/swords/tarot_52.webp",
     "quote": "차라리 몰랐더라면 좋았을 아픈 진실이로다…",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2620,7 +2620,7 @@ const tarotDataSamla = [
     "name_ko": "네 자루의 검",
     "name_en": "Four of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_53.png",
+    "image": "images_samla/swords/tarot_53.webp",
     "quote": "지친 몸과 마음을 잠시 쉬게 해야 할 때이니라.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2668,7 +2668,7 @@ const tarotDataSamla = [
     "name_ko": "다섯 자루의 검",
     "name_en": "Five of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_54.png",
+    "image": "images_samla/swords/tarot_54.webp",
     "quote": "승리를 거두었으나… 어째서 마음 한편이 이리 허망한 것이냐.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2715,7 +2715,7 @@ const tarotDataSamla = [
     "name_ko": "여섯 자루의 검",
     "name_en": "Six of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_55.png",
+    "image": "images_samla/swords/tarot_55.webp",
     "quote": "비록 힘겨울지라도, 더 나은 곳을 향해 떠나가겠노라.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2761,7 +2761,7 @@ const tarotDataSamla = [
     "name_ko": "일곱 자루의 검",
     "name_en": "Seven of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_56.png",
+    "image": "images_samla/swords/tarot_56.webp",
     "quote": "쉿, 아무에게도 말하지 마시오.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2808,7 +2808,7 @@ const tarotDataSamla = [
     "name_ko": "여덟 자루의 검",
     "name_en": "Eight of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_57.png",
+    "image": "images_samla/swords/tarot_57.webp",
     "quote": "스스로를 가두고 있으니, 한 걸음조차 내딛기 어렵구나…",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2855,7 +2855,7 @@ const tarotDataSamla = [
     "name_ko": "아홉 자루의 검",
     "name_en": "Nine of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_58.png",
+    "image": "images_samla/swords/tarot_58.webp",
     "quote": "끝없는 걱정과 불안이 밤새도록 나를 괴롭히는구나…",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2902,7 +2902,7 @@ const tarotDataSamla = [
     "name_ko": "열 자루의 검",
     "name_en": "Ten of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_59.png",
+    "image": "images_samla/swords/tarot_59.webp",
     "quote": "모든 것이 끝나버렸구나… 허나 이것 또한 지나가리라.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2949,7 +2949,7 @@ const tarotDataSamla = [
     "name_ko": "소드 시종",
     "name_en": "Page of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_60.png",
+    "image": "images_samla/swords/tarot_60.webp",
     "quote": "숨겨진 진실이 있다면, 끝까지 밝혀내고야 말겠소이다.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -2996,7 +2996,7 @@ const tarotDataSamla = [
     "name_ko": "소드 기사",
     "name_en": "Knight of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_61.png",
+    "image": "images_samla/swords/tarot_61.webp",
     "quote": "망설임 따위는 필요 없다! 곧장 돌파해나가겠노라!",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -3043,7 +3043,7 @@ const tarotDataSamla = [
     "name_ko": "소드 여왕",
     "name_en": "Queen of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_62.png",
+    "image": "images_samla/swords/tarot_62.webp",
     "quote": "감정에 휘둘리지 않고 냉철하게 판단하겠노라.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -3091,7 +3091,7 @@ const tarotDataSamla = [
     "name_ko": "소드 왕",
     "name_en": "King of Swords",
     "suit": "Swords",
-    "image": "images_samla/swords/tarot_63.png",
+    "image": "images_samla/swords/tarot_63.webp",
     "quote": "명확한 이성과 판단만이 진실에 다가설 수 있게 하는 법입니다.",
     "symbol": "백호 (바람의 이성과 결단)",
     "keywords": [
@@ -3138,7 +3138,7 @@ const tarotDataSamla = [
     "name_ko": "한 개의 펜타클",
     "name_en": "Ace of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_64.png",
+    "image": "images_samla/pentacles/tarot_64.webp",
     "quote": "그대에게 새로운 기회와 풍요의 씨앗을 내어드리겠소.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3185,7 +3185,7 @@ const tarotDataSamla = [
     "name_ko": "두 개의 펜타클",
     "name_en": "Two of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_65.png",
+    "image": "images_samla/pentacles/tarot_65.webp",
     "quote": "이쪽으로 갈지… 저쪽으로 갈지… 참으로 고민되옵니다!",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3232,7 +3232,7 @@ const tarotDataSamla = [
     "name_ko": "세 개의 펜타클",
     "name_en": "Three of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_66.png",
+    "image": "images_samla/pentacles/tarot_66.webp",
     "quote": "",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3279,7 +3279,7 @@ const tarotDataSamla = [
     "name_ko": "네 개의 펜타클",
     "name_en": "Four of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_67.png",
+    "image": "images_samla/pentacles/tarot_67.webp",
     "quote": "내 펜타클들 건들지마!",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3325,7 +3325,7 @@ const tarotDataSamla = [
     "name_ko": "다섯 개의 펜타클",
     "name_en": "Five of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_68.png",
+    "image": "images_samla/pentacles/tarot_68.webp",
     "quote": "춥고, 배고프고, 졸려워요… 우리가 갈 곳은 어디에도 없어요.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3372,7 +3372,7 @@ const tarotDataSamla = [
     "name_ko": "여섯 개의 펜타클",
     "name_en": "Six of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_69.png",
+    "image": "images_samla/pentacles/tarot_69.webp",
     "quote": "분배와 나눔, 그리고 공평함.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3419,7 +3419,7 @@ const tarotDataSamla = [
     "name_ko": "일곱 개의 펜타클",
     "name_en": "Seven of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_70.png",
+    "image": "images_samla/pentacles/tarot_70.webp",
     "quote": "무럭무럭 자라거라. 나중에 큰 펜타클 열매가 되렴!",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3464,7 +3464,7 @@ const tarotDataSamla = [
     "name_ko": "여덟 개의 펜타클",
     "name_en": "Eight of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_71.png",
+    "image": "images_samla/pentacles/tarot_71.webp",
     "quote": "꾸준함과 성실함만이 나의 무기입니다.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3510,7 +3510,7 @@ const tarotDataSamla = [
     "name_ko": "아홉 개의 펜타클",
     "name_en": "Nine of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_72.png",
+    "image": "images_samla/pentacles/tarot_72.webp",
     "quote": "나 혼자서 이룬 성취와 풍요… 이제는 저 혼자 살렵니다.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3556,7 +3556,7 @@ const tarotDataSamla = [
     "name_ko": "열 개의 펜타클",
     "name_en": "Ten of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_73.png",
+    "image": "images_samla/pentacles/tarot_73.webp",
     "quote": "",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3604,7 +3604,7 @@ const tarotDataSamla = [
     "name_ko": "펜타클 시종",
     "name_en": "Page of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_74.png",
+    "image": "images_samla/pentacles/tarot_74.webp",
     "quote": "잠재력 있는 대지의 씨앗을 발견하는 시종.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3651,7 +3651,7 @@ const tarotDataSamla = [
     "name_ko": "펜타클 기사",
     "name_en": "Knight of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_75.png",
+    "image": "images_samla/pentacles/tarot_75.webp",
     "quote": "느리지만 꾸준히 전진하는, 단단한 대지의 힘.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3697,7 +3697,7 @@ const tarotDataSamla = [
     "name_ko": "펜타클 여왕",
     "name_en": "Queen of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_76.png",
+    "image": "images_samla/pentacles/tarot_76.webp",
     "quote": "나는 모든 물질과 풍요, 그리고 대지를 길러내고 다스립니다.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [
@@ -3744,7 +3744,7 @@ const tarotDataSamla = [
     "name_ko": "펜타클 왕",
     "name_en": "King of Pentacles",
     "suit": "Pentacles",
-    "image": "images_samla/pentacles/tarot_77.png",
+    "image": "images_samla/pentacles/tarot_77.webp",
     "quote": "나는 모든 물질과 풍요를 성취했습니다.",
     "symbol": "현무 (대지의 결실과 풍요)",
     "keywords": [

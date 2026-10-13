@@ -127,50 +127,56 @@
         const urlParams = new URLSearchParams(window.location.search);
         const secretKey = urlParams.get('key') || 'default';
 
+        function handleIncomingPayload(data) {
+            if (!data || data.type !== 'update_spread') return;
+            // 키 검증: secretKey가 'default'이거나, data.key와 일치하거나, data.key가 'default'인 경우 수신 허용
+            if (secretKey !== 'default' && data.key && data.key !== secretKey && data.key !== 'default') {
+                return;
+            }
+            const stateStr = JSON.stringify(data);
+            if (stateStr !== lastStateStr) {
+                renderCards(data.mode, data.cards);
+                lastStateStr = stateStr;
+            }
+        }
+
         // 1. BroadcastChannel (동일 브라우저 탭/창 실시간 연동)
         const obsChannel = new BroadcastChannel('tarot_obs_channel');
         obsChannel.onmessage = (event) => {
-            if (event.data.type === 'update_spread') {
-                if (event.data.key && event.data.key !== secretKey && secretKey !== 'default') {
-                    return; // 발급받은 OBS 키와 다른 방송 소스 수신 무시
-                }
-                const stateStr = JSON.stringify(event.data);
-                if (stateStr !== lastStateStr) {
-                    renderCards(event.data.mode, event.data.cards);
-                    lastStateStr = stateStr;
-                }
-            }
+            handleIncomingPayload(event.data);
         };
 
         // 2. Supabase Realtime (OBS 브라우저 소스 / 외부 원격 웹소켓 통신)
         if (supabaseClient) {
-            const channelName = 'obs_room_' + secretKey;
-            const realtimeChannel = supabaseClient.channel(channelName, {
-                config: { broadcast: { self: false } }
-            });
-            realtimeChannel.on('broadcast', { event: 'update_spread' }, (response) => {
-                const data = response.payload;
-                if (data && data.type === 'update_spread') {
-                    if (data.key && data.key !== secretKey && secretKey !== 'default') {
-                        return;
+            function connectRealtimeRoom(roomKey) {
+                const channelName = 'obs_room_' + roomKey;
+                const ch = supabaseClient.channel(channelName, {
+                    config: { broadcast: { self: false } }
+                });
+                ch.on('broadcast', { event: 'update_spread' }, (response) => {
+                    handleIncomingPayload(response.payload);
+                }).subscribe((status) => {
+                    console.log(`[OBS] Supabase Realtime (${channelName}) status:`, status);
+                    if (status === 'SUBSCRIBED') {
+                        // 연결 직후 및 1.5초 후 재시도로 현재 메인 페이지 스프레드 상태 즉시 복원
+                        ch.send({ type: 'broadcast', event: 'request_sync', payload: { key: roomKey } }).catch(() => {});
+                        setTimeout(() => {
+                            if (!lastStateStr) {
+                                ch.send({ type: 'broadcast', event: 'request_sync', payload: { key: roomKey } }).catch(() => {});
+                            }
+                        }, 1500);
                     }
-                    const stateStr = JSON.stringify(data);
-                    if (stateStr !== lastStateStr) {
-                        renderCards(data.mode, data.cards);
-                        lastStateStr = stateStr;
-                    }
-                }
-            }).subscribe((status) => {
-                if (status === 'SUBSCRIBED') {
-                    console.log(`[OBS] Supabase Realtime connected (${channelName})`);
-                    // 연결 즉시 메인 페이지에 현재 화면 상태 재전송 요청
-                    realtimeChannel.send({
-                        type: 'broadcast',
-                        event: 'request_sync',
-                        payload: { key: secretKey }
-                    }).catch(() => {});
-                }
-            });
+                });
+                return ch;
+            }
+
+            // 본인 지정 방 연결
+            connectRealtimeRoom(secretKey);
+
+            // secretKey가 default가 아닐 경우, default 방도 함께 청취하여 키 불일치 방지
+            if (secretKey !== 'default') {
+                connectRealtimeRoom('default');
+            }
         }
 
         // 3. 로컬 파이썬 서버 폴링 (로컬 실행 시 보조)
@@ -234,7 +240,7 @@
                 }
 
                 if (card) {
-                    const finalImg = card.image || `images/tarot_${card.id}.png`;
+                    const finalImg = card.image || `images/tarot_${card.id}.webp`;
                     bgLayer.style.backgroundImage = `url('${finalImg}')`;
                     bgLayer.style.transform = card.isReversed ? 'rotate(180deg)' : 'none';
                     bgLayer.style.opacity = '1';

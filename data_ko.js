@@ -3,7 +3,7 @@ const tarotDataKo = [
     "id": 0,
     "name": "바보 (The Fool)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_0.png",
+    "image": "images/major_arcana/tarot_0.webp",
     "keywords": [
       "시작",
       "자발성",
@@ -34,7 +34,7 @@ const tarotDataKo = [
     "id": 1,
     "name": "마법사 (Magician)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_1.png",
+    "image": "images/major_arcana/tarot_1.webp",
     "keywords": [
       "창조",
       "현현",
@@ -65,7 +65,7 @@ const tarotDataKo = [
     "id": 2,
     "name": "고위 여사제 (High Priestess)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_2.png",
+    "image": "images/major_arcana/tarot_2.webp",
     "keywords": [
       "신비",
       "무의식",
@@ -96,7 +96,7 @@ const tarotDataKo = [
     "id": 3,
     "name": "여황제 (Empress)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_3.png",
+    "image": "images/major_arcana/tarot_3.webp",
     "keywords": [
       "어머니의 돌봄",
       "풍요",
@@ -127,7 +127,7 @@ const tarotDataKo = [
     "id": 4,
     "name": "황제 (Emperor)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_4.png",
+    "image": "images/major_arcana/tarot_4.webp",
     "keywords": [
       "질서",
       "구조",
@@ -158,7 +158,7 @@ const tarotDataKo = [
     "id": 5,
     "name": "교황 (Hierophant)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_5.png",
+    "image": "images/major_arcana/tarot_5.webp",
     "keywords": [
       "믿음",
       "협력",
@@ -189,7 +189,7 @@ const tarotDataKo = [
     "id": 6,
     "name": "연인 (Lovers)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_6.png",
+    "image": "images/major_arcana/tarot_6.webp",
     "keywords": [
       "균형"
     ],
@@ -217,7 +217,7 @@ const tarotDataKo = [
     "id": 7,
     "name": "전차 (Chariot)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_7.png",
+    "image": "images/major_arcana/tarot_7.webp",
     "keywords": [
       "야망",
       "의지",
@@ -248,7 +248,7 @@ const tarotDataKo = [
     "id": 8,
     "name": "힘 (Strength)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_8.png",
+    "image": "images/major_arcana/tarot_8.webp",
     "keywords": [
       "힘",
       "연민",
@@ -279,7 +279,7 @@ const tarotDataKo = [
     "id": 9,
     "name": "은둔자 (Hermit)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_9.png",
+    "image": "images/major_arcana/tarot_9.webp",
     "keywords": [
       "탐구",
       "성찰",
@@ -310,7 +310,7 @@ const tarotDataKo = [
     "id": 10,
     "name": "운명의 수레바퀴 (Wheel of Fortune)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_10.png",
+    "image": "images/major_arcana/tarot_10.webp",
     "keywords": [
       "변화",
       "운명",
@@ -341,7 +341,7 @@ const tarotDataKo = [
     "id": 11,
     "name": "정의 (Justice)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_11.png",
+    "image": "images/major_arcana/tarot_11.webp",
     "keywords": [
       "공정함",
       "치우침 없음",
@@ -373,7 +373,7 @@ const tarotDataKo = [
     "id": 12,
     "name": "매달린 사람 (Hanged Man)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_12.png",
+    "image": "images/major_arcana/tarot_12.webp",
     "keywords": [
       "항복",
       "믿음",
@@ -404,7 +404,7 @@ const tarotDataKo = [
     "id": 13,
     "name": "죽음 (Death)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_13.png",
+    "image": "images/major_arcana/tarot_13.webp",
     "keywords": [
       "끝",
       "진화",
@@ -435,7 +435,7 @@ const tarotDataKo = [
     "id": 14,
     "name": "절제 (Temperance)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_14.png",
+    "image": "images/major_arcana/tarot_14.webp",
     "keywords": [
       "균형",
       "배려",
@@ -466,7 +466,7 @@ const tarotDataKo = [
     "id": 15,
     "name": "악마 (Devil)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_15.png",
+    "image": "images/major_arcana/tarot_15.webp",
     "keywords": [
       "유혹",
       "과잉",
@@ -497,7 +497,7 @@ const tarotDataKo = [
     "id": 16,
     "name": "탑 (Tower)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_16.png",
+    "image": "images/major_arcana/tarot_16.webp",
     "keywords": [
       "변화",
       "격변",
@@ -528,7 +528,7 @@ const tarotDataKo = [
     "id": 17,
     "name": "별 (Star)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_17.png",
+    "image": "images/major_arcana/tarot_17.webp",
     "keywords": [
       "인도",
       "선의",
@@ -559,7 +559,7 @@ const tarotDataKo = [
     "id": 18,
     "name": "달 (Moon)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_18.png",
+    "image": "images/major_arcana/tarot_18.webp",
     "keywords": [
       "직관",
       "두려움",
@@ -590,7 +590,7 @@ const tarotDataKo = [
     "id": 19,
     "name": "태양 (Sun)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_19.png",
+    "image": "images/major_arcana/tarot_19.webp",
     "keywords": [
       "통찰",
       "축하",
@@ -621,7 +621,7 @@ const tarotDataKo = [
     "id": 20,
     "name": "심판 (Judgment)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_20.png",
+    "image": "images/major_arcana/tarot_20.webp",
     "keywords": [
       "결정",
       "심판",
@@ -652,7 +652,7 @@ const tarotDataKo = [
     "id": 21,
     "name": "세계 (World)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_21.png",
+    "image": "images/major_arcana/tarot_21.webp",
     "keywords": [
       "온전함",
       "완성",
@@ -683,7 +683,7 @@ const tarotDataKo = [
     "id": 22,
     "name": "아난트 (Anant)",
     "suit": "Major Arcana",
-    "image": "images/major_arcana/tarot_22.png",
+    "image": "images/major_arcana/tarot_22.webp",
     "keywords": [
       "끝없는",
       "무한한",
@@ -739,7 +739,7 @@ const tarotDataKo = [
         "advice": "불씨가 꺼졌습니다. 억지로 타오르려 하지 말고 다시 땔감을 모으는 시간을 가지세요."
       }
     },
-    "image": "images/wands/tarot_23.png"
+    "image": "images/wands/tarot_23.webp"
   },
   {
     "id": 24,
@@ -770,7 +770,7 @@ const tarotDataKo = [
         "advice": "발밑이 불안정합니다. 멀리 보기 전에 현재 쥐고 있는 지팡이를 먼저 단단히 고정하세요."
       }
     },
-    "image": "images/wands/tarot_24.png"
+    "image": "images/wands/tarot_24.webp"
   },
   {
     "id": 25,
@@ -801,7 +801,7 @@ const tarotDataKo = [
         "advice": "배가 풍랑을 만났습니다. 당장 결과를 보려 하기보다 안전한 항구를 먼저 확보하세요."
       }
     },
-    "image": "images/wands/tarot_25.png"
+    "image": "images/wands/tarot_25.webp"
   },
   {
     "id": 26,
@@ -832,7 +832,7 @@ const tarotDataKo = [
         "advice": "집안 단속이 우선입니다. 화려한 화환 뒤에 숨겨진 먼지를 먼저 닦아내세요."
       }
     },
-    "image": "images/wands/tarot_26.png"
+    "image": "images/wands/tarot_26.webp"
   },
   {
     "id": 27,
@@ -863,7 +863,7 @@ const tarotDataKo = [
         "advice": "지팡이를 내려놓으세요. 질서 없는 싸움은 승자 없는 고통만을 남깁니다."
       }
     },
-    "image": "images/wands/tarot_27.png"
+    "image": "images/wands/tarot_27.webp"
   },
   {
     "id": 28,
@@ -893,7 +893,7 @@ const tarotDataKo = [
         "advice": "박수 소리가 잦아들었습니다. 지금은 고개를 숙이고 현재의 지위를 겸허히 돌아볼 때입니다."
       }
     },
-    "image": "images/wands/tarot_28.png"
+    "image": "images/wands/tarot_28.webp"
   },
   {
     "id": 29,
@@ -924,7 +924,7 @@ const tarotDataKo = [
         "advice": "한계를 인정하세요. 혼자서 모든 지팡이를 막아낼 수는 없습니다. 전략적 후퇴도 용기입니다."
       }
     },
-    "image": "images/wands/tarot_29.png"
+    "image": "images/wands/tarot_29.webp"
   },
   {
     "id": 30,
@@ -955,7 +955,7 @@ const tarotDataKo = [
         "advice": "브레이크를 밟으세요. 너무 빨리 달리면 가장 중요한 풍경을 놓치게 됩니다."
       }
     },
-    "image": "images/wands/tarot_30.png"
+    "image": "images/wands/tarot_30.webp"
   },
   {
     "id": 31,
@@ -986,7 +986,7 @@ const tarotDataKo = [
         "advice": "지팡이를 내려놓고 잠시 누우세요. 그대는 이미 충분히 싸웠고, 지금은 안식이 우선입니다."
       }
     },
-    "image": "images/wands/tarot_31.png"
+    "image": "images/wands/tarot_31.webp"
   },
   {
     "id": 32,
@@ -1017,7 +1017,7 @@ const tarotDataKo = [
         "advice": "짐을 내려놓으세요. 그대가 부서지면 그 짐 또한 아무 의미가 없음을 깨달아야 합니다."
       }
     },
-    "image": "images/wands/tarot_32.png"
+    "image": "images/wands/tarot_32.webp"
   },
   {
     "id": 33,
@@ -1048,7 +1048,7 @@ const tarotDataKo = [
         "advice": "지팡이를 든 손이 떨리고 있습니다. 열정만으로는 부족하니 기초적인 경험을 먼저 쌓으세요."
       }
     },
-    "image": "images/wands/tarot_33.png"
+    "image": "images/wands/tarot_33.webp"
   },
   {
     "id": 34,
@@ -1079,7 +1079,7 @@ const tarotDataKo = [
         "advice": "말에서 내려와 주위를 보세요. 속도보다 중요한 것은 목적지의 방향입니다."
       }
     },
-    "image": "images/wands/tarot_34.png"
+    "image": "images/wands/tarot_34.webp"
   },
   {
     "id": 35,
@@ -1110,7 +1110,7 @@ const tarotDataKo = [
         "advice": "해바라기가 시들고 있습니다. 권위 이전에 따뜻한 공감의 빛을 먼저 회복하세요."
       }
     },
-    "image": "images/wands/tarot_35.png"
+    "image": "images/wands/tarot_35.webp"
   },
   {
     "id": 36,
@@ -1141,7 +1141,7 @@ const tarotDataKo = [
         "advice": "도롱뇽이 꼬리를 물고 있습니다. 무한한 에너지를 독재가 아닌 조화에 사용하세요."
       }
     },
-    "image": "images/wands/tarot_36.png"
+    "image": "images/wands/tarot_36.webp"
   },
   {
     "id": 37,
@@ -1172,7 +1172,7 @@ const tarotDataKo = [
         "advice": "쏟아진 물은 다시 담을 수 없습니다. 이제 새 컵을 준비해야 할 때입니다."
       }
     },
-    "image": "images/cups/tarot_37.png"
+    "image": "images/cups/tarot_37.webp"
   },
   {
     "id": 38,
@@ -1203,7 +1203,7 @@ const tarotDataKo = [
         "advice": "컵의 높이가 서로 다릅니다. 상대를 이기려 하지 말고 수평을 먼저 맞추세요."
       }
     },
-    "image": "images/cups/tarot_38.png"
+    "image": "images/cups/tarot_38.webp"
   },
   {
     "id": 39,
@@ -1234,7 +1234,7 @@ const tarotDataKo = [
         "advice": "춤을 멈추고 컵을 내려놓으세요. 고독 속에서도 행복을 찾는 법을 배워야 합니다."
       }
     },
-    "image": "images/cups/tarot_39.png"
+    "image": "images/cups/tarot_39.webp"
   },
   {
     "id": 40,
@@ -1265,7 +1265,7 @@ const tarotDataKo = [
         "advice": "명상을 멈추고 일어나 손을 뻗으세요. 세상은 당신의 응답을 갈구하고 있습니다."
       }
     },
-    "image": "images/cups/tarot_40.png"
+    "image": "images/cups/tarot_40.webp"
   },
   {
     "id": 41,
@@ -1296,7 +1296,7 @@ const tarotDataKo = [
         "advice": "강 위 다리를 건너 평지로 나아가세요. 당신의 집이 멀지 않은 곳에 있습니다."
       }
     },
-    "image": "images/cups/tarot_41.png"
+    "image": "images/cups/tarot_41.webp"
   },
   {
     "id": 42,
@@ -1327,7 +1327,7 @@ const tarotDataKo = [
         "advice": "과거의 꽃바구니를 내려놓으세요. 향기는 이미 날아갔고 당신 앞엔 미래가 있습니다."
       }
     },
-    "image": "images/cups/tarot_42.png"
+    "image": "images/cups/tarot_42.webp"
   },
   {
     "id": 43,
@@ -1358,7 +1358,7 @@ const tarotDataKo = [
         "advice": "구름이 걷혔습니다. 이제 당신의 발밑에 놓인 진짜 검은색 형상을 선택하세요."
       }
     },
-    "image": "images/cups/tarot_43.png"
+    "image": "images/cups/tarot_43.webp"
   },
   {
     "id": 44,
@@ -1389,7 +1389,7 @@ const tarotDataKo = [
         "advice": "지팡이를 짚고 돌아오세요. 도망친 곳에 낙원은 없으며, 해결책은 당신 안에 있습니다."
       }
     },
-    "image": "images/cups/tarot_44.png"
+    "image": "images/cups/tarot_44.webp"
   },
   {
     "id": 45,
@@ -1420,7 +1420,7 @@ const tarotDataKo = [
         "advice": "장막 뒤를 치우세요. 겉모습만 꾸민 컵들은 진정한 갈증을 해결해주지 못합니다."
       }
     },
-    "image": "images/cups/tarot_45.png"
+    "image": "images/cups/tarot_45.webp"
   },
   {
     "id": 46,
@@ -1451,7 +1451,7 @@ const tarotDataKo = [
         "advice": "무지개가 사라졌습니다. 하지만 태양은 여전히 그곳에 있으니 먼저 손을 내미세요."
       }
     },
-    "image": "images/cups/tarot_46.png"
+    "image": "images/cups/tarot_46.webp"
   },
   {
     "id": 47,
@@ -1482,7 +1482,7 @@ const tarotDataKo = [
         "advice": "물고기가 숨었습니다. 상상은 현실이라는 모래 위에 세워질 때만 가치가 있습니다."
       }
     },
-    "image": "images/cups/tarot_47.png"
+    "image": "images/cups/tarot_47.webp"
   },
   {
     "id": 48,
@@ -1513,7 +1513,7 @@ const tarotDataKo = [
         "advice": "말이 멈춰 섰습니다. 그대의 컵은 비어있으니, 남을 유혹하기 전에 진실을 채우세요."
       }
     },
-    "image": "images/cups/tarot_48.png"
+    "image": "images/cups/tarot_48.webp"
   },
   {
     "id": 49,
@@ -1544,7 +1544,7 @@ const tarotDataKo = [
         "advice": "컵을 덮으세요. 지금은 타인의 고통을 돌보기보다 그대의 무너진 마음을 먼저 건져내야 합니다."
       }
     },
-    "image": "images/cups/tarot_49.png"
+    "image": "images/cups/tarot_49.webp"
   },
   {
     "id": 50,
@@ -1575,7 +1575,7 @@ const tarotDataKo = [
         "advice": "목에 걸린 붉은 비단은 명예일 뿐입니다. 그대의 거친 파도를 먼저 가라앉히세요."
       }
     },
-    "image": "images/cups/tarot_50.png"
+    "image": "images/cups/tarot_50.webp"
   },
   {
     "id": 51,
@@ -1595,7 +1595,7 @@ const tarotDataKo = [
       "career": "확고한 목표 설정과 기획의 성공. 승진이나 새로운 직적 통찰력 획득.",
       "advice": "화환과 왕관이 그대 앞에 있습니다. 감정에 휩쓸리지 말고 명료한 지성으로 승부하세요."
     },
-    "image": "images/swords/tarot_51.png"
+    "image": "images/swords/tarot_51.webp"
   },
   {
     "id": 52,
@@ -1626,7 +1626,7 @@ const tarotDataKo = [
         "advice": "이제 눈을 뜨세요. 바다 위의 암초는 당신의 배를 침몰시키기 위해 기다리고 있습니다."
       }
     },
-    "image": "images/swords/tarot_52.png"
+    "image": "images/swords/tarot_52.webp"
   },
   {
     "id": 53,
@@ -1657,7 +1657,7 @@ const tarotDataKo = [
         "advice": "비가 멈췄습니다. 이제 젖은 망토를 말리고 당신의 심장을 다시 뛰게 하세요."
       }
     },
-    "image": "images/swords/tarot_53.png"
+    "image": "images/swords/tarot_53.webp"
   },
   {
     "id": 54,
@@ -1688,7 +1688,7 @@ const tarotDataKo = [
         "advice": "일어나세요. 안식의 시간은 끝났습니다. 칼 중 하나를 골라잡아 전장으로 복귀하십시오."
       }
     },
-    "image": "images/swords/tarot_54.png"
+    "image": "images/swords/tarot_54.webp"
   },
   {
     "id": 55,
@@ -1719,7 +1719,7 @@ const tarotDataKo = [
         "advice": "검을 돌려주세요. 진정한 강함은 승리가 아니라 패배를 인정하는 용기에서 나옵니다."
       }
     },
-    "image": "images/swords/tarot_55.png"
+    "image": "images/swords/tarot_55.webp"
   },
   {
     "id": 56,
@@ -1750,7 +1750,7 @@ const tarotDataKo = [
         "advice": "노를 더 세게 저으세요. 가만히 있으면 과거의 파도에 배가 전복될 수 있습니다."
       }
     },
-    "image": "images/swords/tarot_56.png"
+    "image": "images/swords/tarot_56.webp"
   },
   {
     "id": 57,
@@ -1781,7 +1781,7 @@ const tarotDataKo = [
         "advice": "남겨둔 두 자루의 칼을 보지 못한 것이 그대의 행운입니다. 이제 정직하게 승부하세요."
       }
     },
-    "image": "images/swords/tarot_57.png"
+    "image": "images/swords/tarot_57.webp"
   },
   {
     "id": 58,
@@ -1812,7 +1812,7 @@ const tarotDataKo = [
         "advice": "뒤편의 성을 향해 걸으세요. 그대를 가둔 칼들은 이미 그대의 발걸음에 길을 내주었습니다."
       }
     },
-    "image": "images/swords/tarot_58.png"
+    "image": "images/swords/tarot_58.webp"
   },
   {
     "id": 59,
@@ -1843,7 +1843,7 @@ const tarotDataKo = [
         "advice": "이불을 발로 차고 일어나 창문을 여세요. 새벽 안개는 그대를 해치지 못합니다."
       }
     },
-    "image": "images/swords/tarot_59.png"
+    "image": "images/swords/tarot_59.webp"
   },
   {
     "id": 60,
@@ -1874,7 +1874,7 @@ const tarotDataKo = [
         "advice": "등의 칼을 하나씩 뽑으세요. 너무 아프겠지만 그 고통이 그대가 살아있다는 증거입니다."
       }
     },
-    "image": "images/swords/tarot_60.png"
+    "image": "images/swords/tarot_60.webp"
   },
   {
     "id": 61,
@@ -1905,7 +1905,7 @@ const tarotDataKo = [
         "advice": "칼자루를 제대로 쥐지도 못했습니다. 남을 비판하기 전에 그대의 논리를 먼저 세우세요."
       }
     },
-    "image": "images/swords/tarot_61.png"
+    "image": "images/swords/tarot_61.webp"
   },
   {
     "id": 62,
@@ -1936,7 +1936,7 @@ const tarotDataKo = [
         "advice": "칼을 내려놓고 말의 고삐를 당기세요. 목적지 없이 질주하는 검은 곧 흉기가 됩니다."
       }
     },
-    "image": "images/swords/tarot_62.png"
+    "image": "images/swords/tarot_62.webp"
   },
   {
     "id": 63,
@@ -1967,7 +1967,7 @@ const tarotDataKo = [
         "advice": "한 손을 뻗으세요. 검을 든 손만큼 반대편 손은 세상을 향해 열려있어야 합니다."
       }
     },
-    "image": "images/swords/tarot_63.png"
+    "image": "images/swords/tarot_63.webp"
   },
   {
     "id": 64,
@@ -1998,7 +1998,7 @@ const tarotDataKo = [
         "advice": "구름이 발밑까지 올라왔습니다. 권위가 오만이 될 때 그대의 왕좌는 추락할 것입니다."
       }
     },
-    "image": "images/swords/tarot_64.png"
+    "image": "images/swords/tarot_64.webp"
   },
   {
     "id": 65,
@@ -2029,7 +2029,7 @@ const tarotDataKo = [
         "advice": "구름 속의 손은 이미 사라졌습니다. 이제 땅에 떨어진 씨앗을 그대의 땀으로 일궈야 합니다."
       }
     },
-    "image": "images/pentacles/tarot_65.png"
+    "image": "images/pentacles/tarot_65.webp"
   },
   {
     "id": 66,
@@ -2060,7 +2060,7 @@ const tarotDataKo = [
         "advice": "저글링을 멈추고 하나만 잡으세요. 모든 것을 가지려다 모든 것을 잃게 될 수 있습니다."
       }
     },
-    "image": "images/pentacles/tarot_66.png"
+    "image": "images/pentacles/tarot_66.webp"
   },
   {
     "id": 67,
@@ -2091,7 +2091,7 @@ const tarotDataKo = [
         "advice": "설계도부터 다시 그리세요. 기초가 없는 대리석은 거친 비를 견딜 수 없습니다."
       }
     },
-    "image": "images/pentacles/tarot_67.png"
+    "image": "images/pentacles/tarot_67.webp"
   },
   {
     "id": 68,
@@ -2122,7 +2122,7 @@ const tarotDataKo = [
         "advice": "면류관의 펜타클을 내려놓으세요. 왕관이 무거워 그대는 고개를 들지 못하고 있습니다."
       }
     },
-    "image": "images/pentacles/tarot_68.png"
+    "image": "images/pentacles/tarot_68.webp"
   },
   {
     "id": 69,
@@ -2153,7 +2153,7 @@ const tarotDataKo = [
         "advice": "눈이 녹고 있습니다. 얼어있던 땅 아래서 그대의 동전은 여전히 빛나고 있습니다."
       }
     },
-    "image": "images/pentacles/tarot_69.png"
+    "image": "images/pentacles/tarot_69.webp"
   },
   {
     "id": 70,
@@ -2184,7 +2184,7 @@ const tarotDataKo = [
         "advice": "동전을 쥔 손을 펴세요. 그대가 저울질하는 동안 진심 어린 인연은 떠나가고 있습니다."
       }
     },
-    "image": "images/pentacles/tarot_70.png"
+    "image": "images/pentacles/tarot_70.webp"
   },
   {
     "id": 71,
@@ -2215,7 +2215,7 @@ const tarotDataKo = [
         "advice": "밭을 갈아엎으세요. 죽은 나무 아래서 수확을 기다리는 것은 어리석은 짓입니다."
       }
     },
-    "image": "images/pentacles/tarot_71.png"
+    "image": "images/pentacles/tarot_71.webp"
   },
   {
     "id": 72,
@@ -2246,7 +2246,7 @@ const tarotDataKo = [
         "advice": "벽에 걸린 6개의 금화를 보세요. 그대는 이미 충분히 해냈으니 잠시 어깨를 펴세요."
       }
     },
-    "image": "images/pentacles/tarot_72.png"
+    "image": "images/pentacles/tarot_72.webp"
   },
   {
     "id": 73,
@@ -2276,7 +2276,7 @@ const tarotDataKo = [
         "advice": "포도가 썩고 있습니다. 금빛 장식보다 그대의 실질적인 내면을 먼저 채우세요."
       }
     },
-    "image": "images/pentacles/tarot_73.png"
+    "image": "images/pentacles/tarot_73.webp"
   },
   {
     "id": 74,
@@ -2307,7 +2307,7 @@ const tarotDataKo = [
         "advice": "낡은 담벼락이 무너지고 있습니다. 전통에만 얽매이지 말고 그대만의 성공을 개척하세요."
       }
     },
-    "image": "images/pentacles/tarot_74.png"
+    "image": "images/pentacles/tarot_74.webp"
   },
   {
     "id": 75,
@@ -2338,7 +2338,7 @@ const tarotDataKo = [
         "advice": "손바닥 위의 금화는 가짜입니다. 그 가치를 증명하려면 먼저 발로 뛰어야 합니다."
       }
     },
-    "image": "images/pentacles/tarot_75.png"
+    "image": "images/pentacles/tarot_75.webp"
   },
   {
     "id": 76,
@@ -2369,7 +2369,7 @@ const tarotDataKo = [
         "advice": "말에서 내려와 주위를 보세요. 농사가 망치고 있는데 그물망만 지키는 것은 어리석음입니다."
       }
     },
-    "image": "images/pentacles/tarot_76.png"
+    "image": "images/pentacles/tarot_76.webp"
   },
   {
     "id": 77,
@@ -2400,7 +2400,7 @@ const tarotDataKo = [
         "advice": "토끼가 숨었습니다. 풍요의 정원을 가꾸기 전에 그대의 메마른 자비심을 먼저 되찾으세요."
       }
     },
-    "image": "images/pentacles/tarot_77.png"
+    "image": "images/pentacles/tarot_77.webp"
   },
   {
     "id": 78,
@@ -2431,6 +2431,6 @@ const tarotDataKo = [
         "advice": "지팡이가 꺾였습니다. 물질의 왕좌는 지켰으나 그대의 영혼은 굶주리고 있습니다."
       }
     },
-    "image": "images/pentacles/tarot_78.png"
+    "image": "images/pentacles/tarot_78.webp"
   }
 ];

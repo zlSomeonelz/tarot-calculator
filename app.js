@@ -40,14 +40,18 @@ function generateRandomStreamKey() {
 
 // Supabase Cloud Realtime Channel for OBS Broadcast
 let supabaseRealtimeChannel = null;
+let defaultFallbackChannel = null;
 let currentSubscribedKey = null;
+let isSupabaseSubscribed = false;
+let pendingBroadcastPayload = null;
 
 function setupSupabaseOBSChannel(key) {
     if (!supabaseClient) return;
     const roomKey = key || currentOBSKey || 'default';
-    if (supabaseRealtimeChannel && currentSubscribedKey === roomKey) {
+    if (supabaseRealtimeChannel && currentSubscribedKey === roomKey && isSupabaseSubscribed) {
         return;
     }
+    isSupabaseSubscribed = false;
     if (supabaseRealtimeChannel) {
         try { supabaseClient.removeChannel(supabaseRealtimeChannel); } catch (e) {}
         supabaseRealtimeChannel = null;
@@ -58,14 +62,35 @@ function setupSupabaseOBSChannel(key) {
     });
     supabaseRealtimeChannel
         .on('broadcast', { event: 'request_sync' }, (response) => {
-            console.log('[Supabase Realtime] Sync requested from OBS');
+            console.log('[Supabase Realtime] Sync requested from OBS on room: ' + roomKey);
             broadcastState();
         })
         .subscribe((status) => {
+            console.log(`[Supabase Realtime] Room obs_room_${roomKey} status:`, status);
             if (status === 'SUBSCRIBED') {
-                console.log(`[Supabase Realtime] Connected to room: obs_room_${roomKey}`);
+                isSupabaseSubscribed = true;
+                if (pendingBroadcastPayload) {
+                    const toSend = pendingBroadcastPayload;
+                    pendingBroadcastPayload = null;
+                    sendSupabaseRealtime(toSend);
+                }
+            } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                isSupabaseSubscribed = false;
             }
         });
+
+    // 만약 개인 고유키를 쓰는 경우, OBS에서 기본(default) 주소로 연결했을 때도 동기화되도록 default 룸도 함께 리슨
+    if (roomKey !== 'default' && !defaultFallbackChannel) {
+        defaultFallbackChannel = supabaseClient.channel('obs_room_default', {
+            config: { broadcast: { self: false } }
+        });
+        defaultFallbackChannel
+            .on('broadcast', { event: 'request_sync' }, () => {
+                console.log('[Supabase Realtime] Sync requested from OBS on default room');
+                broadcastState();
+            })
+            .subscribe();
+    }
 }
 
 function sendSupabaseRealtime(payload) {
@@ -74,14 +99,29 @@ function sendSupabaseRealtime(payload) {
     if (!supabaseRealtimeChannel || currentSubscribedKey !== roomKey) {
         setupSupabaseOBSChannel(roomKey);
     }
-    if (supabaseRealtimeChannel) {
+    if (!isSupabaseSubscribed) {
+        pendingBroadcastPayload = payload;
+        return;
+    }
+    try {
         supabaseRealtimeChannel.send({
             type: 'broadcast',
             event: 'update_spread',
             payload: payload
         }).catch(err => {
-            console.warn('[Supabase Realtime] Send failed:', err);
+            console.warn('[Supabase Realtime] Send failed on room:', roomKey, err);
         });
+
+        // 고유키 방송 시, default 룸에도 브로드캐스트하여 OBS 설정 키 불일치 방지
+        if (roomKey !== 'default' && defaultFallbackChannel) {
+            defaultFallbackChannel.send({
+                type: 'broadcast',
+                event: 'update_spread',
+                payload: payload
+            }).catch(() => {});
+        }
+    } catch (e) {
+        console.warn('[Supabase Realtime] Exception sending broadcast:', e);
     }
 }
 
@@ -777,7 +817,7 @@ function placeCardInSlot(baseCard, isReversed) {
             slotEl.insertBefore(bgLayer, slotEl.firstChild);
         }
         
-        const finalImg = card.image || `images/tarot_${card.id}.png`;
+        const finalImg = card.image || `images/tarot_${card.id}.webp`;
         bgLayer.style.backgroundImage = `url('${finalImg}')`;
         bgLayer.style.transform = isReversed ? 'rotate(180deg)' : 'none';
         bgLayer.style.opacity = '1';
@@ -1476,7 +1516,7 @@ function copyCardForLLM() {
 function showInterpretation(card) {
     currentModalCard = card;
     const isRev = card.isReversed || false;
-    const finalImg = card.image || `images/tarot_${card.id}.png`;
+    const finalImg = card.image || `images/tarot_${card.id}.webp`;
     const imgEl = document.getElementById('modal-card-img');
     if (imgEl) {
         imgEl.style.backgroundImage = `url('${finalImg}')`;
