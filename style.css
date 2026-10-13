@@ -1871,4 +1871,35 @@ section {
 .choice-pos-3 { left: 560px; top: 30px; }
 .choice-pos-4 { left: 560px; top: 350px; }
 
+/* OBS Realtime Status Indicator */
+.obs-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #2ecc71;
+    background: rgba(46, 204, 113, 0.12);
+    padding: 0.45rem 0.85rem;
+    border-radius: 20px;
+    border: 1px solid rgba(46, 204, 113, 0.35);
+    letter-spacing: 0.3px;
+    user-select: none;
+}
+
+.obs-status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #2ecc71;
+    box-shadow: 0 0 8px #2ecc71;
+    animation: obs-pulse 2s infinite ease-in-out;
+}
+
+@keyframes obs-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.35); opacity: 0.55; }
+}
+
+
 

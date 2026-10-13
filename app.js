@@ -2291,7 +2291,7 @@ function broadcastState(isManual = false) {
     fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
 
     if (isManual) {
-        showBroadcastToast("✨ OBS 방송 화면으로 최신 상태가 송출되었습니다!");
+        showBroadcastToast("✨ OBS 방송 화면과 즉시 재동기화되었습니다!");
     }
 }
 

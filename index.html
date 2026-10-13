@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261013_v24">
+    <link rel="stylesheet" href="style.css?v=20261013_v25">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -87,12 +87,12 @@
                         </div>
                     </div>
 
-            <!-- OBS 방송 송출 & 로그인 센터 통합 컨트롤 패널 -->
+            <!-- OBS 방송 실시간 연동 & 로그인 센터 통합 컨트롤 패널 -->
             <div class="auth-obs-center-panel" style="display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; padding: 1.1rem 1.4rem; background: rgba(10,12,20,0.85); border-radius: 14px; border: 1px solid rgba(212,175,55,0.35); box-shadow: 0 4px 25px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.6);">
                 <!-- 비로그인 상태일 때 -->
                 <div id="auth-panel-logged-out" class="auth-panel-group" style="display: flex; gap: 0.9rem; align-items: center; flex-wrap: wrap; justify-content: center;">
                     <div style="color:var(--accent-gold); font-size:0.95rem; font-weight:800; letter-spacing:0.5px;">
-                        📡 <span>방송(OBS) 송출 & 로그인</span>
+                        📡 <span>방송(OBS) 실시간 연동</span>
                     </div>
                     <button class="btn-google-pill" onclick="signInWithGoogle()" title="Google 계정으로 간편 로그인">
                         <svg class="google-icon" viewBox="0 0 48 48" width="18" height="18">
@@ -106,9 +106,12 @@
                     </button>
                     <button class="btn-main-gold" style="font-weight:700; padding: 0.6rem 1.1rem; box-shadow: 0 0 15px rgba(212,175,55,0.4);" onclick="openAuthModal('login')">🔑 이메일 로그인</button>
                     <button class="btn-outline" style="border-color:#aaa; color:#aaa; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="copyOBSUrl()" title="로그인 없이 기본 OBS 주소 복사">🔗 게스트 OBS 주소</button>
-                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="broadcastState(true)">📺 화면 송출</button>
-                    <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="clearOBSBoard()">🚫 화면 지우기</button>
-                    <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 가이드</button>
+                    <span class="obs-status-pill" title="메인 화면에서 카드를 놓거나 지우는 즉시 OBS에 0.1초 만에 자동 송출됩니다.">
+                        <span class="obs-status-dot"></span>
+                        실시간 자동 송출 중
+                    </span>
+                    <button class="btn-outline" style="border-color:#555; color:#bbb; padding: 0.6rem 0.8rem; font-size:0.82rem;" onclick="broadcastState(true)" title="네트워크 지연 시 현재 화면을 OBS로 즉시 재전송합니다.">🔄 재동기화</button>
+                    <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 연동 가이드</button>
                 </div>
 
                 <!-- 로그인 상태일 때 -->
@@ -118,10 +121,13 @@
                         <span id="user-email-display-panel" style="color:#fff; font-weight:700; font-size:0.9rem;"></span>
                     </div>
                     <button class="btn-main-gold" style="font-weight:700; padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #d4af37, #f1c40f); color: #000; box-shadow: 0 0 15px rgba(212,175,55,0.4);" onclick="copyUserOBSUrl()">📡 내 OBS 주소 복사</button>
-                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-weight:bold; background:rgba(46,204,113,0.1);" onclick="broadcastState(true)">📺 화면 송출</button>
-                    <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; padding: 0.6rem 0.9rem; background:rgba(231,76,60,0.1);" onclick="clearOBSBoard()">🚫 화면 지우기</button>
+                    <span class="obs-status-pill" title="메인 화면에서 카드를 놓거나 지우는 즉시 OBS에 0.1초 만에 자동 송출됩니다.">
+                        <span class="obs-status-dot"></span>
+                        실시간 자동 송출 중
+                    </span>
+                    <button class="btn-outline" style="border-color:#555; color:#bbb; padding: 0.6rem 0.8rem; font-size:0.82rem;" onclick="broadcastState(true)" title="네트워크 지연 시 현재 화면을 OBS로 즉시 재전송합니다.">🔄 재동기화</button>
                     <button class="btn-outline" style="border-color:#555; color:#999; padding: 0.6rem 0.8rem; font-size:0.82rem;" onclick="handleLogout()">로그아웃</button>
-                    <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 가이드</button>
+                    <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 연동 가이드</button>
                 </div>
             </div>
             
@@ -131,30 +137,30 @@
             <div id="obs-guide-modal" class="modal-overlay hidden">
                 <div class="modal-content" style="max-width: 650px; text-align: left;">
                     <button class="close-btn" onclick="closeOBSGuide()">✕</button>
-                    <h2 style="color:var(--accent-gold); margin-bottom: 20px; text-align:center;">방송(OBS) 완벽 연동 가이드</h2>
+                    <h2 style="color:var(--accent-gold); margin-bottom: 20px; text-align:center;">방송(OBS) 초간단 실시간 연동 가이드</h2>
                     
-                    <p style="color:#ccc; line-height:1.6; margin-bottom: 15px;">이 사이트는 OBS 스튜디오를 이용한 타로 방송에 최적화된 독립된 인터페이스를 제공합니다. 방송 화면에 타로 카드를 투명하게 띄우는 마법 같은 기능을 사용하려면 아래 순서를 따라해 주세요.</p>
+                    <p style="color:#ccc; line-height:1.6; margin-bottom: 15px;">이 사이트는 OBS 스튜디오를 이용한 타로 방송을 위해 <b>0.1초 초저지연 실시간 연동</b>을 지원합니다. 브라우저 창에서 카드를 놓거나 지우면 OBS 화면에도 즉시 똑같이 반영됩니다.</p>
                     
-                    <h3 style="color:#fff; margin-top:20px;">1. OBS에 화면 추가하기 (최초 1회)</h3>
+                    <h3 style="color:#fff; margin-top:20px;">1. OBS에 브라우저 소스 추가 (최초 1회)</h3>
                     <ol style="color:#ccc; line-height:1.6; padding-left: 20px; margin-bottom: 20px;">
-                        <li>OBS의 하단 [소스 목록]에서 <b>[+]</b> 버튼을 누르고 <b>[브라우저(Browser)]</b>를 선택합니다.</li>
-                        <li>URL 칸에 <b>상단 우측의 [OBS 주소 복사] 버튼을 눌러 복사된 주소</b>를 그대로 붙여넣어 주세요.<br>
-                            👉 <span style="color:#3498db; letter-spacing: 0.5px;">(버튼을 누르면 현재 접속 중인 주소에 맞춰 자동으로 복사됩니다)</span>
-                        </li>
-                        <li>너비(Width)를 <b>1920</b>, 높이(Height)를 <b>1080</b>으로 넉넉하게 적고 [확인]을 누릅니다.</li>
-                        <li><em>(참고: 배경은 이미 100% 투명하게 들어갑니다!)</em></li>
+                        <li>상단 패널에서 <b>[📡 내 OBS 주소 복사]</b> (로그인 시) 또는 <b>[🔗 게스트 OBS 주소]</b> 버튼을 누릅니다.</li>
+                        <li>OBS 스튜디오의 [소스 목록] 하단 <b>[+]</b> 버튼을 클릭하고 <b>[브라우저(Browser)]</b>를 선택합니다.</li>
+                        <li>URL 입력창에 방금 복사한 주소를 붙여넣습니다.</li>
+                        <li>너비(Width)를 <b>1920</b>, 높이(Height)를 <b>1080</b>으로 입력하고 [확인]을 누릅니다.</li>
+                        <li><em>(배경은 100% 투명 처리되어 캠 화면이나 방송 배경 위에 마법처럼 깔끔하게 합성됩니다.)</em></li>
                     </ol>
 
-                    <h3 style="color:#fff; margin-top:20px;">2. 타로 방송 진행하는 법</h3>
-                    <ol style="color:#ccc; line-height:1.6; padding-left: 20px; margin-bottom: 20px;">
-                        <li>현재 켜두신 <b>이 메인 크롬 창은 혼자만 조작하는 '비밀 리모컨'</b>입니다. 여기서 카드를 뽑거나 셋팅해도 시청자 화면(OBS)에는 절대 노출되지 않습니다!</li>
-                        <li>카드 배치가 예쁘게 끝났을 때! 상단의 파란색 <b>[📺 OBS로 화면 송출]</b> 버튼을 "딸깍" 누르세요.</li>
-                        <li>그 순간 방금 전 OBS에 만들어둔 투명한 브라우저 화면이 0.1초 만에 여러분의 세팅대로 변신하며 시청자에게 멋지게 노출됩니다.</li>
-                    </ol>
+                    <h3 style="color:#fff; margin-top:20px;">2. 방송 진행 및 자동 연동 안내</h3>
+                    <ul style="color:#ccc; line-height:1.7; padding-left: 20px; margin-bottom: 20px;">
+                        <li><strong style="color:var(--accent-gold);">⚡ 자동 실시간 송출:</strong> 별도로 송출 버튼을 누를 필요 없이, 카드 배치·랜덤 채우기·스프레드 변경 시 <b>OBS 방송 화면에 실시간으로 즉각 반영</b>됩니다.</li>
+                        <li><strong style="color:#e74c3c;">🗑️ 화면 초기화:</strong> 다음 리딩 진행 시 상단의 <b>[🗑️ 전체 초기화]</b>를 누르면 메인 화면과 OBS 화면이 동시에 깔끔하게 비워집니다.</li>
+                        <li><strong style="color:#3498db;">📖 도감 열람 보호:</strong> 방송 도중 <b>[📖 카드 도감]</b> 탭에서 카드를 검색하거나 해설을 찾아보아도 OBS의 스프레드 화면은 사라지지 않고 안전하게 유지됩니다.</li>
+                        <li><strong style="color:#2ecc71;">🔄 재동기화:</strong> OBS를 재시작했거나 네트워크 지연이 발생했을 땐 상단의 <b>[🔄 재동기화]</b>를 누르면 현재 화면 상태를 즉시 재전송합니다.</li>
+                    </ul>
 
-                    <p style="color:#e74c3c; font-size:0.95rem; text-align:center; padding: 15px; border: 1px dashed #e74c3c; background: rgba(231,76,60,0.1); border-radius: 8px;">
-                        다음 손님을 상담하실 땐 <b>[🚫 OBS 송출 화면 지우기]</b>를 먼저 꾹 눌러서 시청자 화면을 깨끗하게 정리해 주세요!
-                    </p>
+                    <div style="text-align:center; padding: 12px 15px; border: 1px solid rgba(212,175,55,0.3); background: rgba(212,175,55,0.06); border-radius: 8px; font-size:0.9rem; color:var(--accent-gold);">
+                        💡 로그인하시면 나만의 고유 방송키가 부여되어 다른 사용자의 방송 화면과 절대 섞이지 않습니다!
+                    </div>
                 </div>
             </div>
         </header>
@@ -1075,9 +1081,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v24"></script>
-    <script src="data_samla.js?v=20261013_v24"></script>
-    <script src="app.js?v=20261013_v24"></script>
+    <script src="data_ko.js?v=20261013_v25"></script>
+    <script src="data_samla.js?v=20261013_v25"></script>
+    <script src="app.js?v=20261013_v25"></script>
 </body>
 
 </html>
