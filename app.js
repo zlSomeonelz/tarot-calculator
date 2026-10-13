@@ -278,9 +278,7 @@ async function fallbackGoogleOAuth() {
         googleBtnModal.style.opacity = '0.7';
     }
 
-    let redirectUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-        ? window.location.origin + '/'
-        : 'https://tarot-calculator.onrender.com/';
+    let redirectUrl = window.location.origin + '/';
 
     try {
         const { data, error } = await supabaseClient.auth.signInWithOAuth({
@@ -323,9 +321,7 @@ async function handleLogout() {
 
 function copyUserOBSUrl() {
     const key = currentOBSKey || 'default';
-    const origin = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-        ? window.location.origin + '/'
-        : 'https://tarot-calculator.onrender.com/';
+    const origin = window.location.origin + '/';
     const obsUrl = `${origin}obs.html?key=${encodeURIComponent(key)}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1526,9 +1522,7 @@ function copyOBSUrl() {
     const rawKey = (typeof currentOBSKey !== 'undefined' && currentOBSKey) ? currentOBSKey : (document.getElementById('obs-secret') ? document.getElementById('obs-secret').value.trim() : 'default');
     const secretKey = rawKey !== '' ? rawKey : 'default';
     
-    const origin = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-        ? window.location.origin + '/'
-        : 'https://tarot-calculator.onrender.com/';
+    const origin = window.location.origin + '/';
     const obsUrl = `${origin}obs.html?key=${encodeURIComponent(secretKey)}`;
     
     navigator.clipboard.writeText(obsUrl).then(() => {
