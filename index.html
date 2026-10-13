@@ -10,7 +10,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=3.1">
+    <link rel="stylesheet" href="style.css?v=20261013_v10">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -20,18 +21,54 @@
 
     <div id="app-container">
         <header>
-            <div class="logo">SOMEONE'S TAROT CALCULATOR</div>
-            <div style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="header-top-row">
+                <div class="logo">SOMEONE'S TAROT CALCULATOR</div>
+                
+                <!-- 사용자 계정 / OBS 개인 고유 송출키 컨트롤 바 -->
+                <div class="auth-bar" id="auth-bar">
+                    <!-- 비로그인 상태 UI -->
+                    <div id="auth-logged-out" class="auth-group">
+                        <button class="btn-auth" onclick="openAuthModal('login')">🔑 로그인 / 회원가입</button>
+                    </div>
+                    <!-- 로그인 상태 UI -->
+                    <div id="auth-logged-in" class="auth-group hidden">
+                        <div class="user-badge">
+                            <span class="user-icon">👤</span>
+                            <span id="user-email-display" class="user-email"></span>
+                        </div>
+                        <button class="btn-auth-gold" onclick="copyUserOBSUrl()" title="방송 브라우저 소스에 붙여넣을 내 전용 OBS 주소 복사">📡 내 OBS 주소 복사</button>
+                        <button class="btn-auth-icon" onclick="regenerateUserOBSKey()" title="OBS 송출키 재발급">🔄</button>
+                        <button class="btn-auth-sub" onclick="handleLogout()">로그아웃</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- whtjss1230@gmail.com 계정 전용 히든 삼라만상 언락 배너/버튼 -->
+            <div id="samla-hidden-badge-wrap" class="samla-hidden-badge-wrap hidden">
+                <div class="samla-deck-banner">
+                    <span class="nacre-sparkle">✦</span>
+                    <span class="banner-title">마스터 전용 비밀 서고 언락:</span>
+                    <button id="btn-deck-toggle" class="btn-deck-switch" onclick="toggleDeckMode()">
+                        <span id="deck-toggle-icon">🪷</span>
+                        <span id="deck-toggle-text">삼라만상 백자개 타로로 전환</span>
+                    </button>
+                    <span class="nacre-sparkle">✦</span>
+                </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.6rem;">
                 <nav class="mode-tabs">
-                    <button id="view-spread3" class="mode-btn" onclick="switchMode('spread3')">쓰리 카드</button>
-                    <button id="view-spread" class="mode-btn active" onclick="switchMode('spread')">포 카드</button>
-                    <button id="view-celtic" class="mode-btn" onclick="switchMode('celtic')">켈틱 크로스</button>
+                    <button id="view-spread1" class="mode-btn" onclick="switchMode('spread1')">원 카드 (1장)</button>
+                    <button id="view-spread3" class="mode-btn" onclick="switchMode('spread3')">쓰리 카드 (3장)</button>
+                    <button id="view-spread" class="mode-btn active" onclick="switchMode('spread')">포 카드 (4장)</button>
+                    <button id="view-choice" class="mode-btn" onclick="switchMode('choice')">양자택일 (5장)</button>
+                    <button id="view-celtic" class="mode-btn" onclick="switchMode('celtic')">켈틱 크로스 (10장)</button>
                 </nav>
                 <nav class="mode-tabs" style="margin-top: 0;">
-                    <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계의 컵</button>
-                    <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무</button>
-                    <button id="view-hexa" class="mode-btn" onclick="switchMode('hexa')">헥사그램</button>
-                    <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁)</button>
+                    <button id="view-relation" class="mode-btn" onclick="switchMode('relation')">관계의 컵 (12장)</button>
+                    <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무 (10장)</button>
+                    <button id="view-hexa" class="mode-btn" onclick="switchMode('hexa')">헥사그램 (7장)</button>
+                    <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁 12장)</button>
                 </nav>
             </div>
                 <!-- 일반 사이트 액션 -->
@@ -118,6 +155,22 @@
         </header>
 
         <main>
+            <!-- 0. 원 카드 (단장 직관 리딩) -->
+            <section id="spread1-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="board-slots-1">
+                        <div id="s1slot-0" class="slot active" onclick="activateSlot(0, 'spread1')">
+                            <div class="slot-header">단장 직관 <br><small>ONE CARD</small></div>
+                            <div class="slot-content">선택</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(1, 'spread1')">원 카드 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(1)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
             <!-- 1. 쓰리 카드 -->
             <section id="spread3-board" class="hidden">
                 <div class="board-wrapper">
@@ -198,6 +251,59 @@
                     <div class="board-actions">
                         <button class="btn-main-gold" onclick="analyzeFullSpread(4)">전체 분석 리포트</button>
                         <button class="btn-outline" onclick="clearBoard(4)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 양자택일 (Two Choices - 5장) -->
+            <section id="choice-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="choice-container">
+                        <div class="choice-bg-overlay">
+                            <svg viewBox="0 0 860 580" width="860" height="580"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="choice-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                            </svg>
+                        </div>
+                        <!-- 0: 현재 -->
+                        <div id="chslot-0" class="slot choice-pos-0 active" onclick="activateSlot(0, 'choice')">
+                            <div class="slot-header">현재 상황 <br><small>CURRENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">현재의 기로와 고민</div>
+                        </div>
+                        <!-- 1: 선택 A 과정 -->
+                        <div id="chslot-1" class="slot choice-pos-1" onclick="activateSlot(1, 'choice')">
+                            <div class="slot-header">선택 A 흐름 <br><small>PATH A</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">A를 택했을 때의 전개</div>
+                        </div>
+                        <!-- 2: 선택 A 결과 -->
+                        <div id="chslot-2" class="slot choice-pos-2 highlight" onclick="activateSlot(2, 'choice')">
+                            <div class="slot-header">선택 A 결과 <br><small>OUTCOME A</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">A 선택의 최종 결과</div>
+                        </div>
+                        <!-- 3: 선택 B 과정 -->
+                        <div id="chslot-3" class="slot choice-pos-3" onclick="activateSlot(3, 'choice')">
+                            <div class="slot-header">선택 B 흐름 <br><small>PATH B</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">B를 택했을 때의 전개</div>
+                        </div>
+                        <!-- 4: 선택 B 결과 -->
+                        <div id="chslot-4" class="slot choice-pos-4 highlight" onclick="activateSlot(4, 'choice')">
+                            <div class="slot-header">선택 B 결과 <br><small>OUTCOME B</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">B 선택의 최종 결과</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(5, 'choice')">양자택일 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(5)">초기화</button>
                     </div>
                 </div>
             </section>
@@ -786,8 +892,14 @@
     <div id="modal-overlay" class="hidden" onclick="closeAllModals()">
         <div id="interpretation" class="modal-content glass-dark" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <span id="card-suit-tag" class="tag-gold">Major</span>
-                <button onclick="closeInterpretation()" class="close-icon">✕</button>
+                <div class="modal-tags-group">
+                    <span id="card-suit-tag" class="tag-gold">Major</span>
+                    <span id="card-symbol-tag" class="tag-gold tag-symbol" style="display:none;"></span>
+                </div>
+                <div class="modal-header-actions">
+                    <button id="btn-copy-llm" class="btn-copy-llm" onclick="copyCardForLLM()" title="AI/LLM 프롬프트용 텍스트 복사">📋 LLM 복사</button>
+                    <button onclick="closeInterpretation()" class="close-icon">✕</button>
+                </div>
             </div>
             <div class="modal-layout">
                 <div class="modal-left">
@@ -795,11 +907,26 @@
                 </div>
                 <div class="modal-right">
                     <h2 id="card-name" class="title-xl">Card Name</h2>
+                    
+                    <!-- 카드에 대한 큰 한마디 (명대사/핵심 전언) -->
+                    <div id="card-quote-box" class="modal-quote-box" style="display:none;"></div>
+
+                    <!-- 키워드 태그 목록 -->
                     <div id="keywords-list" class="keywords-wrap"></div>
+                    
+                    <!-- 삼라만상 백자개 타로 전용 카테고리 탭 (삼라만상 모드 시 노출) -->
+                    <div id="modal-tab-container" class="modal-tab-container" style="display:none;">
+                        <button class="modal-tab-btn active" data-tab="all" onclick="changeModalTab('all')">📖 전체 해설</button>
+                        <button class="modal-tab-btn" data-tab="character" onclick="changeModalTab('character')">🎭 인물·MBTI</button>
+                        <button class="modal-tab-btn" data-tab="fandom" onclick="changeModalTab('fandom')">💖 덕질·관계</button>
+                        <button class="modal-tab-btn" data-tab="real" onclick="changeModalTab('real')">🌿 현생운</button>
+                        <button class="modal-tab-btn" data-tab="advice" onclick="changeModalTab('advice')">🔮 조언·상징</button>
+                    </div>
+
                     <div class="divider"></div>
                     <p id="card-desc" class="desc-readable"></p>
                     <div id="card-advanced-meanings" class="card-advanced-meanings"
-                        style="margin-top: 1.5rem; text-align: left; line-height: 1.6; font-size: 0.9rem; color: #ddd;"></div>
+                        style="margin-top: 1rem; text-align: left; line-height: 1.6; font-size: 0.9rem; color: #ddd;"></div>
                 </div>
             </div>
         </div>
@@ -816,11 +943,39 @@
         </div>
     </div>
 
-
+    <!-- AUTH MODAL (Supabase Login / Sign Up) -->
+    <div id="auth-modal-overlay" class="modal-overlay hidden" onclick="closeAuthModal()">
+        <div class="auth-modal glass-solid" onclick="event.stopPropagation()">
+            <div class="auth-modal-header">
+                <div class="auth-tabs">
+                    <button id="auth-tab-login" class="auth-tab active" onclick="switchAuthTab('login')">로그인</button>
+                    <button id="auth-tab-signup" class="auth-tab" onclick="switchAuthTab('signup')">회원가입</button>
+                </div>
+                <button class="close-icon" onclick="closeAuthModal()">✕</button>
+            </div>
+            <div class="auth-modal-body">
+                <div class="auth-input-group">
+                    <label for="auth-email">이메일 계정</label>
+                    <input type="email" id="auth-email" placeholder="name@example.com" autocomplete="email">
+                </div>
+                <div class="auth-input-group">
+                    <label for="auth-password">비밀번호</label>
+                    <input type="password" id="auth-password" placeholder="6자리 이상 비밀번호" autocomplete="current-password">
+                </div>
+                <div id="auth-error-msg" class="auth-msg error hidden"></div>
+                <div id="auth-success-msg" class="auth-msg success hidden"></div>
+                <button id="btn-auth-submit" class="btn-main-gold auth-submit-btn" onclick="submitAuthForm()">로그인</button>
+                <div class="auth-footer-help">
+                    <span>💡 로그인하시면 방송용 개인 고유 송출키가 자동 발급되어 다른 방송과 화면이 절대 섞이지 않습니다.</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js"></script>
-    <script src="app.js?v=3.1"></script>
+    <script src="data_ko.js?v=20261013_v10"></script>
+    <script src="data_samla.js?v=20261013_v10"></script>
+    <script src="app.js?v=20261013_v10"></script>
 </body>
 
 </html>

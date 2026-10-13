@@ -59,7 +59,11 @@
             let refH = 1350;
 
             // 각 스프레드별 최적 기준 해상도 설정 (거대화된 레이아웃 대응)
-            if (currentBroadcastMode === 'spread' || currentBroadcastMode === 'spread3') {
+            if (currentBroadcastMode === 'spread1') {
+                refW = 800; refH = 700;
+            } else if (currentBroadcastMode === 'choice') {
+                refW = 1100; refH = 850;
+            } else if (currentBroadcastMode === 'spread' || currentBroadcastMode === 'spread3') {
                 refW = 1000; refH = 900;
             } else if (currentBroadcastMode === 'hexa') {
                 refW = 1100; refH = 1550;
@@ -72,8 +76,6 @@
             } else if (currentBroadcastMode === 'relation') {
                 refW = 1300; refH = 2500;
             }
-
-
 
             const scaleHeight = window.innerHeight / refH;
             const scaleWidth = window.innerWidth / refW;
@@ -106,9 +108,16 @@
             }
         }
 
+        // 쿼리스트링에서 비밀키(key) 추출 (예: obs.html?key=obs_...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const secretKey = urlParams.get('key') || 'default';
+
         const obsChannel = new BroadcastChannel('tarot_obs_channel');
         obsChannel.onmessage = (event) => {
             if (event.data.type === 'update_spread') {
+                if (event.data.key && event.data.key !== secretKey && secretKey !== 'default') {
+                    return; // 발급받은 OBS 키와 다른 방송 소스 수신 무시
+                }
                 const stateStr = JSON.stringify(event.data);
                 if (stateStr !== lastStateStr) {
                     renderCards(event.data.mode, event.data.cards);
@@ -116,10 +125,6 @@
                 }
             }
         };
-
-        // 쿼리스트링에서 비밀키(key) 추출 (예: obs.html?key=타로마스터)
-        const urlParams = new URLSearchParams(window.location.search);
-        const secretKey = urlParams.get('key') || 'default';
 
         async function pollServer() {
             try {
@@ -142,14 +147,15 @@
             resizeLayout(); // 배율 업데이트
 
             if (cards.length === 0) {
-
                 // Completely hide all
                 document.querySelectorAll('#obs-container main section').forEach(sec => sec.classList.add('hidden'));
                 return;
             }
 
             let boardId, prefix;
-            if (mode === 'spread3') { boardId = 'spread3-board'; prefix = 's3slot'; }
+            if (mode === 'spread1') { boardId = 'spread1-board'; prefix = 's1slot'; }
+            else if (mode === 'choice') { boardId = 'choice-board'; prefix = 'chslot'; }
+            else if (mode === 'spread3') { boardId = 'spread3-board'; prefix = 's3slot'; }
             else if (mode === 'tree') { boardId = 'tree-board'; prefix = 'tslot'; }
             else if (mode === 'relation') { boardId = 'relation-board'; prefix = 'rslot'; }
             else if (mode === 'celtic') { boardId = 'celtic-board'; prefix = 'cslot'; }
@@ -204,9 +210,11 @@
             let svgContainer;
             if (mode === 'tree') svgContainer = document.querySelector('#tree-board .tree-bg-overlay svg');
             else if (mode === 'relation') svgContainer = document.querySelector('#relation-board .relation-bg-overlay svg');
+            else if (mode === 'choice') svgContainer = document.querySelector('#choice-board .choice-bg-overlay svg');
             else if (mode === 'spread') svgContainer = document.querySelector('#spread-board .spread-bg-overlay svg');
             else if (mode === 'spread3') svgContainer = document.querySelector('#spread3-board .spread3-bg-overlay svg');
             else if (mode === 'zodiac') svgContainer = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
+            else if (mode === 'celtic') svgContainer = document.querySelector('#celtic-board .celtic-bg-overlay svg');
             if (!svgContainer) return null;
             const rect = slot.getBoundingClientRect();
             const svgRect = svgContainer.getBoundingClientRect();
@@ -219,12 +227,31 @@
             return { x, y };
         }
 
+        function drawChoiceLines() {
+            const container = document.querySelector('#choice-board .choice-bg-overlay svg');
+            if (!container) return;
+            const connections = [[0, 1], [1, 2], [0, 3], [3, 4]];
+            let html = `<defs><filter id="choice-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            connections.forEach(([s, e]) => {
+                const p1 = getSlotCenter(`chslot-${s}`, 'choice');
+                const p2 = getSlotCenter(`chslot-${e}`, 'choice');
+                if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+            });
+            for(let i=0; i<5; i++) {
+                const p = getSlotCenter(`chslot-${i}`, 'choice');
+                if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#choice-star-glow)" />`;
+            }
+            container.innerHTML = html;
+        }
+
         function syncAllLines() {
             if (currentBroadcastMode === 'tree') drawTreeLines();
             else if (currentBroadcastMode === 'relation') drawRelationLines();
+            else if (currentBroadcastMode === 'choice') drawChoiceLines();
             else if (currentBroadcastMode === 'spread') drawFourCardLines();
             else if (currentBroadcastMode === 'spread3') drawThreeCardLines();
             else if (currentBroadcastMode === 'zodiac') drawZodiacLines();
+            else if (currentBroadcastMode === 'celtic') drawCelticLines();
         }
 
         function drawTreeLines() {

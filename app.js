@@ -1,8 +1,26 @@
+// ============================================================
+// SUPABASE AUTH & OBS PERSONAL STREAM KEY SYSTEM
+// ============================================================
+const SUPABASE_URL = 'https://aqgbwzayefinqxjoalzc.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_PG8molq9mMczlAxzP3rELw_ndrwY7sF';
+const supabase = (typeof window !== 'undefined' && window.supabase?.createClient)
+    ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    : null;
+
+const MASTER_EMAIL = 'whtjss1230@gmail.com';
+let currentUser = null;
+let currentOBSKey = localStorage.getItem('obs_user_key') || 'default';
+let currentDeck = 'classic'; // 'classic' or 'samla'
+let currentModalTab = 'all'; // for samla interpretation modal
+let currentModalCard = null;
+
 let currentInterpretationMode = 'all'; // 'all', 'love', 'career', 'advice'
 let currentMode = 'spread';
 let activeSlotIndex = 0;
+let placedCards1 = Array(1).fill(null);
 let placedCards3 = Array(3).fill(null);
 let placedCards4 = Array(4).fill(null);
+let placedCardsChoice = Array(5).fill(null);
 let placedCardsTree = Array(10).fill(null);
 let placedCardsRelation = Array(12).fill(null);
 let placedCardsCeltic = Array(10).fill(null);
@@ -10,11 +28,249 @@ let placedCardsHexa = Array(7).fill(null);
 let placedCardsZodiac = Array(12).fill(null);
 let currentFilter = 'all';
 
+function generateRandomStreamKey() {
+    const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+    let res = 'obs_';
+    for (let i = 0; i < 16; i++) {
+        res += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return res;
+}
+
+async function initAuthSession() {
+    if (!supabase) return;
+    try {
+        const { data: { session } } = await supabase.auth.getSession();
+        updateAuthUI(session ? session.user : null);
+
+        supabase.auth.onAuthStateChange(async (event, session) => {
+            updateAuthUI(session ? session.user : null);
+        });
+    } catch (e) {
+        console.error("Auth session error:", e);
+    }
+}
+
+async function updateAuthUI(user) {
+    currentUser = user;
+    const loggedOutEl = document.getElementById('auth-logged-out');
+    const loggedInEl = document.getElementById('auth-logged-in');
+    const emailDisplay = document.getElementById('user-email-display');
+    const samlaBanner = document.getElementById('samla-hidden-badge-wrap');
+
+    if (user) {
+        if (loggedOutEl) loggedOutEl.classList.add('hidden');
+        if (loggedInEl) loggedInEl.classList.remove('hidden');
+        if (emailDisplay) emailDisplay.textContent = user.email.split('@')[0];
+
+        // 유저 메타데이터에 obs_key가 없으면 자동 생성 및 저장
+        let userKey = user.user_metadata?.obs_key;
+        if (!userKey) {
+            userKey = generateRandomStreamKey();
+            await supabase.auth.updateUser({ data: { obs_key: userKey } });
+        }
+        currentOBSKey = userKey;
+        localStorage.setItem('obs_user_key', userKey);
+
+        // whtjss1230@gmail.com 계정일 때만 삼라만상 히든 배너 노출!
+        if (user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
+            if (samlaBanner) samlaBanner.classList.remove('hidden');
+        } else {
+            if (samlaBanner) samlaBanner.classList.add('hidden');
+            if (currentDeck === 'samla') setDeckMode('classic');
+        }
+    } else {
+        if (loggedOutEl) loggedOutEl.classList.remove('hidden');
+        if (loggedInEl) loggedInEl.classList.add('hidden');
+        if (samlaBanner) samlaBanner.classList.add('hidden');
+        currentOBSKey = 'default';
+        localStorage.removeItem('obs_user_key');
+        if (currentDeck === 'samla') setDeckMode('classic');
+    }
+    broadcastState();
+}
+
+let authCurrentTab = 'login';
+function openAuthModal(tab = 'login') {
+    authCurrentTab = tab;
+    switchAuthTab(tab);
+    const overlay = document.getElementById('auth-modal-overlay');
+    if (overlay) overlay.classList.remove('hidden');
+    clearAuthMessages();
+}
+
+function closeAuthModal() {
+    const overlay = document.getElementById('auth-modal-overlay');
+    if (overlay) overlay.classList.add('hidden');
+    clearAuthMessages();
+}
+
+function switchAuthTab(tab) {
+    authCurrentTab = tab;
+    const tabLogin = document.getElementById('auth-tab-login');
+    const tabSignup = document.getElementById('auth-tab-signup');
+    const submitBtn = document.getElementById('btn-auth-submit');
+    if (tabLogin) tabLogin.classList.toggle('active', tab === 'login');
+    if (tabSignup) tabSignup.classList.toggle('active', tab === 'signup');
+    if (submitBtn) submitBtn.textContent = tab === 'login' ? '로그인' : '회원가입';
+    clearAuthMessages();
+}
+
+function clearAuthMessages() {
+    const err = document.getElementById('auth-error-msg');
+    const succ = document.getElementById('auth-success-msg');
+    if (err) { err.textContent = ''; err.classList.add('hidden'); }
+    if (succ) { succ.textContent = ''; succ.classList.add('hidden'); }
+}
+
+async function submitAuthForm() {
+    if (!supabase) {
+        alert("Supabase 클라이언트가 초기화되지 않았습니다.");
+        return;
+    }
+    const email = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const errEl = document.getElementById('auth-error-msg');
+    const succEl = document.getElementById('auth-success-msg');
+    clearAuthMessages();
+
+    if (!email || !password) {
+        if (errEl) { errEl.textContent = "이메일과 비밀번호를 모두 입력해 주세요."; errEl.classList.remove('hidden'); }
+        return;
+    }
+
+    const submitBtn = document.getElementById('btn-auth-submit');
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "처리 중..."; }
+
+    try {
+        if (authCurrentTab === 'login') {
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            closeAuthModal();
+        } else {
+            const initKey = generateRandomStreamKey();
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: { data: { obs_key: initKey } }
+            });
+            if (error) throw error;
+            if (succEl) {
+                succEl.textContent = "회원가입이 완료되었습니다! 로그인 상태로 전환됩니다.";
+                succEl.classList.remove('hidden');
+            }
+            setTimeout(() => { closeAuthModal(); }, 1200);
+        }
+    } catch (err) {
+        if (errEl) {
+            let msg = err.message || "오류가 발생했습니다.";
+            if (msg.includes("Invalid login credentials")) msg = "이메일 또는 비밀번호가 일치하지 않습니다.";
+            if (msg.includes("already registered")) msg = "이미 가입된 이메일 주소입니다.";
+            if (msg.includes("Password should be at least")) msg = "비밀번호는 최소 6자리 이상이어야 합니다.";
+            errEl.textContent = msg;
+            errEl.classList.remove('hidden');
+        }
+    } finally {
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = authCurrentTab === 'login' ? '로그인' : '회원가입';
+        }
+    }
+}
+
+async function handleLogout() {
+    if (!supabase) return;
+    await supabase.auth.signOut();
+    updateAuthUI(null);
+}
+
+function copyUserOBSUrl() {
+    const key = currentOBSKey || 'default';
+    let base = window.location.href;
+    if (base.includes('index.html')) base = base.replace('index.html', '');
+    if (!base.endsWith('/')) base += '/';
+    const obsUrl = `${base}obs.html?key=${encodeURIComponent(key)}`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(obsUrl).then(() => {
+            alert(`내 방송 전용 OBS 주소가 복사되었습니다!\n\nOBS 브라우저 소스 URL에 붙여넣으세요:\n${obsUrl}`);
+        }).catch(() => prompt("아래 주소를 복사하세요:", obsUrl));
+    } else {
+        prompt("아래 주소를 복사하세요:", obsUrl);
+    }
+}
+
+async function regenerateUserOBSKey() {
+    if (!currentUser || !supabase) {
+        alert("로그인 후 이용할 수 있습니다.");
+        return;
+    }
+    if (!confirm("OBS 송출키를 새로 발급하시겠습니까?\n발급 후 OBS 브라우저 소스의 URL 주소도 변경하셔야 합니다.")) return;
+
+    const newKey = generateRandomStreamKey();
+    const { error } = await supabase.auth.updateUser({ data: { obs_key: newKey } });
+    if (error) {
+        alert("키 재발급 실패: " + error.message);
+        return;
+    }
+    currentOBSKey = newKey;
+    localStorage.setItem('obs_user_key', newKey);
+    copyUserOBSUrl();
+}
+
+// ============================================================
+// DECK MANAGEMENT (CLASSIC ⟷ SAMLA NACRE TAROT)
+// ============================================================
+function getActiveDeckCards() {
+    if (currentDeck === 'samla' && typeof tarotDataSamla !== 'undefined') {
+        return tarotDataSamla;
+    }
+    return tarotDataKo;
+}
+
+function toggleDeckMode() {
+    if (!currentUser || currentUser.email.toLowerCase() !== MASTER_EMAIL.toLowerCase()) {
+        alert("삼라만상 백자개 타로는 마스터 전용 비밀 서고 기능입니다.");
+        return;
+    }
+    setDeckMode(currentDeck === 'classic' ? 'samla' : 'classic');
+}
+
+function setDeckMode(mode) {
+    currentDeck = mode;
+    const btnText = document.getElementById('deck-toggle-text');
+    const btnIcon = document.getElementById('deck-toggle-icon');
+    const modalTabContainer = document.getElementById('modal-tab-container');
+    const quoteBox = document.getElementById('card-quote-box');
+    const copyLLMBtn = document.getElementById('btn-copy-llm');
+
+    if (mode === 'samla') {
+        if (btnText) btnText.textContent = "🌙 정통 웨이트 타로로 복귀";
+        if (btnIcon) btnIcon.textContent = "🌙";
+        if (modalTabContainer) modalTabContainer.style.display = 'flex';
+        if (quoteBox) quoteBox.style.display = 'block';
+        if (copyLLMBtn) copyLLMBtn.style.display = 'inline-block';
+        document.body.classList.add('samla-theme');
+    } else {
+        if (btnText) btnText.textContent = "🪷 삼라만상 백자개 타로로 전환";
+        if (btnIcon) btnIcon.textContent = "🪷";
+        if (modalTabContainer) modalTabContainer.style.display = 'none';
+        if (quoteBox) quoteBox.style.display = 'none';
+        if (copyLLMBtn) copyLLMBtn.style.display = 'none';
+        document.body.classList.remove('samla-theme');
+    }
+
+    setupGrid(getActiveDeckCards());
+    broadcastState();
+    requestAnimationFrame(syncAllLines);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-
-    setupGrid(tarotDataKo);
-    switchMode('spread'); // Star-Birth with Spread
+    initAuthSession();
+    setupGrid(getActiveDeckCards());
+    switchMode('spread');
+    updateSpreadGuide(currentMode);
+    requestAnimationFrame(syncAllLines);
 });
 
 function setupGrid(cards) {
@@ -41,6 +297,10 @@ function setupGrid(cards) {
 
 function switchMode(mode) {
     currentMode = mode;
+    const boardSpread1 = document.getElementById('spread1-board');
+    const boardChoice = document.getElementById('choice-board');
+    if (boardSpread1) boardSpread1.classList.toggle('hidden', mode !== 'spread1');
+    if (boardChoice) boardChoice.classList.toggle('hidden', mode !== 'choice');
     document.getElementById('spread-board').classList.toggle('hidden', mode !== 'spread');
     document.getElementById('spread3-board').classList.toggle('hidden', mode !== 'spread3');
     document.getElementById('tree-board').classList.toggle('hidden', mode !== 'tree');
@@ -49,12 +309,11 @@ function switchMode(mode) {
     document.getElementById('hexa-board').classList.toggle('hidden', mode !== 'hexa');
     document.getElementById('zodiac-board').classList.toggle('hidden', mode !== 'zodiac');
 
-
     updateSpreadGuide(mode);
 
     // UI Tab Sync (Check for null to prevent errors)
-    const btns = ['view-spread3', 'view-spread', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
-    const modes = ['spread3', 'spread', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
+    const btns = ['view-spread1', 'view-spread3', 'view-spread', 'view-choice', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
+    const modes = ['spread1', 'spread3', 'spread', 'choice', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
 
     btns.forEach((id, i) => {
         const btn = document.getElementById(id);
@@ -67,12 +326,14 @@ function switchMode(mode) {
         const slots = document.querySelectorAll('.slot');
         slots.forEach(slot => slot.classList.remove('active'));
         let prefix = 'slot';
-        if (mode === 'spread3') prefix = 's3slot';
-        if (mode === 'tree') prefix = 'tslot';
-        if (mode === 'relation') prefix = 'rslot';
-        if (mode === 'celtic') prefix = 'cslot';
-        if (mode === 'hexa') prefix = 'hslot';
-        if (mode === 'zodiac') prefix = 'zslot';
+        if (mode === 'spread1') prefix = 's1slot';
+        else if (mode === 'choice') prefix = 'chslot';
+        else if (mode === 'spread3') prefix = 's3slot';
+        else if (mode === 'tree') prefix = 'tslot';
+        else if (mode === 'relation') prefix = 'rslot';
+        else if (mode === 'celtic') prefix = 'cslot';
+        else if (mode === 'hexa') prefix = 'hslot';
+        else if (mode === 'zodiac') prefix = 'zslot';
         const target = document.getElementById(`${prefix}-0`);
         if (target) target.classList.add('active');
     }
@@ -89,15 +350,14 @@ function setInterpretationMode(mode) {
     document.querySelectorAll('.inter-mode-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-mode') === mode);
     });
-    
-    // 이미 열려있는 분석 보고서가 있다면 실시간 반영을 위해 다시 렌더링할 수도 있지만, 
-    // 우선은 다음 번 분석 시 적용되도록 합니다.
 }
 
 function activateSlot(index, mode = currentMode) {
     activeSlotIndex = index;
     let prefix = 'slot';
-    if (mode === 'spread3') prefix = 's3slot';
+    if (mode === 'spread1') prefix = 's1slot';
+    else if (mode === 'choice') prefix = 'chslot';
+    else if (mode === 'spread3') prefix = 's3slot';
     else if (mode === 'tree') prefix = 'tslot';
     else if (mode === 'relation') prefix = 'rslot';
     else if (mode === 'celtic') prefix = 'cslot';
@@ -105,6 +365,8 @@ function activateSlot(index, mode = currentMode) {
     else if (mode === 'zodiac') prefix = 'zslot';
 
     const boards = {
+        'spread1': placedCards1,
+        'choice': placedCardsChoice,
         'spread': placedCards4,
         'spread3': placedCards3,
         'tree': placedCardsTree,
@@ -169,9 +431,9 @@ function filterQuickSearch(forcedQuery) {
         return;
     }
 
-    const filtered = tarotDataKo.filter(c =>
+    const filtered = getActiveDeckCards().filter(c =>
         c.name.toLowerCase().includes(query) ||
-        c.keywords.some(k => k.toLowerCase().includes(query))
+        (c.keywords && c.keywords.some(k => k.toLowerCase().includes(query)))
     ).sort((a, b) => a.name.localeCompare(b.name));
 
     if (filtered.length === 0) {
@@ -192,7 +454,7 @@ function filterQuickSearch(forcedQuery) {
 }
 
 function selectQuickCard(cardName) {
-    const card = tarotDataKo.find(c => c.name === cardName);
+    const card = getActiveDeckCards().find(c => c.name === cardName);
     if (card) {
         initiateCardPlacement(card);
         closeQuickSearch();
@@ -273,7 +535,11 @@ function confirmDirection(isReversed) {
 
 function placeCardInSlot(baseCard, isReversed) {
     let cards, prefix, max;
-    if (currentMode === 'spread3') {
+    if (currentMode === 'spread1') {
+        cards = placedCards1; prefix = 's1slot'; max = 1;
+    } else if (currentMode === 'choice') {
+        cards = placedCardsChoice; prefix = 'chslot'; max = 5;
+    } else if (currentMode === 'spread3') {
         cards = placedCards3; prefix = 's3slot'; max = 3;
     } else if (currentMode === 'tree') {
         cards = placedCardsTree; prefix = 'tslot'; max = 10;
@@ -297,35 +563,37 @@ function placeCardInSlot(baseCard, isReversed) {
     const displayKorName = isReversed ? `${korNameOrigin} [역]` : korNameOrigin;
 
     // Remove plain background image assigned previously
-    slotEl.style.backgroundImage = 'none';
+    if (slotEl) {
+        slotEl.style.backgroundImage = 'none';
 
-    // Implement proper background layer for rotation without rotating the inner UI
-    let bgLayer = slotEl.querySelector('.slot-bg-layer');
-    if (!bgLayer) {
-        bgLayer = document.createElement('div');
-        bgLayer.className = 'slot-bg-layer';
-        slotEl.insertBefore(bgLayer, slotEl.firstChild);
+        // Implement proper background layer for rotation without rotating the inner UI
+        let bgLayer = slotEl.querySelector('.slot-bg-layer');
+        if (!bgLayer) {
+            bgLayer = document.createElement('div');
+            bgLayer.className = 'slot-bg-layer';
+            slotEl.insertBefore(bgLayer, slotEl.firstChild);
+        }
+        
+        const finalImg = card.image || `images/tarot_${card.id}.png`;
+        bgLayer.style.backgroundImage = `url('${finalImg}')`;
+        bgLayer.style.transform = isReversed ? 'rotate(180deg)' : 'none';
+        bgLayer.style.opacity = '1';
+
+        const contentEl = slotEl.querySelector('.slot-content');
+        if (contentEl) contentEl.innerHTML = displayKorName;
+        const tooltip = slotEl.querySelector('.slot-tooltip');
+        
+        // Switch meaning on tooltip based on orientation
+        let tipText = card.description || '';
+        if (card.meanings) {
+            const mSet = isReversed ? (card.meanings.reversed || card.meanings) : (card.meanings.upright || card.meanings);
+            const meaningText = mSet.general || (isReversed ? card.meanings.reversed : card.meanings.upright);
+            tipText += `\n\n[해석] ${meaningText}`;
+        }
+        if (tooltip) tooltip.innerText = tipText;
+
+        slotEl.setAttribute('data-active', 'true');
     }
-    
-    const finalImg = card.image || `images/tarot_${card.id}.png`;
-    bgLayer.style.backgroundImage = `url('${finalImg}')`;
-    bgLayer.style.transform = isReversed ? 'rotate(180deg)' : 'none';
-    bgLayer.style.opacity = '1';
-
-    slotEl.querySelector('.slot-content').innerHTML = displayKorName;
-    const tooltip = slotEl.querySelector('.slot-tooltip');
-    
-    // Switch meaning on tooltip based on orientation
-    let tipText = card.description;
-    if (card.meanings) {
-        const mSet = isReversed ? (card.meanings.reversed || card.meanings) : (card.meanings.upright || card.meanings);
-        const meaningText = mSet.general || (isReversed ? card.meanings.reversed : card.meanings.upright);
-        tipText += `\n\n[해석] ${meaningText}`;
-    }
-    if (tooltip) tooltip.innerText = tipText;
-
-    
-    slotEl.setAttribute('data-active', 'true');
 
     let nextIndex = activeSlotIndex + 1;
     if (nextIndex < max) {
@@ -338,6 +606,8 @@ function placeCardInSlot(baseCard, isReversed) {
         const slots = document.querySelectorAll('.slot');
         slots.forEach(s => s.classList.remove('active'));
     }
+
+    broadcastState();
 }
 
 function analyzeFullSpread(count) {
@@ -347,7 +617,23 @@ function analyzeFullSpread(count) {
     let isCeltic = false;
     let isZodiac = false;
 
-    if (count === 3 && currentMode === 'spread3') {
+    if (count === 1 && currentMode === 'spread1') {
+        cards = placedCards1;
+        allIndices = [0];
+        info = [
+            { t: '핵심 에너지 (CORE)', m: '현재 질문의 본질이자 우주의 명확한 한 줄기 해답' }
+        ];
+    } else if (count === 5 && currentMode === 'choice') {
+        cards = placedCardsChoice;
+        allIndices = [0, 1, 2, 3, 4];
+        info = [
+            { t: '현재 상황 (CURRENT)', m: '현재 놓인 기로와 고민' },
+            { t: '선택 A 흐름 (PATH A)', m: 'A를 택했을 때의 전개 과정' },
+            { t: '선택 A 결과 (OUTCOME A)', m: 'A 선택의 최종 결과' },
+            { t: '선택 B 흐름 (PATH B)', m: 'B를 택했을 때의 전개 과정' },
+            { t: '선택 B 결과 (OUTCOME B)', m: 'B 선택의 최종 결과' }
+        ];
+    } else if (count === 3 && currentMode === 'spread3') {
         cards = placedCards3;
         allIndices = [0, 1, 2];
         info = [
@@ -786,7 +1072,11 @@ function getSefirotColor(idx) {
 
 function clearBoard(count) {
     let cards, prefix, boardId;
-    if (count === 3 && currentMode === 'spread3') {
+    if (count === 1 && currentMode === 'spread1') {
+        cards = placedCards1; prefix = 's1slot'; boardId = 'spread1-board';
+    } else if (count === 5 && currentMode === 'choice') {
+        cards = placedCardsChoice; prefix = 'chslot'; boardId = 'choice-board';
+    } else if (count === 3 && currentMode === 'spread3') {
         cards = placedCards3; prefix = 's3slot'; boardId = 'spread3-board';
     } else if (count === 12 && currentMode === 'relation') {
         cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board';
@@ -798,7 +1088,6 @@ function clearBoard(count) {
         cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board';
     } else if (count === 12 && currentMode === 'zodiac') {
         cards = placedCardsZodiac; prefix = 'zslot'; boardId = 'zodiac-board';
-
     } else {
         cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
     }
@@ -816,10 +1105,13 @@ function clearBoard(count) {
         slot.removeAttribute('data-active');
     });
     activateSlot(0);
+    broadcastState();
 }
 
 function clearCurrentBoard() {
-    if (currentMode === 'spread3') clearBoard(3);
+    if (currentMode === 'spread1') clearBoard(1);
+    else if (currentMode === 'choice') clearBoard(5);
+    else if (currentMode === 'spread3') clearBoard(3);
     else if (currentMode === 'tree') clearBoard(10);
     else if (currentMode === 'relation') clearBoard(12);
     else if (currentMode === 'celtic') clearBoard(10);
@@ -830,9 +1122,10 @@ function clearCurrentBoard() {
 
 function filterCards() {
     const query = document.getElementById('universal-search').value.toLowerCase();
-    const filtered = tarotDataKo.filter(card => {
+    const allCards = getActiveDeckCards();
+    const filtered = allCards.filter(card => {
         const matchesQuery = card.name.toLowerCase().includes(query) ||
-            card.keywords.some(k => k.toLowerCase().includes(query));
+            (card.keywords && card.keywords.some(k => k.toLowerCase().includes(query)));
         const matchesSuit = currentFilter === 'all' || card.suit === currentFilter;
         return matchesQuery && matchesSuit;
     });
@@ -890,7 +1183,95 @@ function getMysticalAdvice(card) {
     return `✧ ${rawAdvice} ${pickRandom(outros)} ✧`;
 }
 
+function changeModalTab(tab) {
+    currentModalTab = tab;
+    document.querySelectorAll('.modal-tab-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-tab') === tab);
+    });
+    if (currentModalCard && currentDeck === 'samla') {
+        renderSamlaModalContent(currentModalCard, tab);
+    }
+}
+
+function renderSamlaModalContent(card, tab) {
+    const advContainer = document.getElementById('card-advanced-meanings');
+    if (!advContainer) return;
+
+    let html = '';
+    
+    // 1. 속성 뱃지들 (상시 표시)
+    if (card.attributes) {
+        const a = card.attributes;
+        html += `
+            <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:1rem; padding:8px 12px; background:rgba(212,175,55,0.08); border-radius:8px; border:1px solid rgba(212,175,55,0.2); font-size:0.8rem;">
+                <span style="color:#d4af37;">✦ 판정: <strong>${a.yes_no || '미상'}</strong></span>
+                <span style="color:#aaa;">|</span>
+                <span style="color:#e0e0e0;">속도: <strong>${a.speed || '보통'}</strong></span>
+                <span style="color:#aaa;">|</span>
+                <span style="color:#e0e0e0;">성향: <strong>${a.active_passive || '중립'}</strong></span>
+                <span style="color:#aaa;">|</span>
+                <span style="color:#e0e0e0;">오행: <strong>${a.element || '조화'}</strong></span>
+            </div>
+        `;
+    }
+
+    const formatSection = (title, icon, content, color = '#d4af37') => {
+        if (!content) return '';
+        return `
+            <div style="margin-bottom:1.2rem; background:rgba(255,255,255,0.03); border-left:3px solid ${color}; padding:10px 14px; border-radius:4px;">
+                <h4 style="color:${color}; margin:0 0 6px 0; font-size:0.95rem;">${icon} ${title}</h4>
+                <div style="color:#ccc; font-size:0.88rem; line-height:1.7; white-space:pre-line;">${content}</div>
+            </div>
+        `;
+    };
+
+    if (tab === 'all') {
+        if (card.character_desc) html += formatSection(`인물 해설 & MBTI (${card.mbti || ''})`, '🎭', card.character_desc, '#64b5f6');
+        if (card.fandom_reading) html += formatSection('덕질 & 관계 해석', '💖', card.fandom_reading, '#f06292');
+        if (card.real_reading) html += formatSection('현생운 (직장·학업·연애·금전)', '🌿', card.real_reading, '#81c784');
+        if (card.gold_foil_point) html += formatSection('백자개 & 박 포인트 상징', '✨', card.gold_foil_point, '#ffd54f');
+        if (card.meanings?.upright?.advice) html += formatSection('삼라만상 신성 조언', '🔮', card.meanings.upright.advice, '#ba68c8');
+    } else if (tab === 'character') {
+        if (card.character_desc) html += formatSection(`인물 해설 & MBTI (${card.mbti || ''})`, '🎭', card.character_desc, '#64b5f6');
+        else html += `<p style="color:#888;">해당 카드의 인물 상세 정보가 없습니다.</p>`;
+    } else if (tab === 'fandom') {
+        if (card.fandom_reading) html += formatSection('덕질 & 관계 해석', '💖', card.fandom_reading, '#f06292');
+        else html += `<p style="color:#888;">해당 카드의 덕질 해석 정보가 없습니다.</p>`;
+    } else if (tab === 'real') {
+        if (card.real_reading) html += formatSection('현생운 (직장·학업·연애·금전)', '🌿', card.real_reading, '#81c784');
+        else html += `<p style="color:#888;">해당 카드의 현생운 정보가 없습니다.</p>`;
+    } else if (tab === 'advice') {
+        if (card.gold_foil_point) html += formatSection('백자개 & 박 포인트 상징', '✨', card.gold_foil_point, '#ffd54f');
+        if (card.meanings?.upright?.advice) html += formatSection('삼라만상 신성 조언', '🔮', card.meanings.upright.advice, '#ba68c8');
+    }
+
+    advContainer.innerHTML = html;
+}
+
+function copyCardForLLM() {
+    if (!currentModalCard) return;
+    const c = currentModalCard;
+    let text = `[타로 카드: ${c.name}]\n`;
+    if (c.quote) text += `전언/명대사: "${c.quote}"\n`;
+    if (c.keywords) text += `키워드: ${c.keywords.join(', ')}\n`;
+    if (c.attributes) text += `속성: 판정(${c.attributes.yes_no}), 속도(${c.attributes.speed}), 성향(${c.attributes.active_passive}), 오행(${c.attributes.element})\n`;
+    if (c.mbti) text += `MBTI: ${c.mbti}\n`;
+    if (c.character_desc) text += `\n[인물 성향]\n${c.character_desc}\n`;
+    if (c.fandom_reading) text += `\n[덕질/관계 리딩]\n${c.fandom_reading}\n`;
+    if (c.real_reading) text += `\n[현생운 리딩]\n${c.real_reading}\n`;
+    if (c.gold_foil_point) text += `\n[상징 및 박 포인트]\n${c.gold_foil_point}\n`;
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert(`"${c.name}" 카드의 상세 정보가 LLM 프롬프트용 텍스트로 클립보드에 복사되었습니다!`);
+        }).catch(() => prompt("아래 텍스트를 복사하세요:", text));
+    } else {
+        prompt("아래 텍스트를 복사하세요:", text);
+    }
+}
+
 function showInterpretation(card) {
+    currentModalCard = card;
     const isRev = card.isReversed || false;
     const finalImg = card.image || `images/tarot_${card.id}.png`;
     const imgEl = document.getElementById('modal-card-img');
@@ -901,59 +1282,75 @@ function showInterpretation(card) {
 
     document.getElementById('card-suit-tag').textContent = card.suit === 'Major Arcana' ? '메이저' : card.suit;
     document.getElementById('card-name').textContent = card.name;
-    document.getElementById('card-desc').textContent = card.description;
+    document.getElementById('card-desc').textContent = card.description || '';
+
+    const quoteBox = document.getElementById('card-quote-box');
+    const modalTabContainer = document.getElementById('modal-tab-container');
+    const copyLLMBtn = document.getElementById('btn-copy-llm');
 
     const keywordsList = document.getElementById('keywords-list');
     keywordsList.innerHTML = '';
-    card.keywords.forEach(keyword => {
+    (card.keywords || []).forEach(keyword => {
         const tag = document.createElement('span');
         tag.className = 'keyword-tag';
         tag.textContent = keyword;
         keywordsList.appendChild(tag);
     });
 
-    const advContainer = document.getElementById('card-advanced-meanings');
-    if (advContainer) {
-        if (card.meanings) {
-            const isRev = card.isReversed || false;
-            const m = card.meanings;
-            // Get the correct set based on orientation
-            const mSet = isRev ? (m.reversed || m) : (m.upright || m);
-            const mode = currentInterpretationMode;
-            const refinedAdvice = getMysticalAdvice(card);
-            
-            let html = '';
-            const wrap = (title, content, color, active) => `
-                <div style="margin-bottom: 0.8rem; padding: 0.5rem; border-radius: 6px; ${active ? `background:rgba(${color}, 0.15); border:1px solid rgba(${color}, 0.3);` : 'opacity: 0.6;'}">
-                    <strong style="color:rgb(${color});">[${title}]</strong> ${content || '정보가 없습니다.'}
-                </div>`;
+    if (currentDeck === 'samla') {
+        if (quoteBox) {
+            quoteBox.textContent = card.quote ? `"${card.quote}"` : '';
+            quoteBox.style.display = card.quote ? 'block' : 'none';
+        }
+        if (modalTabContainer) modalTabContainer.style.display = 'flex';
+        if (copyLLMBtn) copyLLMBtn.style.display = 'inline-block';
+        renderSamlaModalContent(card, currentModalTab);
+    } else {
+        if (quoteBox) quoteBox.style.display = 'none';
+        if (modalTabContainer) modalTabContainer.style.display = 'none';
+        if (copyLLMBtn) copyLLMBtn.style.display = 'none';
 
-            if (mode === 'all' || mode === 'love') html += wrap('연애/관계', mSet.love, '255, 107, 107', mode === 'love');
-            if (mode === 'all' || mode === 'career') html += wrap('직업/성취', mSet.career, '77, 168, 218', mode === 'career');
-            if (mode === 'all' || mode === 'wealth') html += wrap('금전/재물', mSet.wealth || mSet.career, '241, 196, 15', mode === 'wealth');
-            if (mode === 'all' || mode === 'health') html += wrap('건강/활력', mSet.health, '46, 204, 113', mode === 'health');
-            
-            if (mode === 'all' || mode === 'advice') {
-                html += `
-                    <div style="background: rgba(46, 204, 113, ${mode === 'advice' ? '0.2' : '0.05'}); padding: 1rem; border-left: 4px solid #2ecc71; margin-top: 1rem; ${mode !== 'all' && mode !== 'advice' ? 'display:none;' : ''}">
-                        <strong style="color:#2ecc71; display: block; margin-bottom: 0.4rem;">🔮 신성한 조언 (Oracle)</strong> 
-                        <span style="color: #eee; line-height: 1.6;">${refinedAdvice}</span>
+        const advContainer = document.getElementById('card-advanced-meanings');
+        if (advContainer) {
+            if (card.meanings) {
+                const isRev = card.isReversed || false;
+                const m = card.meanings;
+                const mSet = isRev ? (m.reversed || m) : (m.upright || m);
+                const mode = currentInterpretationMode;
+                const refinedAdvice = getMysticalAdvice(card);
+                
+                let html = '';
+                const wrap = (title, content, color, active) => `
+                    <div style="margin-bottom: 0.8rem; padding: 0.5rem; border-radius: 6px; ${active ? `background:rgba(${color}, 0.15); border:1px solid rgba(${color}, 0.3);` : 'opacity: 0.6;'}">
+                        <strong style="color:rgb(${color});">[${title}]</strong> ${content || '정보가 없습니다.'}
+                    </div>`;
+
+                if (mode === 'all' || mode === 'love') html += wrap('연애/관계', mSet.love, '255, 107, 107', mode === 'love');
+                if (mode === 'all' || mode === 'career') html += wrap('직업/성취', mSet.career, '77, 168, 218', mode === 'career');
+                if (mode === 'all' || mode === 'wealth') html += wrap('금전/재물', mSet.wealth || mSet.career, '241, 196, 15', mode === 'wealth');
+                if (mode === 'all' || mode === 'health') html += wrap('건강/활력', mSet.health, '46, 204, 113', mode === 'health');
+                
+                if (mode === 'all' || mode === 'advice') {
+                    html += `
+                        <div style="background: rgba(46, 204, 113, ${mode === 'advice' ? '0.2' : '0.05'}); padding: 1rem; border-left: 4px solid #2ecc71; margin-top: 1rem; ${mode !== 'all' && mode !== 'advice' ? 'display:none;' : ''}">
+                            <strong style="color:#2ecc71; display: block; margin-bottom: 0.4rem;">🔮 신성한 조언 (Oracle)</strong> 
+                            <span style="color: #eee; line-height: 1.6;">${refinedAdvice}</span>
+                        </div>
+                    `;
+                }
+                
+                advContainer.innerHTML = `
+                    <div style="font-size: 0.95rem; margin-bottom: 1.5rem; color: #fff; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.2); padding: 1rem; border-radius: 8px;">
+                        <div style="color: ${isRev ? '#e74c3c' : '#d4af37'}; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
+                            ${isRev ? '역방향 (REVERSED)' : '정방향 (UPRIGHT)'} 상세 해석
+                        </div>
+                        <div style="line-height: 1.6;">${mSet.general || (isRev ? m.reversed : m.upright)}</div>
                     </div>
+                    ${html}
                 `;
+            } else {
+                advContainer.innerHTML = '';
             }
-            
-            // Highlight current orientation meaning prominently
-            advContainer.innerHTML = `
-                <div style="font-size: 0.95rem; margin-bottom: 1.5rem; color: #fff; background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.2); padding: 1rem; border-radius: 8px;">
-                    <div style="color: ${isRev ? '#e74c3c' : '#d4af37'}; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">
-                        ${isRev ? '역방향 (REVERSED)' : '정방향 (UPRIGHT)'} 상세 해석
-                    </div>
-                    <div style="line-height: 1.6;">${mSet.general || (isRev ? m.reversed : m.upright)}</div>
-                </div>
-                ${html}
-            `;
-        } else {
-            advContainer.innerHTML = '';
         }
     }
 
@@ -1023,7 +1420,9 @@ function copyFallback(text) {
 
 function showInterpretationOnTop(index, mode) {
     let cards;
-    if (mode === 'tree') cards = placedCardsTree;
+    if (mode === 'spread1') cards = placedCards1;
+    else if (mode === 'choice') cards = placedCardsChoice;
+    else if (mode === 'tree') cards = placedCardsTree;
     else if (mode === 'relation') cards = placedCardsRelation;
     else if (mode === 'celtic') cards = placedCardsCeltic;
     else if (mode === 'hexa') cards = placedCardsHexa;
@@ -1031,7 +1430,7 @@ function showInterpretationOnTop(index, mode) {
     else if (mode === 'spread3') cards = placedCards3;
     else cards = placedCards4;
 
-    const card = cards[index];
+    const card = cards ? cards[index] : null;
     const topBar = document.getElementById('top-interpretation');
 
     if (card && card.name) {
@@ -1040,7 +1439,7 @@ function showInterpretationOnTop(index, mode) {
             <div class="top-inter-inner">
                 <span class="top-tag">✧ AETHER SYNC ✧</span>
                 <span class="top-name">${card.name}</span>
-                <span class="top-desc">${card.description}</span>
+                <span class="top-desc">${card.description || ''}</span>
             </div>
         `;
     } else {
@@ -1053,13 +1452,18 @@ function clearTopInterpretation() {
 }
 
 function drawRandom() {
-    const randomIndex = Math.floor(Math.random() * tarotDataKo.length);
-    showInterpretation(tarotDataKo[randomIndex]);
+    const allCards = getActiveDeckCards();
+    const randomIndex = Math.floor(Math.random() * allCards.length);
+    showInterpretation(allCards[randomIndex]);
 }
 
 function fillSpreadRandomly() {
     let cards, max;
-    if (currentMode === 'spread3') {
+    if (currentMode === 'spread1') {
+        cards = placedCards1; max = 1;
+    } else if (currentMode === 'choice') {
+        cards = placedCardsChoice; max = 5;
+    } else if (currentMode === 'spread3') {
         cards = placedCards3; max = 3;
     } else if (currentMode === 'tree') {
         cards = placedCardsTree; max = 10;
@@ -1077,12 +1481,13 @@ function fillSpreadRandomly() {
 
     let placedIds = cards.filter(c => c).map(c => c.id);
 
-    const isReversedAllowed = document.getElementById('toggle-reversed').checked;
-    const isMinorAllowed = document.getElementById('toggle-minor').checked;
+    const isReversedAllowed = document.getElementById('toggle-reversed')?.checked || false;
+    const isMinorAllowed = document.getElementById('toggle-minor')?.checked !== false;
+    const allCards = getActiveDeckCards();
 
     for (let i = 0; i < max; i++) {
         if (!cards[i]) {
-            let availableCards = tarotDataKo.filter(c => {
+            let availableCards = allCards.filter(c => {
                 // 이미 뽑힌 카드 제외
                 if (placedIds.includes(c.id)) return false;
                 // 마이너 제외 옵션 체크
@@ -1095,7 +1500,6 @@ function fillSpreadRandomly() {
             const randomIndex = Math.floor(Math.random() * availableCards.length);
             const card = availableCards[randomIndex];
             placedIds.push(card.id);
-
 
             activeSlotIndex = i;
             // 50% chance for reverse only if allowed
@@ -1113,6 +1517,14 @@ function updateSpreadGuide(mode) {
     if (!guideBox || !titleEl || !descEl) return;
 
     const guides = {
+        'spread1': {
+            title: "원 카드 (One Card)",
+            desc: "직관적이고 명쾌한 단 한 장의 메시지. 하루의 운세나 긴급한 질문의 본질을 즉시 파악합니다."
+        },
+        'choice': {
+            title: "양자택일 (Two Choices)",
+            desc: "두 가지 선택지 사이에서 갈등할 때, A와 B 각각의 흐름과 최종 결말을 비교 분석합니다."
+        },
         'spread': {
             title: "포 카드 (Four Card)",
             desc: "과거, 현재, 미래, 그리고 문제를 해결할 조언까지 입체적으로 파악합니다."
@@ -1296,6 +1708,7 @@ function syncAllLines() {
     else if (currentMode === 'relation') drawRelationLines();
     else if (currentMode === 'spread') drawFourCardLines();
     else if (currentMode === 'spread3') drawThreeCardLines();
+    else if (currentMode === 'choice') drawChoiceLines();
     else if (currentMode === 'zodiac') drawZodiacLines();
     else if (currentMode === 'celtic') drawCelticLines();
 }
@@ -1307,6 +1720,7 @@ function getSlotCenter(id, mode) {
     let svgContainer;
     if (mode === 'tree') svgContainer = document.querySelector('#tree-board .tree-bg-overlay svg');
     else if (mode === 'relation') svgContainer = document.querySelector('#relation-board .relation-bg-overlay svg');
+    else if (mode === 'choice') svgContainer = document.querySelector('#choice-board .choice-bg-overlay svg');
     else if (mode === 'spread') svgContainer = document.querySelector('#spread-board .spread-bg-overlay svg');
     else if (mode === 'spread3') svgContainer = document.querySelector('#spread3-board .spread3-bg-overlay svg');
     else if (mode === 'zodiac') svgContainer = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
@@ -1328,6 +1742,23 @@ function getSlotCenter(id, mode) {
         };
     }
     return { x, y };
+}
+
+function drawChoiceLines() {
+    const container = document.querySelector('#choice-board .choice-bg-overlay svg');
+    if (!container) return;
+    const connections = [[0, 1], [1, 2], [0, 3], [3, 4]];
+    let html = `<defs><filter id="choice-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    connections.forEach(([s, e]) => {
+        const p1 = getSlotCenter(`chslot-${s}`, 'choice');
+        const p2 = getSlotCenter(`chslot-${e}`, 'choice');
+        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+    });
+    for(let i=0; i<5; i++) {
+        const p = getSlotCenter(`chslot-${i}`, 'choice');
+        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#choice-star-glow)" />`;
+    }
+    container.innerHTML = html;
 }
 
 function drawTreeLines() {
@@ -1474,7 +1905,9 @@ window.addEventListener('resize', syncAllLines);
 const obsChannel = new BroadcastChannel('tarot_obs_channel');
 function broadcastState() {
     let cards;
-    if (currentMode === 'spread3') cards = placedCards3;
+    if (currentMode === 'spread1') cards = placedCards1;
+    else if (currentMode === 'choice') cards = placedCardsChoice;
+    else if (currentMode === 'spread3') cards = placedCards3;
     else if (currentMode === 'tree') cards = placedCardsTree;
     else if (currentMode === 'relation') cards = placedCardsRelation;
     else if (currentMode === 'celtic') cards = placedCardsCeltic;
@@ -1482,15 +1915,15 @@ function broadcastState() {
     else if (currentMode === 'zodiac') cards = placedCardsZodiac;
     else cards = placedCards4;
 
-    const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
-    const payload = { type: 'update_spread', mode: currentMode, cards: cards, key: secretKey };
+    const secretKey = currentOBSKey || (document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default');
+    const payload = { type: 'update_spread', mode: currentMode, cards: cards, key: secretKey, deck: currentDeck };
     obsChannel.postMessage(payload);
     fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
 }
 
 function clearOBSBoard() {
-    const secretKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default';
-    const payload = { type: 'update_spread', mode: currentMode, cards: [], key: secretKey };
+    const secretKey = currentOBSKey || (document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default');
+    const payload = { type: 'update_spread', mode: currentMode, cards: [], key: secretKey, deck: currentDeck };
     obsChannel.postMessage(payload);
     fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
 }
