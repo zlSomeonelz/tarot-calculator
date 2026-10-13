@@ -382,7 +382,7 @@ function setDeckMode(mode) {
     const copyLLMBtn = document.getElementById('btn-copy-llm');
 
     if (mode === 'samla') {
-        if (btnText) btnText.textContent = "🌙 정통 웨이트 타로로 복귀";
+        if (btnText) btnText.textContent = "🌙 기본 타로로 복귀";
         if (btnIcon) btnIcon.textContent = "🌙";
         if (modalTabContainer) modalTabContainer.style.display = 'flex';
         if (quoteBox) quoteBox.style.display = 'block';
