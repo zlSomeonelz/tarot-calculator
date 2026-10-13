@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261013_v23">
+    <link rel="stylesheet" href="style.css?v=20261013_v24">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -50,6 +50,7 @@
                     <button id="view-tree" class="mode-btn" onclick="switchMode('tree')">세피로트의 나무 (10장)</button>
                     <button id="view-hexa" class="mode-btn" onclick="switchMode('hexa')">헥사그램 (7장)</button>
                     <button id="view-zodiac" class="mode-btn" onclick="switchMode('zodiac')">조디악 (12궁 12장)</button>
+                    <button id="view-search" class="mode-btn" onclick="switchMode('search')" style="border-color: rgba(212,175,55,0.6); color: var(--accent-gold); font-weight: 700;">📖 카드 도감</button>
                 </nav>
             </div>
                 <!-- 일반 사이트 액션 -->
@@ -921,8 +922,15 @@
 
 
 
-            <!-- 검색 영역 -->
-            <section id="card-selection-area">
+            <!-- 스프레드 전용 카드 목록 펼쳐보기 바 -->
+            <div id="spread-card-picker-bar" class="spread-card-picker-bar">
+                <button id="btn-toggle-spread-cards" class="btn-toggle-spread-cards" onclick="toggleSpreadCardsGrid()">
+                    <span id="toggle-cards-icon">🃏</span> <span id="toggle-cards-text">스프레드에 배치할 카드 목록 펼쳐보기</span>
+                </button>
+            </div>
+
+            <!-- 카드 도감 및 검색 영역 (기본 숨김) -->
+            <section id="card-selection-area" class="hidden">
                 <div class="search-wrap">
                     <input type="text" id="universal-search" placeholder="영혼의 울림을 따라 검색하세요..." oninput="filterCards()">
                     <div id="search-filters" class="filter-tabs">
@@ -933,7 +941,6 @@
                         <button class="tab-btn suit-filter" onclick="setFilter(this, 'Swords')">소드</button>
                         <button class="tab-btn suit-filter" onclick="setFilter(this, 'Pentacles')">펜타클</button>
                         <button class="tab-btn rand-btn" onclick="drawRandom()">랜덤</button>
-                        <button id="toggle-card-view-btn" class="tab-btn card-view-btn" onclick="toggleCardImageView()" title="카드를 열 때 대역폭을 절약하기 위해 기본은 뒷면으로 뜨며, 누르면 일러스트가 로드됩니다.">🖼️ 카드 일러스트 보기</button>
                     </div>
                 </div>
                 <div id="cards-grid" class="cards-grid"></div>
@@ -1068,9 +1075,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v23"></script>
-    <script src="data_samla.js?v=20261013_v23"></script>
-    <script src="app.js?v=20261013_v23"></script>
+    <script src="data_ko.js?v=20261013_v24"></script>
+    <script src="data_samla.js?v=20261013_v24"></script>
+    <script src="app.js?v=20261013_v24"></script>
 </body>
 
 </html>

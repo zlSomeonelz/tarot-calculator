@@ -514,83 +514,36 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-let isCardImagesVisible = false;
-let cardGridObserver = null;
+let isSpreadCardAreaOpen = false;
 
-function initCardGridObserver() {
-    if (!('IntersectionObserver' in window)) return null;
-    return new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const cardEl = entry.target;
-                const imgUrl = cardEl.dataset.img;
-                if (imgUrl && isCardImagesVisible) {
-                    cardEl.style.backgroundImage = `url('${imgUrl}')`;
-                    cardEl.classList.add('has-art');
-                }
-                observer.unobserve(cardEl);
-            }
-        });
-    }, { rootMargin: '200px 0px' });
-}
+function toggleSpreadCardsGrid() {
+    isSpreadCardAreaOpen = !isSpreadCardAreaOpen;
+    const cardArea = document.getElementById('card-selection-area');
+    const toggleBtn = document.getElementById('btn-toggle-spread-cards');
+    const toggleText = document.getElementById('toggle-cards-text');
+    const toggleIcon = document.getElementById('toggle-cards-icon');
 
-function toggleCardImageView() {
-    isCardImagesVisible = !isCardImagesVisible;
-    const btn = document.getElementById('toggle-card-view-btn');
-    if (btn) {
-        if (isCardImagesVisible) {
-            btn.classList.add('active');
-            btn.innerHTML = '🃏 카드 뒷면으로 보기';
-            btn.title = '클릭하면 카드 뒷면으로 전환하여 리소스와 대역폭을 절약합니다.';
-        } else {
-            btn.classList.remove('active');
-            btn.innerHTML = '🖼️ 카드 일러스트 보기';
-            btn.title = '대역폭을 절약하기 위해 기본은 뒷면으로 뜨며, 누르면 일러스트가 로드됩니다.';
+    if (cardArea) {
+        cardArea.classList.toggle('hidden', !isSpreadCardAreaOpen);
+    }
+    if (toggleBtn) {
+        toggleBtn.classList.toggle('active', isSpreadCardAreaOpen);
+        if (toggleText) {
+            toggleText.textContent = isSpreadCardAreaOpen ? '카드 목록 접기' : '스프레드에 배치할 카드 목록 펼쳐보기';
+        }
+        if (toggleIcon) {
+            toggleIcon.textContent = isSpreadCardAreaOpen ? '🔼' : '🃏';
         }
     }
-    applyCardGridImages();
-}
-
-function applyCardGridImages() {
-    const gridCards = document.querySelectorAll('.cards-grid .grid-card');
-    if (cardGridObserver) {
-        cardGridObserver.disconnect();
-    }
-
-    if (isCardImagesVisible) {
-        if ('IntersectionObserver' in window) {
-            cardGridObserver = initCardGridObserver();
-            gridCards.forEach(cardEl => {
-                if (cardEl.dataset.img) {
-                    cardGridObserver.observe(cardEl);
-                }
-            });
-        } else {
-            gridCards.forEach(cardEl => {
-                if (cardEl.dataset.img) {
-                    cardEl.style.backgroundImage = `url('${cardEl.dataset.img}')`;
-                    cardEl.classList.add('has-art');
-                }
-            });
-        }
-    } else {
-        gridCards.forEach(cardEl => {
-            cardEl.style.backgroundImage = '';
-            cardEl.classList.remove('has-art');
-        });
+    if (isSpreadCardAreaOpen) {
+        filterCards();
     }
 }
 
 function setupGrid(cards) {
     const grid = document.getElementById('cards-grid');
+    if (!grid) return;
     grid.innerHTML = '';
-
-    if (cardGridObserver) {
-        cardGridObserver.disconnect();
-    }
-    if (isCardImagesVisible && 'IntersectionObserver' in window) {
-        cardGridObserver = initCardGridObserver();
-    }
 
     cards.forEach(card => {
         let korName = card.name;
@@ -603,19 +556,11 @@ function setupGrid(cards) {
 
         const cardEl = document.createElement('div');
         cardEl.className = 'grid-card';
-        cardEl.dataset.img = card.image || '';
-
-        if (isCardImagesVisible) {
-            if (cardGridObserver && card.image) {
-                cardGridObserver.observe(cardEl);
-            } else if (card.image) {
-                cardEl.style.backgroundImage = `url('${card.image}')`;
-                cardEl.classList.add('has-art');
-            }
+        if (card.image) {
+            cardEl.style.backgroundImage = `url('${card.image}')`;
         }
 
         cardEl.innerHTML = `
-            <span class="card-back-ornament">✦</span>
             <div class="name">
                 <span class="kor">${korName}</span>
                 ${engName ? `<span class="eng">${engName}</span>` : ''}
@@ -635,6 +580,8 @@ function setupGrid(cards) {
 
 function switchMode(mode) {
     currentMode = mode;
+    const isSearch = (mode === 'search');
+
     const boardSpread1 = document.getElementById('spread1-board');
     const boardChoice = document.getElementById('choice-board');
     if (boardSpread1) boardSpread1.classList.toggle('hidden', mode !== 'spread1');
@@ -647,19 +594,33 @@ function switchMode(mode) {
     document.getElementById('hexa-board').classList.toggle('hidden', mode !== 'hexa');
     document.getElementById('zodiac-board').classList.toggle('hidden', mode !== 'zodiac');
 
+    // 카드 도감(검색) 영역 및 펼치기 바 상태 제어
+    const cardArea = document.getElementById('card-selection-area');
+    const pickerBar = document.getElementById('spread-card-picker-bar');
+
+    if (isSearch) {
+        // [카드 도감] 모드: 카드 목록 항상 전체 노출! 펼치기 바는 숨김
+        if (cardArea) cardArea.classList.remove('hidden');
+        if (pickerBar) pickerBar.classList.add('hidden');
+        filterCards();
+    } else {
+        // [스프레드] 모드: 카드 목록은 기본 숨김(펼쳐보기 버튼 눌렀을 때만 노출)
+        if (cardArea) cardArea.classList.toggle('hidden', !isSpreadCardAreaOpen);
+        if (pickerBar) pickerBar.classList.remove('hidden');
+    }
+
     updateSpreadGuide(mode);
 
-    // UI Tab Sync (Check for null to prevent errors)
-    const btns = ['view-spread1', 'view-spread3', 'view-spread', 'view-choice', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac'];
-    const modes = ['spread1', 'spread3', 'spread', 'choice', 'relation', 'tree', 'celtic', 'hexa', 'zodiac'];
+    // UI Tab Sync
+    const btns = ['view-spread1', 'view-spread3', 'view-spread', 'view-choice', 'view-relation', 'view-tree', 'view-celtic', 'view-hexa', 'view-zodiac', 'view-search'];
+    const modes = ['spread1', 'spread3', 'spread', 'choice', 'relation', 'tree', 'celtic', 'hexa', 'zodiac', 'search'];
 
     btns.forEach((id, i) => {
         const btn = document.getElementById(id);
         if (btn) btn.classList.toggle('active', mode === modes[i]);
     });
 
-    if (modes.includes(mode)) {
-        // Just set the active index and highlight, don't trigger search
+    if (modes.includes(mode) && mode !== 'search') {
         activeSlotIndex = 0;
         const slots = document.querySelectorAll('.slot');
         slots.forEach(slot => slot.classList.remove('active'));
@@ -683,7 +644,11 @@ function switchMode(mode) {
     setTimeout(() => {
         if (typeof syncAllLines === 'function') syncAllLines();
     }, 60);
-    broadcastState();
+
+    // OBS 화면 송출 동기화 (단, 카드 도감 열람 모드일 때는 OBS 화면을 덮어쓰지 않음)
+    if (mode !== 'search') {
+        broadcastState();
+    }
 }
 
 function setInterpretationMode(mode) {
@@ -1886,6 +1851,10 @@ function updateSpreadGuide(mode) {
         'zodiac': {
             title: "조디악 12궁 (Zodiac Spread)",
             desc: "우주가 선사한 12개의 방(House)을 통해 자아, 재물, 소통 등 인생의 모든 영역을 아우르는 거대한 운명의 흐름을 조망합니다."
+        },
+        'search': {
+            title: "타로 카드 도감 (전체 카드 보기)",
+            desc: "78장의 타로 카드 일러스트와 상징 체계, 정·역방향 해설을 열람합니다. 카드를 클릭하면 상세 해설 모달이 열립니다."
         }
     };
 

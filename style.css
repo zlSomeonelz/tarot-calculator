@@ -1045,28 +1045,43 @@ section {
 
 .tab-btn.rand-btn { border-color: var(--accent-purple); color: var(--accent-purple); margin-left: auto; }
 
-.tab-btn.card-view-btn {
-    border: 1px solid rgba(212, 175, 55, 0.45);
+/* Spread Card Picker Bar (Collapsible during spreads) */
+.spread-card-picker-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 2.5rem 0 1rem;
+}
+
+.btn-toggle-spread-cards {
     background: rgba(212, 175, 55, 0.08);
+    border: 1px dashed rgba(212, 175, 55, 0.45);
     color: var(--accent-gold);
+    padding: 0.75rem 1.8rem;
+    border-radius: 30px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.25s ease;
+    gap: 0.6rem;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 }
-.tab-btn.card-view-btn:hover {
+
+.btn-toggle-spread-cards:hover {
+    background: rgba(212, 175, 55, 0.18);
     border-color: var(--accent-gold);
-    background: rgba(212, 175, 55, 0.16);
-    box-shadow: 0 0 12px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.35);
+    transform: translateY(-2px);
 }
-.tab-btn.card-view-btn.active {
-    background: linear-gradient(135deg, #d4af37, #f1c40f) !important;
-    color: #000 !important;
-    font-weight: 800 !important;
-    border-color: #f1c40f !important;
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.45);
+
+.btn-toggle-spread-cards.active {
+    background: rgba(212, 175, 55, 0.22);
+    border-style: solid;
+    border-color: var(--accent-gold);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
 }
 
 /* Grid Styling */
@@ -1080,7 +1095,7 @@ section {
 
 .grid-card {
     aspect-ratio: 1024 / 1792;
-    background: #0d0b14 url('card-back.png') center / cover no-repeat;
+    background: #0a0a0f center / cover no-repeat;
     border: 1.5px solid rgba(212, 175, 55, 0.25);
     border-radius: 12px;
     position: relative;
@@ -1100,21 +1115,6 @@ section {
     border-color: rgba(212, 175, 55, 0.7);
     z-index: 50;
     box-shadow: 0 20px 50px rgba(0,0,0,0.8), 0 0 20px rgba(212, 175, 55, 0.25);
-}
-
-.grid-card .card-back-ornament {
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.8rem;
-    color: rgba(212, 175, 55, 0.35);
-    text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
-    pointer-events: none;
-    transition: all 0.3s ease;
-}
-.grid-card.has-art .card-back-ornament {
-    display: none;
 }
 
 .grid-card .name {
