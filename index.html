@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261013_v10">
+    <link rel="stylesheet" href="style.css?v=20261013_v11">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
@@ -107,16 +107,37 @@
                 </div>
             </div>
 
-            <!-- OBS 방송 송출 전용 컨트롤 패널 -->
-            <div class="obs-control-panel" style="display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; padding: 1.2rem; background: rgba(0,0,0,0.6); border-radius: 12px; border: 1px solid rgba(212,175,55,0.3); box-shadow: inset 0 0 20px rgba(0,0,0,0.8);">
-                <div style="color:var(--accent-gold); font-size:0.9rem; font-weight:800; letter-spacing:1px; margin-right: 10px;">[OBS 송출 컨트롤]</div>
-                
-                <input type="text" id="obs-secret" placeholder="방송 비밀키 (예: 타로마스터1)" style="padding: 0.8rem 1rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); background: rgba(20,20,20,0.8); color: #fff; text-align: center; min-width: 160px;" title="독립된 방송 채널을 만들기 위한 비밀번호입니다">
-                
-                <button class="btn-outline" style="border-color:#c0c0c0; color:#c0c0c0; padding: 0.8rem 1rem;" onclick="copyOBSUrl()">🔗 송출 URL 1초 복사</button>
-                <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.8rem 1rem; font-weight: bold; background: rgba(46,204,113,0.1);" onclick="broadcastState()">📺 화면 송출 (적용)</button>
-                <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; padding: 0.8rem 1rem; background: rgba(231,76,60,0.1);" onclick="clearOBSBoard()">🚫 화면 지우기</button>
-                <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.8rem 1rem;" onclick="showOBSGuide()">❓ 가이드</button>
+            <!-- OBS 방송 송출 & 로그인 센터 통합 컨트롤 패널 -->
+            <div class="auth-obs-center-panel" style="display: flex; gap: 0.8rem; margin-top: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap; padding: 1.1rem 1.4rem; background: rgba(10,12,20,0.85); border-radius: 14px; border: 1px solid rgba(212,175,55,0.35); box-shadow: 0 4px 25px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.6);">
+                <!-- 비로그인 상태일 때 -->
+                <div id="auth-panel-logged-out" class="auth-panel-group" style="display: flex; gap: 0.9rem; align-items: center; flex-wrap: wrap; justify-content: center;">
+                    <div style="color:var(--accent-gold); font-size:0.95rem; font-weight:800; letter-spacing:0.5px;">
+                        📡 <span>방송(OBS) 송출 & 로그인</span>
+                    </div>
+                    <span style="color:#aaa; font-size:0.85rem;">로그인 시 개인 방송 전용 송출키가 발급되어 다른 방송과 화면이 섞이지 않습니다.</span>
+                    <button class="btn-main-gold" style="font-weight:700; padding: 0.6rem 1.3rem; box-shadow: 0 0 15px rgba(212,175,55,0.4);" onclick="openAuthModal('login')">🔑 로그인 / 회원가입</button>
+                    <button class="btn-outline" style="border-color:#aaa; color:#aaa; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="copyOBSUrl()" title="로그인 없이 기본 OBS 주소 복사">🔗 게스트 OBS 주소</button>
+                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="broadcastState()">📺 화면 송출</button>
+                    <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="clearOBSBoard()">🚫 화면 지우기</button>
+                    <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 가이드</button>
+                </div>
+
+                <!-- 로그인 상태일 때 -->
+                <div id="auth-panel-logged-in" class="auth-panel-group hidden" style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap; justify-content: center;">
+                    <div class="user-badge" style="background: rgba(212,175,55,0.12); border: 1px solid rgba(212,175,55,0.3); padding: 0.4rem 0.9rem; border-radius: 20px; display: flex; align-items: center; gap: 0.5rem;">
+                        <span class="user-icon">👤</span>
+                        <span id="user-email-display-panel" style="color:#fff; font-weight:700; font-size:0.9rem;"></span>
+                    </div>
+                    <div style="color:#ddd; font-size:0.85rem; background:rgba(0,0,0,0.5); padding:0.4rem 0.8rem; border-radius:8px; border:1px solid rgba(255,255,255,0.1);">
+                        고유 송출키: <code id="user-key-display-panel" style="color:var(--accent-gold); font-weight:bold;">obs_...</code>
+                    </div>
+                    <button class="btn-main-gold" style="font-weight:700; padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #d4af37, #f1c40f); color: #000; box-shadow: 0 0 15px rgba(212,175,55,0.4);" onclick="copyUserOBSUrl()">📡 내 OBS 주소 1초 복사</button>
+                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-weight:bold; background:rgba(46,204,113,0.1);" onclick="broadcastState()">📺 화면 송출</button>
+                    <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; padding: 0.6rem 0.9rem; background:rgba(231,76,60,0.1);" onclick="clearOBSBoard()">🚫 화면 지우기</button>
+                    <button class="btn-outline" style="border-color:#888; color:#bbb; padding: 0.6rem 0.8rem; font-size:0.82rem;" onclick="regenerateUserOBSKey()" title="OBS 송출키 새로 발급">🔄 키 재발급</button>
+                    <button class="btn-outline" style="border-color:#555; color:#999; padding: 0.6rem 0.8rem; font-size:0.82rem;" onclick="handleLogout()">로그아웃</button>
+                    <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 가이드</button>
+                </div>
             </div>
             
             <div id="top-interpretation" class="hidden fade-in"></div>
@@ -630,14 +651,13 @@
                                 <polygon points="450,770 173,290 727,290" fill="none" />
 
                                 <!-- Central Connections -->
-                                <line x1="450" y1="130" x2="450" y2="770" opacity="0.2" stroke-dasharray="6 6" />
-                                <line x1="173" y1="290" x2="727" y2="610" opacity="0.2" stroke-dasharray="6 6" />
-                                <line x1="173" y1="610" x2="727" y2="290" opacity="0.2" stroke-dasharray="6 6" />
+                                <line x1="450" y1="130" x2="450" y2="770" stroke="rgba(212,175,55,0.3)" stroke-width="1.2" />
+                                <line x1="173" y1="290" x2="727" y2="610" stroke="rgba(212,175,55,0.3)" stroke-width="1.2" />
+                                <line x1="173" y1="610" x2="727" y2="290" stroke="rgba(212,175,55,0.3)" stroke-width="1.2" />
 
                                 <!-- Magic Circles -->
-                                <circle cx="450" cy="450" r="320" fill="none" stroke-opacity="0.3"
-                                    stroke-dasharray="10 5" />
-                                <circle cx="450" cy="450" r="140" fill="none" stroke-opacity="0.2" />
+                                <circle cx="450" cy="450" r="320" fill="none" stroke="rgba(212,175,55,0.35)" stroke-width="1.2" />
+                                <circle cx="450" cy="450" r="140" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" />
 
                                 <!-- Star Nodes -->
                                 <circle cx="450" cy="130" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />
@@ -724,16 +744,14 @@
                                     </filter>
                                 </defs>
                                 <!-- Central Sun / Core -->
-                                <circle cx="500" cy="500" r="100" fill="none" stroke-opacity="0.3"
-                                    stroke-dasharray="10 5" />
-                                <circle cx="500" cy="500" r="40" fill="none" />
+                                <circle cx="500" cy="500" r="100" fill="none" stroke="rgba(212,175,55,0.35)" stroke-width="1.2" />
+                                <circle cx="500" cy="500" r="40" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" />
                                 <circle cx="500" cy="500" r="8" fill="#d4af37" filter="url(#zodiac-star-glow)" />
                                 <!-- The Sun -->
 
                                 <!-- Outer Zodiac Wheel Rings -->
-                                <circle cx="500" cy="500" r="420" fill="none" stroke-opacity="0.4" />
-                                <circle cx="500" cy="500" r="300" fill="none" stroke-opacity="0.2"
-                                    stroke-dasharray="8 8" />
+                                <circle cx="500" cy="500" r="420" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1.5" />
+                                <circle cx="500" cy="500" r="300" fill="none" stroke="rgba(212,175,55,0.28)" stroke-width="1.2" />
 
                                 <!-- Spoke Lines for 12 Houses -->
                                 <!-- 1 and 7 (9 to 3 o'clock) -->
@@ -973,9 +991,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v10"></script>
-    <script src="data_samla.js?v=20261013_v10"></script>
-    <script src="app.js?v=20261013_v10"></script>
+    <script src="data_ko.js?v=20261013_v11"></script>
+    <script src="data_samla.js?v=20261013_v11"></script>
+    <script src="app.js?v=20261013_v11"></script>
 </body>
 
 </html>

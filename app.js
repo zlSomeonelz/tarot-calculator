@@ -58,10 +58,19 @@ async function updateAuthUI(user) {
     const emailDisplay = document.getElementById('user-email-display');
     const samlaBanner = document.getElementById('samla-hidden-badge-wrap');
 
+    const panelLoggedOut = document.getElementById('auth-panel-logged-out');
+    const panelLoggedIn = document.getElementById('auth-panel-logged-in');
+    const panelEmail = document.getElementById('user-email-display-panel');
+    const panelKey = document.getElementById('user-key-display-panel');
+
     if (user) {
         if (loggedOutEl) loggedOutEl.classList.add('hidden');
         if (loggedInEl) loggedInEl.classList.remove('hidden');
         if (emailDisplay) emailDisplay.textContent = user.email.split('@')[0];
+
+        if (panelLoggedOut) panelLoggedOut.classList.add('hidden');
+        if (panelLoggedIn) panelLoggedIn.classList.remove('hidden');
+        if (panelEmail) panelEmail.textContent = user.email;
 
         // 유저 메타데이터에 obs_key가 없으면 자동 생성 및 저장
         let userKey = user.user_metadata?.obs_key;
@@ -71,6 +80,7 @@ async function updateAuthUI(user) {
         }
         currentOBSKey = userKey;
         localStorage.setItem('obs_user_key', userKey);
+        if (panelKey) panelKey.textContent = userKey;
 
         // whtjss1230@gmail.com 계정일 때만 삼라만상 히든 배너 노출!
         if (user.email.toLowerCase() === MASTER_EMAIL.toLowerCase()) {
@@ -83,6 +93,11 @@ async function updateAuthUI(user) {
         if (loggedOutEl) loggedOutEl.classList.remove('hidden');
         if (loggedInEl) loggedInEl.classList.add('hidden');
         if (samlaBanner) samlaBanner.classList.add('hidden');
+
+        if (panelLoggedOut) panelLoggedOut.classList.remove('hidden');
+        if (panelLoggedIn) panelLoggedIn.classList.add('hidden');
+        if (panelKey) panelKey.textContent = 'default';
+
         currentOBSKey = 'default';
         localStorage.removeItem('obs_user_key');
         if (currentDeck === 'samla') setDeckMode('classic');
@@ -95,13 +110,23 @@ function openAuthModal(tab = 'login') {
     authCurrentTab = tab;
     switchAuthTab(tab);
     const overlay = document.getElementById('auth-modal-overlay');
-    if (overlay) overlay.classList.remove('hidden');
+    if (overlay) {
+        overlay.classList.remove('hidden');
+        overlay.style.display = 'flex';
+    }
     clearAuthMessages();
+    setTimeout(() => {
+        const inp = document.getElementById('auth-email');
+        if (inp) inp.focus();
+    }, 120);
 }
 
 function closeAuthModal() {
     const overlay = document.getElementById('auth-modal-overlay');
-    if (overlay) overlay.classList.add('hidden');
+    if (overlay) {
+        overlay.classList.add('hidden');
+        overlay.style.display = 'none';
+    }
     clearAuthMessages();
 }
 
@@ -156,7 +181,7 @@ async function submitAuthForm() {
             });
             if (error) throw error;
             if (succEl) {
-                succEl.textContent = "회원가입이 완료되었습니다! 로그인 상태로 전환됩니다.";
+                succEl.textContent = "회원가입이 완료되었습니다! 로그인 상태로 자동 전환됩니다.";
                 succEl.classList.remove('hidden');
             }
             setTimeout(() => { closeAuthModal(); }, 1200);
@@ -164,9 +189,13 @@ async function submitAuthForm() {
     } catch (err) {
         if (errEl) {
             let msg = err.message || "오류가 발생했습니다.";
-            if (msg.includes("Invalid login credentials")) msg = "이메일 또는 비밀번호가 일치하지 않습니다.";
-            if (msg.includes("already registered")) msg = "이미 가입된 이메일 주소입니다.";
-            if (msg.includes("Password should be at least")) msg = "비밀번호는 최소 6자리 이상이어야 합니다.";
+            if (msg.includes("Invalid login credentials")) {
+                msg = "이메일 또는 비밀번호가 일치하지 않거나 아직 등록되지 않은 계정입니다. 계정이 없다면 위의 [회원가입] 탭을 눌러 가입해 주세요!";
+            } else if (msg.includes("already registered") || msg.includes("User already registered")) {
+                msg = "이미 가입된 이메일 주소입니다. [로그인] 탭에서 로그인해 주세요.";
+            } else if (msg.includes("Password should be at least")) {
+                msg = "비밀번호는 최소 6자리 이상이어야 합니다.";
+            }
             errEl.textContent = msg;
             errEl.classList.remove('hidden');
         }
@@ -271,6 +300,16 @@ document.addEventListener('DOMContentLoaded', () => {
     switchMode('spread');
     updateSpreadGuide(currentMode);
     requestAnimationFrame(syncAllLines);
+
+    const emailInp = document.getElementById('auth-email');
+    const passInp = document.getElementById('auth-password');
+    [emailInp, passInp].forEach(inp => {
+        if (inp) {
+            inp.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') submitAuthForm();
+            });
+        }
+    });
 });
 
 function setupGrid(cards) {
@@ -1817,7 +1856,7 @@ function drawFourCardLines() {
             html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />`;
         }
     }
-    if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+    if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#standard-star-glow)" />`;
     container.innerHTML = html;
 }
 
@@ -1833,7 +1872,7 @@ function drawThreeCardLines() {
             html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#spread3-star-glow)" />`;
         }
     }
-    if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+    if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#spread3-star-glow)" />`;
     container.innerHTML = html;
 }
 
@@ -1881,7 +1920,7 @@ function drawCelticLines() {
     // Circle at center
     const pCenter = getSlotCenter('cslot-0', 'celtic');
     if (pCenter) {
-        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="150" fill="none" stroke="rgba(212,175,55,0.2)" stroke-width="1.5" stroke-dasharray="8 4" />`;
+        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="150" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1.5" filter="url(#celtic-star-glow)" />`;
     }
 
     connections.forEach(([s, e]) => {

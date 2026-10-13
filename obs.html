@@ -300,7 +300,7 @@
             let html = `<defs><filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
             let centers = [];
             for(let i=0; i<4; i++) { const p = getSlotCenter(`slot-${i}`, 'spread'); if(p) centers.push(p); }
-            if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+            if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#standard-star-glow)" />`;
             container.innerHTML = html;
         }
 
@@ -310,7 +310,7 @@
             let html = `<defs><filter id="spread3-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
             let centers = [];
             for(let i=0; i<3; i++) { const p = getSlotCenter(`s3slot-${i}`, 'spread3'); if(p) centers.push(p); }
-            if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.7)" stroke-width="1.5" stroke-dasharray="10 5" />`;
+            if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#spread3-star-glow)" />`;
             container.innerHTML = html;
         }
 
@@ -336,7 +336,7 @@
             const connections = [[2, 0], [0, 3], [4, 0], [0, 5], [6, 7], [7, 8], [8, 9]];
             let html = `<defs><filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
             const pCenter = getSlotCenter('cslot-0', 'celtic');
-            if (pCenter) html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="150" fill="none" stroke="rgba(212,175,55,0.2)" stroke-width="1.5" stroke-dasharray="8 4" />`;
+            if (pCenter) html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="150" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1.5" filter="url(#celtic-star-glow)" />`;
             connections.forEach(([s, e]) => {
                 const p1 = getSlotCenter(`cslot-${s}`, 'celtic');
                 const p2 = getSlotCenter(`cslot-${e}`, 'celtic');
