@@ -39,82 +39,77 @@ function generateRandomStreamKey() {
 }
 
 // Supabase Cloud Realtime Channel for OBS Broadcast
-let supabaseRealtimeChannel = null;
-let defaultFallbackChannel = null;
+let personalRealtimeChannel = null;
+let defaultRealtimeChannel = null;
 let currentSubscribedKey = null;
-let isSupabaseSubscribed = false;
-let pendingBroadcastPayload = null;
 
 function setupSupabaseOBSChannel(key) {
     if (!supabaseClient) return;
     const roomKey = key || currentOBSKey || 'default';
-    if (supabaseRealtimeChannel && currentSubscribedKey === roomKey && isSupabaseSubscribed) {
-        return;
-    }
-    isSupabaseSubscribed = false;
-    if (supabaseRealtimeChannel) {
-        try { supabaseClient.removeChannel(supabaseRealtimeChannel); } catch (e) {}
-        supabaseRealtimeChannel = null;
-    }
-    currentSubscribedKey = roomKey;
-    supabaseRealtimeChannel = supabaseClient.channel('obs_room_' + roomKey, {
-        config: { broadcast: { self: false } }
-    });
-    supabaseRealtimeChannel
-        .on('broadcast', { event: 'request_sync' }, (response) => {
-            console.log('[Supabase Realtime] Sync requested from OBS on room: ' + roomKey);
-            broadcastState();
-        })
-        .subscribe((status) => {
-            console.log(`[Supabase Realtime] Room obs_room_${roomKey} status:`, status);
-            if (status === 'SUBSCRIBED') {
-                isSupabaseSubscribed = true;
-                if (pendingBroadcastPayload) {
-                    const toSend = pendingBroadcastPayload;
-                    pendingBroadcastPayload = null;
-                    sendSupabaseRealtime(toSend);
-                }
-            } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                isSupabaseSubscribed = false;
-            }
-        });
 
-    // 만약 개인 고유키를 쓰는 경우, OBS에서 기본(default) 주소로 연결했을 때도 동기화되도록 default 룸도 함께 리슨
-    if (roomKey !== 'default' && !defaultFallbackChannel) {
-        defaultFallbackChannel = supabaseClient.channel('obs_room_default', {
+    // 1. 개인 고유키 채널 (roomKey) 설정
+    if (!personalRealtimeChannel || currentSubscribedKey !== roomKey) {
+        if (personalRealtimeChannel) {
+            try { supabaseClient.removeChannel(personalRealtimeChannel); } catch (e) {}
+            personalRealtimeChannel = null;
+        }
+        currentSubscribedKey = roomKey;
+        personalRealtimeChannel = supabaseClient.channel('obs_room_' + roomKey, {
             config: { broadcast: { self: false } }
         });
-        defaultFallbackChannel
+        personalRealtimeChannel
+            .on('broadcast', { event: 'request_sync' }, () => {
+                console.log('[Supabase Realtime] Sync requested from OBS on personal room:', roomKey);
+                broadcastState();
+            })
+            .subscribe((status) => {
+                console.log(`[Supabase Realtime] Personal room obs_room_${roomKey} status:`, status);
+                if (status === 'SUBSCRIBED') {
+                    broadcastState();
+                }
+            });
+    }
+
+    // 2. 기본(default) 채널 항상 동시 연결 (OBS에서 ?key 없이 접속해도 100% 동기화 보장)
+    if (!defaultRealtimeChannel) {
+        defaultRealtimeChannel = supabaseClient.channel('obs_room_default', {
+            config: { broadcast: { self: false } }
+        });
+        defaultRealtimeChannel
             .on('broadcast', { event: 'request_sync' }, () => {
                 console.log('[Supabase Realtime] Sync requested from OBS on default room');
                 broadcastState();
             })
-            .subscribe();
+            .subscribe((status) => {
+                console.log('[Supabase Realtime] Default room obs_room_default status:', status);
+                if (status === 'SUBSCRIBED') {
+                    broadcastState();
+                }
+            });
     }
 }
 
 function sendSupabaseRealtime(payload) {
     if (!supabaseClient) return;
     const roomKey = payload.key || currentOBSKey || 'default';
-    if (!supabaseRealtimeChannel || currentSubscribedKey !== roomKey) {
+    if (!personalRealtimeChannel || currentSubscribedKey !== roomKey) {
         setupSupabaseOBSChannel(roomKey);
     }
-    if (!isSupabaseSubscribed) {
-        pendingBroadcastPayload = payload;
-        return;
-    }
-    try {
-        supabaseRealtimeChannel.send({
-            type: 'broadcast',
-            event: 'update_spread',
-            payload: payload
-        }).catch(err => {
-            console.warn('[Supabase Realtime] Send failed on room:', roomKey, err);
-        });
 
-        // 고유키 방송 시, default 룸에도 브로드캐스트하여 OBS 설정 키 불일치 방지
-        if (roomKey !== 'default' && defaultFallbackChannel) {
-            defaultFallbackChannel.send({
+    try {
+        if (personalRealtimeChannel) {
+            personalRealtimeChannel.send({
+                type: 'broadcast',
+                event: 'update_spread',
+                payload: payload
+            }).catch(err => {
+                console.warn('[Supabase Realtime] Send failed on room:', roomKey, err);
+            });
+        }
+
+        // 고유키 방송 시, default 룸에도 항상 동시 브로드캐스트하여 OBS 설정 키 불일치 방지
+        if (roomKey !== 'default' && defaultRealtimeChannel) {
+            defaultRealtimeChannel.send({
                 type: 'broadcast',
                 event: 'update_spread',
                 payload: payload
@@ -128,6 +123,12 @@ function sendSupabaseRealtime(payload) {
 // Initial Realtime setup
 if (typeof window !== 'undefined') {
     setupSupabaseOBSChannel(currentOBSKey);
+    // OBS 화면이 나중에 켜져도 언제든 자동 복원되도록 3초 주기 자동 동기화
+    setInterval(() => {
+        if (personalRealtimeChannel || defaultRealtimeChannel) {
+            broadcastState();
+        }
+    }, 3000);
 }
 
 async function initAuthSession() {
@@ -682,6 +683,7 @@ function switchMode(mode) {
     setTimeout(() => {
         if (typeof syncAllLines === 'function') syncAllLines();
     }, 60);
+    broadcastState();
 }
 
 function setInterpretationMode(mode) {
@@ -2301,7 +2303,7 @@ window.addEventListener('resize', syncAllLines);
 
 // OBS Multi-Broadcast
 const obsChannel = new BroadcastChannel('tarot_obs_channel');
-function broadcastState() {
+function broadcastState(isManual = false) {
     let cards;
     if (currentMode === 'spread1') cards = placedCards1;
     else if (currentMode === 'choice') cards = placedCardsChoice;
@@ -2318,6 +2320,27 @@ function broadcastState() {
     obsChannel.postMessage(payload);
     sendSupabaseRealtime(payload);
     fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
+
+    if (isManual) {
+        showBroadcastToast("✨ OBS 방송 화면으로 최신 상태가 송출되었습니다!");
+    }
+}
+
+function showBroadcastToast(msg) {
+    let toast = document.getElementById('broadcast-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'broadcast-toast';
+        toast.style.cssText = "position:fixed;bottom:25px;right:25px;background:rgba(10,10,15,0.92);border:1px solid #2ecc71;color:#2ecc71;padding:0.7rem 1.2rem;border-radius:10px;font-size:0.9rem;font-weight:700;z-index:99999;box-shadow:0 8px 25px rgba(0,0,0,0.6);transition:all 0.3s ease;pointer-events:none;opacity:0;transform:translateY(10px);";
+        document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+    }, 2200);
 }
 
 function clearOBSBoard() {

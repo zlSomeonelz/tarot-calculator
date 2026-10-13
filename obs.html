@@ -2,8 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Tarot Broadcast</title>
-    <link rel="stylesheet" href="style.css?v=20261013_v21">
+    <link rel="stylesheet" href="style.css?v=20261013_v23">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
@@ -15,8 +16,8 @@
             height: 100vh;
         }
 
-        /* Hide unwanted elements from the injected HTML */
-        .board-actions, header, footer, .search-wrap { display: none !important; }
+        /* Hide unwanted elements in OBS broadcast */
+        .board-actions, header, footer, .search-wrap, .btn-save-img, .btn-copy-img { display: none !important; }
         .slot-hint { display: none !important; }
         
         #obs-container {
@@ -24,8 +25,8 @@
             height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* 화면 잘림 방지 */
-            padding-top: 4vh; /* 비율에 맞춘 상단 여백 */
+            align-items: flex-start;
+            padding-top: 4vh;
         }
         
         main { 
@@ -38,19 +39,815 @@
             width: 100%;
         }
 
+        /* Live status pill to give streamer immediate visual confirmation */
+        .obs-status-pill {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: rgba(10, 10, 16, 0.88);
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            color: #d4af37;
+            font-size: 0.82rem;
+            font-weight: 700;
+            padding: 0.4rem 0.9rem;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            z-index: 99999;
+            pointer-events: none;
+            transition: opacity 0.8s ease, transform 0.5s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+            font-family: 'Noto Sans KR', sans-serif;
+            letter-spacing: 0.5px;
+        }
+        .obs-status-pill.connected {
+            border-color: #2ecc71;
+            color: #2ecc71;
+            box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
+        }
+        .obs-status-pill.fade-out {
+            opacity: 0;
+            transform: translateY(-8px);
+        }
     </style>
 </head>
 <body id="obs-body">
 
+    <!-- Status pill for instant visual connection confirmation -->
+    <div id="obs-status-indicator" class="obs-status-pill">✦ 방송 연동 준비 중...</div>
+
     <!-- The actual injected layout goes here -->
-    <div id="obs-container"></div>
+    <div id="obs-container">
+        <main>
+<section id="spread1-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        ONE CARD ORACLE
+                        <small>단 한 장의 직관: 질문의 본질과 당면한 핵심 과제를 짚는 직관 리딩</small>
+                    </div>
+                    <div class="board-slots-1">
+                        <div class="spread1-bg-overlay">
+                            <svg viewBox="0 0 600 400" width="600" height="400"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="spread1-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                            </svg>
+                        </div>
+                        <div id="s1slot-0" class="slot active sef-gold" onclick="activateSlot(0, 'spread1')">
+                            <div class="slot-header">단장 직관 <br><small>ONE CARD</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">신의 전언 · 본질의 통찰</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(1, 'spread1')">원 카드 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(1)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 1. 쓰리 카드 -->
+            <section id="spread3-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        THREE CARD SPREAD
+                        <small>과거 · 현재 · 미래: 원인과 현재의 상황, 다가올 흐름을 통찰하는 시간선 스프레드</small>
+                    </div>
+                    <div class="board-slots-3">
+                        <div class="spread3-bg-overlay">
+                            <svg viewBox="0 0 484 280" width="484" height="280"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="spread3-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <!-- Dynamic lines will be injected here -->
+                            </svg>
+                        </div>
+                        <div id="s3slot-0" class="slot active sef-blue" onclick="activateSlot(0, 'spread3')"
+                            onmouseenter="showInterpretationOnTop(0, 'spread3')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">과거 <br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">축적된 원인과 기억</div>
+                        </div>
+                        <div id="s3slot-1" class="slot sef-gold" onclick="activateSlot(1, 'spread3')"
+                            onmouseenter="showInterpretationOnTop(1, 'spread3')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">현재 <br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">실존의 결단과 시험</div>
+                        </div>
+                        <div id="s3slot-2" class="slot highlight sef-violet" onclick="activateSlot(2, 'spread3')"
+                            onmouseenter="showInterpretationOnTop(2, 'spread3')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">미래 <br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">필연의 결실과 가능성</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-outline" onclick="clearBoard(3)">초기화</button>
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(3)">결과 분석</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 포 카드 -->
+            <section id="spread-board">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        FOUR CARD SPREAD
+                        <small>과거 · 현재 · 미래 · 해결책: 상황의 흐름과 구체적 해결의 열쇠를 찾는 4장 스프레드</small>
+                    </div>
+                    <div class="board-slots-4">
+                        <div class="spread-bg-overlay">
+                            <svg viewBox="0 0 656 280" width="656" height="280"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <!-- Dynamic lines will be injected here -->
+                            </svg>
+                        </div>
+                        <div id="slot-0" class="slot active sef-earth" onclick="activateSlot(0)"
+                            onmouseenter="showInterpretationOnTop(0, 'spread')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">과거 <br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">토대와 원인의 뿌리</div>
+                        </div>
+                        <div id="slot-1" class="slot sef-blue" onclick="activateSlot(1)"
+                            onmouseenter="showInterpretationOnTop(1, 'spread')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">현재 <br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">현재의 파동과 흐름</div>
+                        </div>
+                        <div id="slot-2" class="slot sef-violet" onclick="activateSlot(2)"
+                            onmouseenter="showInterpretationOnTop(2, 'spread')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">미래 <br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">예견된 흐름의 향방</div>
+                        </div>
+                        <div id="slot-3" class="slot highlight sef-gold" onclick="activateSlot(3)"
+                            onmouseenter="showInterpretationOnTop(3, 'spread')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">해결책 <br><small>SOLUTION</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">핵심 해결책과 지혜</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(4)">전체 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(4)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 양자택일 (Two Choices - 5장) -->
+            <section id="choice-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        TWO CHOICES SPREAD
+                        <small>두 갈래의 선택: 선택지 A와 B의 전개 및 결과를 비교 분석하는 스프레드</small>
+                    </div>
+                    <div class="choice-container">
+                        <div class="choice-branch-label label-path-a">PATH A <small>선택 A: 전개와 결과</small></div>
+                        <div class="choice-branch-label label-crossroad">CURRENT <small>현재의 상황과 기로</small></div>
+                        <div class="choice-branch-label label-path-b">PATH B <small>선택 B: 전개와 결과</small></div>
+                        <div class="choice-bg-overlay">
+                            <svg viewBox="0 0 860 580" width="860" height="580"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="choice-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                            </svg>
+                        </div>
+                        <!-- 0: 현재 -->
+                        <div id="chslot-0" class="slot choice-pos-0 active sef-gold" onclick="activateSlot(0, 'choice')">
+                            <div class="slot-header">현재 상황 <br><small>CURRENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">현재의 기로와 고민</div>
+                        </div>
+                        <!-- 1: 선택 A 과정 -->
+                        <div id="chslot-1" class="slot choice-pos-1 sef-blue" onclick="activateSlot(1, 'choice')">
+                            <div class="slot-header">선택 A 흐름 <br><small>PATH A</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">A를 택했을 때의 전개</div>
+                        </div>
+                        <!-- 2: 선택 A 결과 -->
+                        <div id="chslot-2" class="slot choice-pos-2 highlight sef-blue" onclick="activateSlot(2, 'choice')">
+                            <div class="slot-header">선택 A 결과 <br><small>OUTCOME A</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">A 선택의 최종 결과</div>
+                        </div>
+                        <!-- 3: 선택 B 과정 -->
+                        <div id="chslot-3" class="slot choice-pos-3 sef-orange" onclick="activateSlot(3, 'choice')">
+                            <div class="slot-header">선택 B 흐름 <br><small>PATH B</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">B를 택했을 때의 전개</div>
+                        </div>
+                        <!-- 4: 선택 B 결과 -->
+                        <div id="chslot-4" class="slot choice-pos-4 highlight sef-orange" onclick="activateSlot(4, 'choice')">
+                            <div class="slot-header">선택 B 결과 <br><small>OUTCOME B</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">B 선택의 최종 결과</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(5, 'choice')">양자택일 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(5)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 관계 분석 (컵 오브 릴레이션쉽 - 12장) -->
+            <section id="relation-board" class="hidden">
+                <div class="relation-container">
+                    <div class="spread-world-guide">
+                        CHALICE OF RELATIONSHIP
+                        <small>관계의 성배: 나와 상대의 내면 심리와 인연의 과거·현재·미래를 짚는 12장 스프레드</small>
+                    </div>
+                    <div class="relation-bg-overlay">
+                        <svg viewBox="0 0 880 2200" width="880" height="2200"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                            <defs>
+                                <filter id="star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur stdDeviation="3" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <!-- Dynamic content injected by app.js -->
+                        </svg>
+                    </div>
+                    <div class="relation-grid">
+                        <!-- 1. 나 (MY STATE) -->
+                        <div id="rslot-0" class="slot sef-white pos-me-1" onclick="activateSlot(0, 'relation')"
+                            onmouseenter="showInterpretationOnTop(0, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1. 나 <br><small>MY STATE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">나의 현재 심리와 상태</div>
+                        </div>
+                        <div id="rslot-1" class="slot sef-white pos-you-1" onclick="activateSlot(1, 'relation')"
+                            onmouseenter="showInterpretationOnTop(1, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2. 상대 <br><small>PARTNER'S STATE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">상대의 현재 심리와 상태</div>
+                        </div>
+                        <div id="rslot-2" class="slot sef-purple pos-bond-1" onclick="activateSlot(2, 'relation')"
+                            onmouseenter="showInterpretationOnTop(2, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3. 만남 <br><small>REASON</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">두 영혼이 만난 이유</div>
+                        </div>
+                        <div id="rslot-3" class="slot sef-white pos-bond-2" onclick="activateSlot(3, 'relation')"
+                            onmouseenter="showInterpretationOnTop(3, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4. 기초/과거 <br><small>FOUNDATION</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">관계가 쌓아온 토대</div>
+                        </div>
+                        <div id="rslot-4" class="slot sef-blue pos-bond-3" onclick="activateSlot(4, 'relation')"
+                            onmouseenter="showInterpretationOnTop(4, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5. 현재 <br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">현재 관계의 에너지</div>
+                        </div>
+                        <div id="rslot-5" class="slot sef-red pos-bond-4" onclick="activateSlot(5, 'relation')"
+                            onmouseenter="showInterpretationOnTop(5, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6. 장애물 <br><small>OBSTACLE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">넘어야 할 시련과 벽</div>
+                        </div>
+                        <div id="rslot-6" class="slot sef-white pos-me-2" onclick="activateSlot(6, 'relation')"
+                            onmouseenter="showInterpretationOnTop(6, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7. 나의 겉모습 <br><small>SURFACE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">비치는 나의 겉태도</div>
+                        </div>
+                        <div id="rslot-7" class="slot sef-white pos-you-2" onclick="activateSlot(7, 'relation')"
+                            onmouseenter="showInterpretationOnTop(7, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">8. 상대의 겉모습 <br><small>SURFACE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">비치는 상대의 겉태도</div>
+                        </div>
+                        <div id="rslot-8" class="slot sef-gold pos-me-3" onclick="activateSlot(8, 'relation')"
+                            onmouseenter="showInterpretationOnTop(8, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">9. 나의 속마음 <br><small>INNER MIND</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">숨겨진 나의 진심</div>
+                        </div>
+                        <div id="rslot-9" class="slot sef-gold pos-you-3" onclick="activateSlot(9, 'relation')"
+                            onmouseenter="showInterpretationOnTop(9, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">10. 상대의 속마음 <br><small>INNER MIND</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">숨겨진 상대의 진심</div>
+                        </div>
+                        <div id="rslot-10" class="slot sef-green pos-bond-5" onclick="activateSlot(10, 'relation')"
+                            onmouseenter="showInterpretationOnTop(10, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">11. 결과 <br><small>RESULT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">관계의 중간 결과</div>
+                        </div>
+                        <div id="rslot-11" class="slot sef-gold pos-bond-6" onclick="activateSlot(11, 'relation')"
+                            onmouseenter="showInterpretationOnTop(11, 'relation')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">12. 미래 <br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">궁극적인 관계의 결착</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(12)">관계의 컵 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(12)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. 세피로트의 나무 (Project Moon 스타일) -->
+            <section id="tree-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        THE TREE OF LIFE
+                        <small>10개의 세피라와 3개의 기둥: 영혼의 순례와 현실적 발현을 조망하는 카발라 스프레드</small>
+                    </div>
+                    <div class="tree-container">
+                        <div class="tree-bg-overlay">
+                        <svg viewBox="0 0 680 1900" width="680" height="1900"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                            <defs>
+                                <filter id="tree-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur stdDeviation="3" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <!-- Dynamic content injected by app.js -->
+                        </svg>
+
+
+                    </div>
+
+                    <!-- World Labels (Left Sidebar Overlay) -->
+                    <div class="world-sidebar">
+                        <div class="world-label world-top">ATZILUTH <small>원형: 정신의 근원과 순수한 의지</small></div>
+                        <div class="world-label world-mid">BERIAH <small>창조: 감정의 발현과 깊은 열망</small></div>
+                        <div class="world-label world-low">YETZIRAH <small>형성: 정보의 체계화와 구체적 계획</small></div>
+                        <div class="world-label world-bottom">ASIYAH <small>활동: 최종적인 결과와 현실적 현현</small></div>
+                    </div>
+
+                    <!-- Layout Guides (Pillars) -->
+                    <div class="tree-pillars-guide">
+                        <div class="guide-pillar"><small>엄격 (Severity)</small></div>
+                        <div class="guide-pillar"><small>균형 (Mildness)</small></div>
+                        <div class="guide-pillar"><small>자비 (Mercy)</small></div>
+                    </div>
+
+                    <!-- Interactive Slots Grid -->
+                    <div class="tree-grid-refined">
+                        <!-- Upper -->
+                        <div id="tslot-0" class="slot active sef-white pos-center-1" onclick="activateSlot(0, 'tree')"
+                            onmouseenter="showInterpretationOnTop(0, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1. 케테르<br><small>설계팀 (Architecture)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">남아있는 영혼</div>
+                        </div>
+                        <div id="tslot-1" class="slot sef-grey pos-right-2" onclick="activateSlot(1, 'tree')"
+                            onmouseenter="showInterpretationOnTop(1, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2. 호크마<br><small>기록팀 (Records)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">닿을 수 있는 영원</div>
+                        </div>
+                        <div id="tslot-2" class="slot sef-black pos-left-2" onclick="activateSlot(2, 'tree')"
+                            onmouseenter="showInterpretationOnTop(2, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3. 비나<br><small>추출팀 (Extraction)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">굴레를 끊어낼 관용</div>
+                        </div>
+
+
+
+                        <!-- Middle -->
+                        <div id="tslot-3" class="slot sef-blue pos-right-4" onclick="activateSlot(3, 'tree')"
+                            onmouseenter="showInterpretationOnTop(3, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4. 헤세드<br><small>복지팀 (Welfare)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">믿음에 보답하는 마음</div>
+                        </div>
+                        <div id="tslot-4" class="slot sef-red pos-left-4" onclick="activateSlot(4, 'tree')"
+                            onmouseenter="showInterpretationOnTop(4, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5. 게부라<br><small>징계팀 (Disciplinary)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">굴복하지 않는 용기</div>
+                        </div>
+                        <div id="tslot-5" class="slot sef-gold pos-center-5" onclick="activateSlot(5, 'tree')"
+                            onmouseenter="showInterpretationOnTop(5, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6. 티페레트<br><small>중앙본부 (Central)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">존재에 대한 확신</div>
+                        </div>
+
+                        <!-- Lower -->
+                        <div id="tslot-6" class="slot sef-green pos-right-7" onclick="activateSlot(6, 'tree')"
+                            onmouseenter="showInterpretationOnTop(6, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7. 네짜흐<br><small>안전팀 (Safety)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">삶을 이어갈 용기</div>
+                        </div>
+                        <div id="tslot-7" class="slot sef-orange pos-left-7" onclick="activateSlot(7, 'tree')"
+                            onmouseenter="showInterpretationOnTop(7, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">8. 호드<br><small>교육팀 (Training)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">더 나은 존재가 될 희망</div>
+                        </div>
+                        <div id="tslot-8" class="slot sef-violet pos-center-8" onclick="activateSlot(8, 'tree')"
+                            onmouseenter="showInterpretationOnTop(8, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">9. 예소드<br><small>정보팀 (Information)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">분별할 수 있는 이성</div>
+                        </div>
+
+                        <!-- Bottom -->
+                        <div id="tslot-9" class="slot sef-earth pos-center-10" onclick="activateSlot(9, 'tree')"
+                            onmouseenter="showInterpretationOnTop(9, 'tree')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">10. 말쿠트<br><small>지휘팀 (Control)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">똑바로 설 수 있는 의지</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="board-actions">
+                    <button class="btn-main-gold" onclick="analyzeFullSpread(10)">전체 분석 리포트</button>
+                    <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                </div>
+            </div>
+        </section>
+
+            <!-- 4. 켈틱 크로스 (10카드) -->
+            <section id="celtic-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        THE CELTIC CROSS
+                        <small>고대 켈틱 십자가: 핵심 갈등과 시공간 축(십자가), 환경과 최종 결착(기둥)을 분석하는 10장 전통 스프레드</small>
+                    </div>
+                    <div class="celtic-container">
+                        <!-- Decorative SVG Background -->
+                        <div class="celtic-bg-overlay">
+                        <svg viewBox="0 0 1000 1400" width="1000" height="1400"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                            <defs>
+                                <filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                    <feGaussianBlur stdDeviation="2.5" result="blur" />
+                                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                </filter>
+                            </defs>
+                            <!-- Dynamic content injected by app.js -->
+                        </svg>
+                        </div>
+
+                        <!-- 10 Slots (Absolutely positioned) -->
+                        <div id="cslot-0" class="slot celtic-pos-1 sef-gold" onclick="activateSlot(0, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(0, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1. 현재<br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">현재의 상황과 주제</div>
+                        </div>
+                        <div id="cslot-1" class="slot celtic-pos-2 sef-red" onclick="activateSlot(1, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(1, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2. 장애물<br><small>CHALLENGE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">가로막는 것 또는 도움</div>
+                        </div>
+                        <div id="cslot-2" class="slot celtic-pos-3 sef-white" onclick="activateSlot(2, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(2, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3. 목표/의식<br><small>GOAL / CONSCIOUS</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">원하는 것 또는 의식적인 생각</div>
+                        </div>
+                        <div id="cslot-3" class="slot celtic-pos-4 sef-blue" onclick="activateSlot(3, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(3, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4. 잠재의식<br><small>SUBCONSCIOUS</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">무의식과 과거의 기반</div>
+                        </div>
+                        <div id="cslot-4" class="slot celtic-pos-5 sef-earth" onclick="activateSlot(4, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(4, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5. 과거<br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">막 지나온 과거의 영향</div>
+                        </div>
+                        <div id="cslot-5" class="slot celtic-pos-6 sef-violet" onclick="activateSlot(5, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(5, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6. 미래<br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">앞으로 나타날 즉각적인 영향</div>
+                        </div>
+                        <div id="cslot-6" class="slot celtic-pos-7 sef-green" onclick="activateSlot(6, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(6, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7. 본인 태도<br><small>SELF</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">자신을 바라보는 태도</div>
+                        </div>
+                        <div id="cslot-7" class="slot celtic-pos-8 sef-orange" onclick="activateSlot(7, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(7, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">8. 외부 환경<br><small>ENVIRONMENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">타인과 환경의 영향</div>
+                        </div>
+                        <div id="cslot-8" class="slot celtic-pos-9 sef-grey" onclick="activateSlot(8, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(8, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">9. 희망/공포<br><small>HOPES / FEARS</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">지닌 생각과 느낌</div>
+                        </div>
+                        <div id="cslot-9" class="slot celtic-pos-10 sef-gold" onclick="activateSlot(9, 'celtic')"
+                            onmouseenter="showInterpretationOnTop(9, 'celtic')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">10. 최종 결과<br><small>OUTCOME</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">상황의 마지막 결론</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(10, 'celtic')">켈틱 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. 헥사그램 (7카드) -->
+            <section id="hexa-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        HEXAGRAM SPREAD
+                        <small>상황의 흐름(정삼각형)과 내면·조언(역삼각형)의 조화로 결론을 도출하는 7장 스프레드</small>
+                    </div>
+                    <div class="hexa-container">
+                        <!-- Decorative SVG Background -->
+                        <div class="hexa-bg-overlay">
+                            <svg viewBox="0 0 900 900" width="900" height="900"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="hexa-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="2.5" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <!-- Hexagram Triangles -->
+                                <!-- Upward: 450,130 -> 727,610 -> 173,610 -> 450,130 -->
+                                <polygon points="450,130 727,610 173,610" fill="none" />
+                                <!-- Downward: 450,770 -> 173,290 -> 727,290 -> 450,770 -->
+                                <polygon points="450,770 173,290 727,290" fill="none" />
+
+                                <!-- Central Connections -->
+                                <line x1="450" y1="130" x2="450" y2="770" stroke="rgba(212,175,55,0.3)" stroke-width="1.2" />
+                                <line x1="173" y1="290" x2="727" y2="610" stroke="rgba(212,175,55,0.3)" stroke-width="1.2" />
+                                <line x1="173" y1="610" x2="727" y2="290" stroke="rgba(212,175,55,0.3)" stroke-width="1.2" />
+
+                                <!-- Magic Circles -->
+                                <circle cx="450" cy="450" r="320" fill="none" stroke="rgba(212,175,55,0.35)" stroke-width="1.2" />
+                                <circle cx="450" cy="450" r="140" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" />
+
+                                <!-- Star Nodes -->
+                                <circle cx="450" cy="130" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />
+                                <!-- 1 Top -->
+                                <circle cx="727" cy="610" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />
+                                <!-- 2 BRight -->
+                                <circle cx="173" cy="610" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />
+                                <!-- 3 BLeft -->
+                                <circle cx="450" cy="770" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />
+                                <!-- 4 Bot -->
+                                <circle cx="173" cy="290" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />
+                                <!-- 5 TLeft -->
+                                <circle cx="727" cy="290" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />
+                                <!-- 6 TRight -->
+                                <circle cx="450" cy="450" r="5" fill="#d4af37" filter="url(#hexa-star-glow)" />
+                                <!-- 7 Center -->
+                            </svg>
+                        </div>
+
+                        <!-- 7 Slots (Absolutely positioned) -->
+                        <div id="hslot-0" class="slot hexa-pos-1 sef-earth" onclick="activateSlot(0, 'hexa')"
+                            onmouseenter="showInterpretationOnTop(0, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1. 과거<br><small>PAST</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">과거의 영향과 원인</div>
+                        </div>
+                        <div id="hslot-1" class="slot hexa-pos-2 sef-blue" onclick="activateSlot(1, 'hexa')"
+                            onmouseenter="showInterpretationOnTop(1, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2. 현재<br><small>PRESENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">인지하는 현재 상황</div>
+                        </div>
+                        <div id="hslot-2" class="slot hexa-pos-3 sef-violet" onclick="activateSlot(2, 'hexa')"
+                            onmouseenter="showInterpretationOnTop(2, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3. 미래<br><small>FUTURE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">나타날 가시적 결과</div>
+                        </div>
+                        <div id="hslot-3" class="slot hexa-pos-4 sef-deepblue" onclick="activateSlot(3, 'hexa')"
+                            onmouseenter="showInterpretationOnTop(3, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4. 무의식<br><small>HIDDEN</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">숨겨진 욕망과 무의식</div>
+                        </div>
+                        <div id="hslot-4" class="slot hexa-pos-5 sef-orange" onclick="activateSlot(4, 'hexa')"
+                            onmouseenter="showInterpretationOnTop(4, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5. 환경<br><small>ENVIRONMENT</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">주변의 영향과 타인</div>
+                        </div>
+                        <div id="hslot-5" class="slot hexa-pos-6 sef-green" onclick="activateSlot(5, 'hexa')"
+                            onmouseenter="showInterpretationOnTop(5, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6. 조언<br><small>ADVICE</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">문제 해결을 위한 지침</div>
+                        </div>
+                        <div id="hslot-6" class="slot hexa-pos-7 sef-gold" onclick="activateSlot(6, 'hexa')"
+                            onmouseenter="showInterpretationOnTop(6, 'hexa')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7. 최종 결과<br><small>OUTCOME</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">모든 흐름의 최종 결론</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(7, 'hexa')">헥사그램 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(7)">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. 조디악 (12궁) 스프레드 -->
+            <section id="zodiac-board" class="hidden">
+                <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        THE CELESTIAL ZODIAC
+                        <small>황도 12궁과 점성학적 하우스: 12개 영역을 통해 인생 전반의 흐름을 조망하는 스프레드</small>
+                    </div>
+                    <div class="zodiac-container">
+                        <div class="zodiac-quadrant-label quad-spring">SPRING · 봄 <small>1~3궁: 자아와 물질</small></div>
+                        <div class="zodiac-quadrant-label quad-summer">SUMMER · 여름 <small>4~6궁: 감정과 역할</small></div>
+                        <div class="zodiac-quadrant-label quad-autumn">AUTUMN · 가을 <small>7~9궁: 관계와 지혜</small></div>
+                        <div class="zodiac-quadrant-label quad-winter">WINTER · 겨울 <small>10~12궁: 사회와 초월</small></div>
+                        <!-- Decorative Circular Astrological SVG Background -->
+                        <div class="zodiac-bg-overlay">
+                            <svg viewBox="0 0 1000 1000" width="1000" height="1000"
+                                style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
+                                <defs>
+                                    <filter id="zodiac-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+                                        <feGaussianBlur stdDeviation="3" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                </defs>
+                                <!-- Central Sun / Core -->
+                                <circle cx="500" cy="500" r="100" fill="none" stroke="rgba(212,175,55,0.35)" stroke-width="1.2" />
+                                <circle cx="500" cy="500" r="40" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" />
+                                <circle cx="500" cy="500" r="8" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <!-- The Sun -->
+
+                                <!-- Outer Zodiac Wheel Rings -->
+                                <circle cx="500" cy="500" r="420" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1.5" />
+                                <circle cx="500" cy="500" r="300" fill="none" stroke="rgba(212,175,55,0.28)" stroke-width="1.2" />
+
+                                <!-- Spoke Lines for 12 Houses -->
+                                <!-- 1 and 7 (9 to 3 o'clock) -->
+                                <line x1="80" y1="500" x2="920" y2="500" opacity="0.15" />
+                                <!-- 4 and 10 (12 to 6 o'clock) -->
+                                <line x1="500" y1="80" x2="500" y2="920" opacity="0.15" />
+                                <!-- Cross 1 (30 and 210 degrees) -->
+                                <line x1="136" y1="290" x2="864" y2="710" opacity="0.15" />
+                                <!-- Cross 2 (60 and 240 degrees) -->
+                                <line x1="290" y1="136" x2="710" y2="864" opacity="0.15" />
+                                <!-- Cross 3 (120 and 300 degrees) -->
+                                <line x1="710" y1="136" x2="290" y2="864" opacity="0.15" />
+                                <!-- Cross 4 (150 and 330 degrees) -->
+                                <line x1="864" y1="290" x2="136" y2="710" opacity="0.15" />
+
+                                <!-- Star Nodes located exactly at the cards' anchor points (R=340) -->
+                                <!-- 1 o'clock to 12 o'clock -->
+                                <circle cx="670" cy="206" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="794" cy="330" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="840" cy="500" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="794" cy="670" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="670" cy="794" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="500" cy="840" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="330" cy="794" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="206" cy="670" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="160" cy="500" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="206" cy="330" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="330" cy="206" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                                <circle cx="500" cy="160" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />
+                            </svg>
+                        </div>
+
+                        <!-- 12 Slots (Clockwise layout) -->
+                        <div id="zslot-0" class="slot zodiac-pos-1 sef-red" onclick="activateSlot(0, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(0, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">1궁 백양<br><small>ARIES (SELF)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">자아, 기본 성향, 에너지</div>
+                        </div>
+                        <div id="zslot-1" class="slot zodiac-pos-2 sef-earth" onclick="activateSlot(1, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(1, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">2궁 황소<br><small>TAURUS (WEALTH)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">금전, 물질, 가치관</div>
+                        </div>
+                        <div id="zslot-2" class="slot zodiac-pos-3 sef-white" onclick="activateSlot(2, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(2, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">3궁 쌍아<br><small>GEMINI (MIND)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">소통, 학습, 짧은 여행</div>
+                        </div>
+                        <div id="zslot-3" class="slot zodiac-pos-4 sef-blue" onclick="activateSlot(3, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(3, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">4궁 거해<br><small>CANCER (HOME)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">가정, 안식처, 감정의 뿌리</div>
+                        </div>
+                        <div id="zslot-4" class="slot zodiac-pos-5 sef-gold" onclick="activateSlot(4, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(4, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">5궁 사자<br><small>LEO (CREATIVITY)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">연애, 창조성, 기쁨, 자녀</div>
+                        </div>
+                        <div id="zslot-5" class="slot zodiac-pos-6 sef-green" onclick="activateSlot(5, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(5, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">6궁 처녀<br><small>VIRGO (WORK)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">일상 업무, 의무, 건강</div>
+                        </div>
+                        <div id="zslot-6" class="slot zodiac-pos-7 sef-violet" onclick="activateSlot(6, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(6, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">7궁 천칭<br><small>LIBRA (PARTNER)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">결혼, 파트너십, 대인관계</div>
+                        </div>
+                        <div id="zslot-7" class="slot zodiac-pos-8 sef-black" onclick="activateSlot(7, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(7, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">8궁 천갈<br><small>SCORPIO (DEPTH)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">변화, 숨겨진 것, 타인의 자산</div>
+                        </div>
+                        <div id="zslot-8" class="slot zodiac-pos-9 sef-orange" onclick="activateSlot(8, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(8, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">9궁 인마<br><small>SAGITTARIUS (EXPAND)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">철학, 장거리 여행, 탐구</div>
+                        </div>
+                        <div id="zslot-9" class="slot zodiac-pos-10 sef-grey" onclick="activateSlot(9, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(9, 'zodiac')" onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">10궁 마갈<br><small>CAPRICORN (CAREER)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">커리어, 명예, 사회적 성취</div>
+                        </div>
+                        <div id="zslot-10" class="slot zodiac-pos-11 sef-blue" onclick="activateSlot(10, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(10, 'zodiac')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">11궁 보병<br><small>AQUARIUS (HOPES)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">희망, 공동체, 친구, 이상</div>
+                        </div>
+                        <div id="zslot-11" class="slot zodiac-pos-12 sef-violet" onclick="activateSlot(11, 'zodiac')"
+                            onmouseenter="showInterpretationOnTop(11, 'zodiac')"
+                            onmouseleave="clearTopInterpretation()">
+                            <div class="slot-header">12궁 쌍어<br><small>PISCES (SOUL)</small></div>
+                            <div class="slot-content">선택</div>
+                            <div class="slot-hint">무의식, 영적인 세계, 비밀</div>
+                        </div>
+                    </div>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(12, 'zodiac')">조디악 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(12, 'zodiac')">초기화</button>
+                    </div>
+                </div>
+            </section>
+
+
+
+            <!-- 검색 영역 -->
+        </main>
+    </div>
 
     <script>
-        const container = document.getElementById('obs-container');
+        const statusIndicator = document.getElementById('obs-status-indicator');
         let lastStateStr = "";
         let currentBroadcastMode = 'spread';
-        let isLayoutReady = false;
-        let pendingRender = null;
+        let hasReceivedInitialState = false;
 
         // Supabase Client for Cloud Realtime Sync (Vercel & OBS Studio)
         const SUPABASE_URL = 'https://aqgbwzayefinqxjoalzc.supabase.co';
@@ -58,6 +855,19 @@
         const supabaseClient = (typeof window !== 'undefined' && window.supabase && window.supabase.createClient)
             ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
             : null;
+
+        function setStatusPill(text, isSuccess) {
+            if (!statusIndicator) return;
+            statusIndicator.textContent = text;
+            if (isSuccess) {
+                statusIndicator.classList.add('connected');
+                setTimeout(() => {
+                    statusIndicator.classList.add('fade-out');
+                }, 3500);
+            } else {
+                statusIndicator.classList.remove('connected', 'fade-out');
+            }
+        }
 
         // 화면 해상도에 맞춰 가장 예쁜 비율로 자동 확대/축소 (4K, 1440p, 1080p 모두 대응)
         function resizeLayout() {
@@ -67,7 +877,6 @@
             let refW = 1450;
             let refH = 1350;
 
-            // 각 스프레드별 최적 기준 해상도 설정 (거대화된 레이아웃 대응)
             if (currentBroadcastMode === 'spread1') {
                 refW = 800; refH = 700;
             } else if (currentBroadcastMode === 'choice') {
@@ -88,40 +897,11 @@
 
             const scaleHeight = window.innerHeight / refH;
             const scaleWidth = window.innerWidth / refW;
-            // 브라우저 소스의 크기에 맞게 딱 들어맞도록 스케일 조정 (최소 0.5x ~ 최대 3.0x)
             const finalScale = Math.min(scaleHeight, scaleWidth, 3.0);
-            
             mainEl.style.transform = `scale(${finalScale})`;
         }
 
         window.addEventListener('resize', resizeLayout);
-
-        async function initLayout() {
-            try {
-                // index.html에서 구조를 그대로 복제해 옵니다. (스타일 유지)
-                const res = await fetch('index.html');
-                const text = await res.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(text, 'text/html');
-                const mainBoards = doc.querySelector('main');
-                
-                mainBoards.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
-                container.appendChild(mainBoards);
-                
-                isLayoutReady = true;
-                resizeLayout(); // 로드 직후 1회 실행
-                
-                if (pendingRender) {
-                    renderCards(pendingRender.mode, pendingRender.cards);
-                    pendingRender = null;
-                }
-
-                setInterval(pollServer, 1000);
-                pollServer();
-            } catch (e) {
-                console.error("레이아웃 로딩 실패", e);
-            }
-        }
 
         // 쿼리스트링에서 비밀키(key) 추출 (예: obs.html?key=obs_...)
         const urlParams = new URLSearchParams(window.location.search);
@@ -133,6 +913,9 @@
             if (secretKey !== 'default' && data.key && data.key !== secretKey && data.key !== 'default') {
                 return;
             }
+            hasReceivedInitialState = true;
+            setStatusPill('🟢 타로 방송 실시간 연동됨', true);
+
             const stateStr = JSON.stringify(data);
             if (stateStr !== lastStateStr) {
                 renderCards(data.mode, data.cards);
@@ -141,12 +924,14 @@
         }
 
         // 1. BroadcastChannel (동일 브라우저 탭/창 실시간 연동)
-        const obsChannel = new BroadcastChannel('tarot_obs_channel');
-        obsChannel.onmessage = (event) => {
-            handleIncomingPayload(event.data);
-        };
+        try {
+            const obsChannel = new BroadcastChannel('tarot_obs_channel');
+            obsChannel.onmessage = (event) => {
+                handleIncomingPayload(event.data);
+            };
+        } catch(e) {}
 
-        // 2. Supabase Realtime (OBS 브라우저 소스 / 외부 원격 웹소켓 통신)
+        // 2. Supabase Realtime (OBS 브라우저 소스 / 원격 웹소켓 통신)
         if (supabaseClient) {
             function connectRealtimeRoom(roomKey) {
                 const channelName = 'obs_room_' + roomKey;
@@ -158,25 +943,35 @@
                 }).subscribe((status) => {
                     console.log(`[OBS] Supabase Realtime (${channelName}) status:`, status);
                     if (status === 'SUBSCRIBED') {
-                        // 연결 직후 및 1.5초 후 재시도로 현재 메인 페이지 스프레드 상태 즉시 복원
+                        setStatusPill('🟢 타로 방송 실시간 연동됨', true);
                         ch.send({ type: 'broadcast', event: 'request_sync', payload: { key: roomKey } }).catch(() => {});
-                        setTimeout(() => {
-                            if (!lastStateStr) {
-                                ch.send({ type: 'broadcast', event: 'request_sync', payload: { key: roomKey } }).catch(() => {});
-                            }
-                        }, 1500);
+                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
+                        if (!hasReceivedInitialState) {
+                            setStatusPill('🟡 클라우드 재연결 중...', false);
+                        }
                     }
                 });
                 return ch;
             }
 
             // 본인 지정 방 연결
-            connectRealtimeRoom(secretKey);
+            const mainCh = connectRealtimeRoom(secretKey);
 
             // secretKey가 default가 아닐 경우, default 방도 함께 청취하여 키 불일치 방지
+            let defCh = null;
             if (secretKey !== 'default') {
-                connectRealtimeRoom('default');
+                defCh = connectRealtimeRoom('default');
             }
+
+            // 초기 상태가 도착할 때까지 2초마다 메인 페이지에 동기화 요청 (연결 안정화)
+            const syncInterval = setInterval(() => {
+                if (!hasReceivedInitialState) {
+                    if (mainCh) mainCh.send({ type: 'broadcast', event: 'request_sync', payload: { key: secretKey } }).catch(() => {});
+                    if (defCh) defCh.send({ type: 'broadcast', event: 'request_sync', payload: { key: 'default' } }).catch(() => {});
+                } else {
+                    clearInterval(syncInterval);
+                }
+            }, 2000);
         }
 
         // 3. 로컬 파이썬 서버 폴링 (로컬 실행 시 보조)
@@ -186,28 +981,18 @@
                 if (!response.ok) return;
                 const data = await response.json();
                 if (data && data.type === 'update_spread') {
-                    const stateStr = JSON.stringify(data);
-                    if (stateStr !== lastStateStr) {
-                        renderCards(data.mode, data.cards);
-                        lastStateStr = stateStr;
-                    }
+                    handleIncomingPayload(data);
                 }
-            } catch (e) {
-                // Ignore API errors if offline or running static
-            }
+            } catch (e) {}
         }
+        setInterval(pollServer, 1500);
 
         function renderCards(mode, cards) {
-            if (!isLayoutReady) {
-                pendingRender = { mode, cards };
-                return;
-            }
             currentBroadcastMode = mode;
-            resizeLayout(); // 배율 업데이트
+            resizeLayout();
 
-            if (cards.length === 0) {
-                // Completely hide all
-                document.querySelectorAll('#obs-container main section').forEach(sec => sec.classList.add('hidden'));
+            if (!cards || cards.length === 0) {
+                // If cards is empty array, keep the active board structure visible but clear slots
                 return;
             }
 
@@ -222,7 +1007,7 @@
             else if (mode === 'zodiac') { boardId = 'zodiac-board'; prefix = 'zslot'; }
             else { boardId = 'spread-board'; prefix = 'slot'; }
 
-            // Hide all and show active
+            // Hide all sections and show active
             document.querySelectorAll('#obs-container main section').forEach(sec => sec.classList.add('hidden'));
             const activeSec = document.getElementById(boardId);
             if (activeSec) activeSec.classList.remove('hidden');
@@ -247,13 +1032,15 @@
 
                     const korNameOrigin = card.name.split(' (')[0];
                     const displayKorName = card.isReversed ? `${korNameOrigin} [역]` : korNameOrigin;
-                    slotEl.querySelector('.slot-content').innerHTML = displayKorName;
+                    const contentEl = slotEl.querySelector('.slot-content');
+                    if (contentEl) contentEl.innerHTML = displayKorName;
                     slotEl.setAttribute('data-active', 'true');
                 } else {
                     bgLayer.style.backgroundImage = 'none';
                     bgLayer.style.transform = 'none';
                     bgLayer.style.opacity = '0';
-                    slotEl.querySelector('.slot-content').innerHTML = '선택';
+                    const contentEl = slotEl.querySelector('.slot-content');
+                    if (contentEl) contentEl.innerHTML = '선택';
                     slotEl.removeAttribute('data-active');
                 }
             });
@@ -262,7 +1049,7 @@
             requestAnimationFrame(syncAllLines);
         }
 
-        // Shared Drawing Logic (Mirrored from app.js)
+        // Shared Drawing Logic
         function getSlotCenter(id, mode) {
             const slot = document.getElementById(id);
             if (!slot) return null;
@@ -274,13 +1061,14 @@
             else if (mode === 'spread3') svgContainer = document.querySelector('#spread3-board .spread3-bg-overlay svg');
             else if (mode === 'zodiac') svgContainer = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
             else if (mode === 'celtic') svgContainer = document.querySelector('#celtic-board .celtic-bg-overlay svg');
+            else if (mode === 'hexa') svgContainer = document.querySelector('#hexa-board .hexa-bg-overlay svg');
             if (!svgContainer) return null;
             const rect = slot.getBoundingClientRect();
             const svgRect = svgContainer.getBoundingClientRect();
             const x = (rect.left + rect.width / 2) - svgRect.left;
             const y = (rect.top + rect.height / 2) - svgRect.top;
             const viewBox = svgContainer.viewBox.baseVal;
-            if (viewBox.width > 0 && viewBox.height > 0) {
+            if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
                 return { x: x * (viewBox.width/svgRect.width), y: y * (viewBox.height/svgRect.height) };
             }
             return { x, y };
@@ -290,7 +1078,7 @@
             const container = document.querySelector('#choice-board .choice-bg-overlay svg');
             if (!container) return;
             const connections = [[0, 1], [1, 2], [0, 3], [3, 4]];
-            let html = `<defs><filter id="choice-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let html = '<defs><filter id="choice-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
             connections.forEach(([s, e]) => {
                 const p1 = getSlotCenter(`chslot-${s}`, 'choice');
                 const p2 = getSlotCenter(`chslot-${e}`, 'choice');
@@ -303,21 +1091,11 @@
             container.innerHTML = html;
         }
 
-        function syncAllLines() {
-            if (currentBroadcastMode === 'tree') drawTreeLines();
-            else if (currentBroadcastMode === 'relation') drawRelationLines();
-            else if (currentBroadcastMode === 'choice') drawChoiceLines();
-            else if (currentBroadcastMode === 'spread') drawFourCardLines();
-            else if (currentBroadcastMode === 'spread3') drawThreeCardLines();
-            else if (currentBroadcastMode === 'zodiac') drawZodiacLines();
-            else if (currentBroadcastMode === 'celtic') drawCelticLines();
-        }
-
         function drawTreeLines() {
             const container = document.querySelector('#tree-board .tree-bg-overlay svg');
             if (!container) return;
             const connections = [[0, 1], [0, 2], [1, 2], [1, 3], [1, 5], [2, 4], [2, 5], [3, 4], [3, 5], [3, 6], [4, 5], [4, 7], [5, 6], [5, 7], [5, 8], [6, 7], [6, 8], [7, 8], [8, 9], [0, 5], [5, 9]];
-            let html = `<defs><filter id="tree-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let html = '<defs><filter id="tree-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
             connections.forEach(([s, e]) => {
                 const p1 = getSlotCenter(`tslot-${s}`, 'tree');
                 const p2 = getSlotCenter(`tslot-${e}`, 'tree');
@@ -334,13 +1112,13 @@
             const container = document.querySelector('#relation-board .relation-bg-overlay svg');
             if (!container) return;
             const connections = [
-                [0, 2], [1, 2],                            // Base
-                [2, 3], [3, 5], [5, 4], [4, 10], [10, 11], // Spine
-                [4, 6], [4, 7],                            // Hearts
-                [10, 6], [10, 7], [10, 8], [10, 9],        // Result
-                [6, 8], [7, 9]                             // Inner Mind
+                [0, 2], [1, 2],
+                [2, 3], [3, 5], [5, 4], [4, 10], [10, 11],
+                [4, 6], [4, 7],
+                [10, 6], [10, 7], [10, 8], [10, 9],
+                [6, 8], [7, 9]
             ];
-            let html = `<defs><filter id="star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let html = '<defs><filter id="star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
             connections.forEach(([s, e]) => {
                 const p1 = getSlotCenter(`rslot-${s}`, 'relation');
                 const p2 = getSlotCenter(`rslot-${e}`, 'relation');
@@ -356,7 +1134,7 @@
         function drawFourCardLines() {
             const container = document.querySelector('#spread-board .spread-bg-overlay svg');
             if (!container) return;
-            let html = `<defs><filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let html = '<defs><filter id="standard-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
             let centers = [];
             for(let i=0; i<4; i++) { const p = getSlotCenter(`slot-${i}`, 'spread'); if(p) centers.push(p); }
             if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#standard-star-glow)" />`;
@@ -366,7 +1144,7 @@
         function drawThreeCardLines() {
             const container = document.querySelector('#spread3-board .spread3-bg-overlay svg');
             if (!container) return;
-            let html = `<defs><filter id="spread3-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let html = '<defs><filter id="spread3-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
             let centers = [];
             for(let i=0; i<3; i++) { const p = getSlotCenter(`s3slot-${i}`, 'spread3'); if(p) centers.push(p); }
             if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#spread3-star-glow)" />`;
@@ -376,15 +1154,11 @@
         function drawZodiacLines() {
             const container = document.querySelector('#zodiac-board .zodiac-bg-overlay svg');
             if (!container) return;
-            let html = `<defs><filter id="zodiac-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let html = '<defs><filter id="zodiac-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
             for(let i=0; i<12; i++) {
                 const p1 = getSlotCenter(`zslot-${i}`, 'zodiac');
                 const p2 = getSlotCenter(`zslot-${(i+1)%12}`, 'zodiac');
                 if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.4)" stroke-width="1.2" />`;
-            }
-            for(let i=0; i<12; i++) {
-                const p = getSlotCenter(`zslot-${i}`, 'zodiac');
-                if (p) html += `<line x1="${p.x}" y1="${p.y}" x2="500" y2="500" stroke="rgba(212,175,55,0.2)" stroke-width="1" />`;
             }
             container.innerHTML = html;
         }
@@ -393,7 +1167,7 @@
             const container = document.querySelector('#celtic-board .celtic-bg-overlay svg');
             if (!container) return;
             const connections = [[2, 0], [0, 3], [4, 0], [0, 5], [6, 7], [7, 8], [8, 9]];
-            let html = `<defs><filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+            let html = '<defs><filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
             const pCenter = getSlotCenter('cslot-0', 'celtic');
             if (pCenter) html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="150" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1.5" filter="url(#celtic-star-glow)" />`;
             connections.forEach(([s, e]) => {
@@ -408,16 +1182,37 @@
             container.innerHTML = html;
         }
 
+        function drawHexaLines() {
+            const container = document.querySelector('#hexa-board .hexa-bg-overlay svg');
+            if (!container) return;
+            const connections = [[0, 2], [2, 4], [4, 0], [1, 3], [3, 5], [5, 1]];
+            let html = '<defs><filter id="hexa-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>';
+            connections.forEach(([s, e]) => {
+                const p1 = getSlotCenter(`hslot-${s}`, 'hexa');
+                const p2 = getSlotCenter(`hslot-${e}`, 'hexa');
+                if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+            });
+            for(let i=0; i<7; i++) {
+                const p = getSlotCenter(`hslot-${i}`, 'hexa');
+                if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />`;
+            }
+            container.innerHTML = html;
+        }
+
         function syncAllLines() {
             if (currentBroadcastMode === 'tree') drawTreeLines();
             else if (currentBroadcastMode === 'relation') drawRelationLines();
+            else if (currentBroadcastMode === 'choice') drawChoiceLines();
             else if (currentBroadcastMode === 'spread') drawFourCardLines();
             else if (currentBroadcastMode === 'spread3') drawThreeCardLines();
             else if (currentBroadcastMode === 'zodiac') drawZodiacLines();
             else if (currentBroadcastMode === 'celtic') drawCelticLines();
+            else if (currentBroadcastMode === 'hexa') drawHexaLines();
         }
 
-        initLayout();
+        // Initialize display immediately on startup!
+        resizeLayout();
+        setTimeout(syncAllLines, 100);
     </script>
 </body>
 </html>

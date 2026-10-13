@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261013_v22">
+    <link rel="stylesheet" href="style.css?v=20261013_v23">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -105,7 +105,7 @@
                     </button>
                     <button class="btn-main-gold" style="font-weight:700; padding: 0.6rem 1.1rem; box-shadow: 0 0 15px rgba(212,175,55,0.4);" onclick="openAuthModal('login')">🔑 이메일 로그인</button>
                     <button class="btn-outline" style="border-color:#aaa; color:#aaa; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="copyOBSUrl()" title="로그인 없이 기본 OBS 주소 복사">🔗 게스트 OBS 주소</button>
-                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="broadcastState()">📺 화면 송출</button>
+                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="broadcastState(true)">📺 화면 송출</button>
                     <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; padding: 0.6rem 0.9rem; font-size:0.85rem;" onclick="clearOBSBoard()">🚫 화면 지우기</button>
                     <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 가이드</button>
                 </div>
@@ -117,7 +117,7 @@
                         <span id="user-email-display-panel" style="color:#fff; font-weight:700; font-size:0.9rem;"></span>
                     </div>
                     <button class="btn-main-gold" style="font-weight:700; padding: 0.6rem 1.2rem; background: linear-gradient(135deg, #d4af37, #f1c40f); color: #000; box-shadow: 0 0 15px rgba(212,175,55,0.4);" onclick="copyUserOBSUrl()">📡 내 OBS 주소 복사</button>
-                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-weight:bold; background:rgba(46,204,113,0.1);" onclick="broadcastState()">📺 화면 송출</button>
+                    <button class="btn-outline" style="border-color:#2ecc71; color:#2ecc71; padding: 0.6rem 0.9rem; font-weight:bold; background:rgba(46,204,113,0.1);" onclick="broadcastState(true)">📺 화면 송출</button>
                     <button class="btn-outline" style="border-color:#e74c3c; color:#e74c3c; padding: 0.6rem 0.9rem; background:rgba(231,76,60,0.1);" onclick="clearOBSBoard()">🚫 화면 지우기</button>
                     <button class="btn-outline" style="border-color:#555; color:#999; padding: 0.6rem 0.8rem; font-size:0.82rem;" onclick="handleLogout()">로그아웃</button>
                     <button class="btn-outline" style="border-color:#f1c40f; color:#f1c40f; padding: 0.6rem 0.8rem; font-size:0.85rem;" onclick="showOBSGuide()">❓ 가이드</button>
@@ -1068,9 +1068,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v22"></script>
-    <script src="data_samla.js?v=20261013_v22"></script>
-    <script src="app.js?v=20261013_v22"></script>
+    <script src="data_ko.js?v=20261013_v23"></script>
+    <script src="data_samla.js?v=20261013_v23"></script>
+    <script src="app.js?v=20261013_v23"></script>
 </body>
 
 </html>
