@@ -164,8 +164,8 @@
             <section id="spread1-board" class="hidden">
                 <div class="board-wrapper">
                     <div class="spread-world-guide">
-                        AETHER ORACLE
-                        <small>단 한 장의 직관: 모든 답이 수렴하는 본질의 시선</small>
+                        ONE CARD ORACLE
+                        <small>단 한 장의 직관: 질문의 본질과 당면한 핵심 과제를 짚는 직관 리딩</small>
                     </div>
                     <div class="board-slots-1">
                         <div class="spread1-bg-overlay">
@@ -196,13 +196,8 @@
             <section id="spread3-board" class="hidden">
                 <div class="board-wrapper">
                     <div class="spread-world-guide">
-                        TEMPORAL TRINITY
-                        <small>시간의 삼위일체: 과거의 업보에서 미래의 가능성으로</small>
-                    </div>
-                    <div class="spread-pillars-guide three-pillars">
-                        <div class="guide-pillar"><small>CHRONOS · 과거</small></div>
-                        <div class="guide-pillar"><small>KAIROS · 현재</small></div>
-                        <div class="guide-pillar"><small>DESTINY · 미래</small></div>
+                        THREE CARD SPREAD
+                        <small>과거 · 현재 · 미래: 원인과 현재의 상황, 다가올 흐름을 통찰하는 시간선 스프레드</small>
                     </div>
                     <div class="board-slots-3">
                         <div class="spread3-bg-overlay">
@@ -246,6 +241,10 @@
             <!-- 2. 포 카드 -->
             <section id="spread-board" class="hidden">
                 <div class="board-wrapper">
+                    <div class="spread-world-guide">
+                        FOUR CARD SPREAD
+                        <small>과거 · 현재 · 미래 · 해결책: 상황의 흐름과 구체적 해결의 열쇠를 찾는 4장 스프레드</small>
+                    </div>
                     <div class="board-slots-4">
                         <div class="spread-bg-overlay">
                             <svg viewBox="0 0 656 280" width="656" height="280"
@@ -295,13 +294,13 @@
             <section id="choice-board" class="hidden">
                 <div class="board-wrapper">
                     <div class="spread-world-guide">
-                        BIFURCATION OF FATE
-                        <small>운명의 갈림길과 양자의 저울: 두 경로의 인과와 최종 도달점</small>
+                        TWO CHOICES SPREAD
+                        <small>두 갈래의 선택: 선택지 A와 B의 전개 및 결과를 비교 분석하는 스프레드</small>
                     </div>
                     <div class="choice-container">
-                        <div class="choice-branch-label label-path-a">PATH A <small>선택 A의 전개와 결과</small></div>
-                        <div class="choice-branch-label label-crossroad">CROSSROAD <small>현재의 분기점</small></div>
-                        <div class="choice-branch-label label-path-b">PATH B <small>선택 B의 전개와 결과</small></div>
+                        <div class="choice-branch-label label-path-a">PATH A <small>선택 A: 전개와 결과</small></div>
+                        <div class="choice-branch-label label-crossroad">CURRENT <small>현재의 상황과 기로</small></div>
+                        <div class="choice-branch-label label-path-b">PATH B <small>선택 B: 전개와 결과</small></div>
                         <div class="choice-bg-overlay">
                             <svg viewBox="0 0 860 580" width="860" height="580"
                                 style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
@@ -355,8 +354,8 @@
             <section id="relation-board" class="hidden">
                 <div class="relation-container">
                     <div class="spread-world-guide">
-                        THE CHALICE OF BOND
-                        <small>두 사람의 심리와 인연의 흐름을 분석하는 12장 스프레드</small>
+                        CHALICE OF RELATIONSHIP
+                        <small>관계의 성배: 나와 상대의 내면 심리와 인연의 과거·현재·미래를 짚는 12장 스프레드</small>
                     </div>
                     <div class="relation-bg-overlay">
                         <svg viewBox="0 0 880 2200" width="880" height="2200"
@@ -467,6 +466,10 @@
             <!-- 2. 세피로트의 나무 (Project Moon 스타일) -->
             <section id="tree-board" class="hidden">
                 <div class="tree-container">
+                    <div class="spread-world-guide">
+                        THE TREE OF LIFE
+                        <small>10개의 세피라와 3개의 기둥: 영혼의 순례와 현실적 발현을 조망하는 카발라 스프레드</small>
+                    </div>
                     <div class="tree-bg-overlay">
                         <svg viewBox="0 0 680 1900" width="680" height="1900"
                                 style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
@@ -569,11 +572,10 @@
                             <div class="slot-hint">똑바로 설 수 있는 의지</div>
                         </div>
                     </div>
-                </div>
-
-                <div class="board-actions">
-                    <button class="btn-main-gold" onclick="analyzeFullSpread(10)">전체 분석 리포트</button>
-                    <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                    <div class="board-actions">
+                        <button class="btn-main-gold" onclick="analyzeFullSpread(10)">전체 분석 리포트</button>
+                        <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                    </div>
                 </div>
             </section>
 
@@ -582,7 +584,7 @@
                 <div class="board-wrapper">
                     <div class="spread-world-guide">
                         THE CELTIC CROSS
-                        <small>10장의 카드로 심층적인 상황과 미래를 통찰하는 전통 스프레드</small>
+                        <small>고대 켈틱 십자가: 핵심 갈등과 시공간 축(십자가), 환경과 최종 결착(기둥)을 분석하는 10장 전통 스프레드</small>
                     </div>
                     <div class="celtic-container">
                         <!-- Decorative SVG Background -->
@@ -672,13 +674,10 @@
             <section id="hexa-board" class="hidden">
                 <div class="board-wrapper">
                     <div class="spread-world-guide">
-                        SOLOMON'S HEXAGRAM
-                        <small>솔로몬의 육각성: 능동의 불과 수용의 물이 조화를 이루는 영혼의 핵</small>
+                        HEXAGRAM SPREAD
+                        <small>상황의 흐름(정삼각형)과 내면·조언(역삼각형)의 조화로 결론을 도출하는 7장 스프레드</small>
                     </div>
                     <div class="hexa-container">
-                        <div class="hexa-zone-label zone-fire">TRIANGLE OF FIRE <small>능동의 불: 과거 · 미래 · 환경</small></div>
-                        <div class="hexa-zone-label zone-water">TRIANGLE OF WATER <small>수용의 물: 현재 · 무의식 · 조언</small></div>
-                        <div class="hexa-zone-label zone-nucleus">SEVENTH NUCLEUS <small>영혼의 핵: 최종 결과</small></div>
                         <!-- Decorative SVG Background -->
                         <div class="hexa-bg-overlay">
                             <svg viewBox="0 0 900 900" width="900" height="900"
@@ -778,7 +777,7 @@
                 <div class="board-wrapper">
                     <div class="spread-world-guide">
                         THE CELESTIAL ZODIAC
-                        <small>황도 12궁과 사계절의 바퀴: 12하우스의 순환과 삶의 모든 영역</small>
+                        <small>황도 12궁과 점성학적 하우스: 12개 영역을 통해 인생 전반의 흐름을 조망하는 스프레드</small>
                     </div>
                     <div class="zodiac-container">
                         <div class="zodiac-quadrant-label quad-spring">SPRING · 봄 <small>1~3궁: 자아와 물질</small></div>
@@ -1067,9 +1066,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v19"></script>
-    <script src="data_samla.js?v=20261013_v19"></script>
-    <script src="app.js?v=20261013_v19"></script>
+    <script src="data_ko.js?v=20261013_v20"></script>
+    <script src="data_samla.js?v=20261013_v20"></script>
+    <script src="app.js?v=20261013_v20"></script>
 </body>
 
 </html>
