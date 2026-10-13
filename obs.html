@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Tarot Broadcast</title>
-    <link rel="stylesheet" href="style.css?v=20261013_v26">
+    <link rel="stylesheet" href="style.css?v=20261014_v27">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         html, body {
@@ -1009,8 +1009,9 @@
                 // 전체 초기화 수신 시 활성 보드의 모든 슬롯 비우기
                 const slots = document.querySelectorAll(`#${boardId} .slot`);
                 slots.forEach(slotEl => {
+                    slotEl.style.backgroundImage = 'none';
                     let bgLayer = slotEl.querySelector('.slot-bg-layer');
-                    if (bgLayer && bgLayer.dataset.img) {
+                    if (bgLayer) {
                         bgLayer.style.backgroundImage = 'none';
                         delete bgLayer.dataset.img;
                         delete bgLayer.dataset.reversed;
@@ -1065,7 +1066,8 @@
                         slotEl.setAttribute('data-active', 'true');
                     }
                 } else {
-                    if (bgLayer.dataset.img) {
+                    slotEl.style.backgroundImage = 'none';
+                    if (bgLayer) {
                         bgLayer.style.backgroundImage = 'none';
                         delete bgLayer.dataset.img;
                         delete bgLayer.dataset.reversed;
