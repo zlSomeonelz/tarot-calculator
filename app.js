@@ -38,6 +38,58 @@ function generateRandomStreamKey() {
     return res;
 }
 
+// Supabase Cloud Realtime Channel for OBS Broadcast
+let supabaseRealtimeChannel = null;
+let currentSubscribedKey = null;
+
+function setupSupabaseOBSChannel(key) {
+    if (!supabaseClient) return;
+    const roomKey = key || currentOBSKey || 'default';
+    if (supabaseRealtimeChannel && currentSubscribedKey === roomKey) {
+        return;
+    }
+    if (supabaseRealtimeChannel) {
+        try { supabaseClient.removeChannel(supabaseRealtimeChannel); } catch (e) {}
+        supabaseRealtimeChannel = null;
+    }
+    currentSubscribedKey = roomKey;
+    supabaseRealtimeChannel = supabaseClient.channel('obs_room_' + roomKey, {
+        config: { broadcast: { self: false } }
+    });
+    supabaseRealtimeChannel
+        .on('broadcast', { event: 'request_sync' }, (response) => {
+            console.log('[Supabase Realtime] Sync requested from OBS');
+            broadcastState();
+        })
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log(`[Supabase Realtime] Connected to room: obs_room_${roomKey}`);
+            }
+        });
+}
+
+function sendSupabaseRealtime(payload) {
+    if (!supabaseClient) return;
+    const roomKey = payload.key || currentOBSKey || 'default';
+    if (!supabaseRealtimeChannel || currentSubscribedKey !== roomKey) {
+        setupSupabaseOBSChannel(roomKey);
+    }
+    if (supabaseRealtimeChannel) {
+        supabaseRealtimeChannel.send({
+            type: 'broadcast',
+            event: 'update_spread',
+            payload: payload
+        }).catch(err => {
+            console.warn('[Supabase Realtime] Send failed:', err);
+        });
+    }
+}
+
+// Initial Realtime setup
+if (typeof window !== 'undefined') {
+    setupSupabaseOBSChannel(currentOBSKey);
+}
+
 async function initAuthSession() {
     if (!supabaseClient) return;
     try {
@@ -90,6 +142,7 @@ async function updateAuthUI(user) {
         }
         currentOBSKey = userKey;
         localStorage.setItem('obs_user_key', userKey);
+        setupSupabaseOBSChannel(userKey);
         if (panelKey) panelKey.textContent = userKey;
 
         // whtjss1230@gmail.com 계정일 때만 삼라만상 히든 배너 노출!
@@ -110,6 +163,7 @@ async function updateAuthUI(user) {
 
         currentOBSKey = 'default';
         localStorage.removeItem('obs_user_key');
+        setupSupabaseOBSChannel('default');
         if (currentDeck === 'samla') setDeckMode('classic');
     }
     broadcastState();
@@ -348,6 +402,7 @@ async function regenerateUserOBSKey() {
     }
     currentOBSKey = newKey;
     localStorage.setItem('obs_user_key', newKey);
+    setupSupabaseOBSChannel(newKey);
     copyUserOBSUrl();
 }
 
@@ -2124,6 +2179,7 @@ function broadcastState() {
     const secretKey = currentOBSKey || (document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default');
     const payload = { type: 'update_spread', mode: currentMode, cards: cards, key: secretKey, deck: currentDeck };
     obsChannel.postMessage(payload);
+    sendSupabaseRealtime(payload);
     fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
 }
 
@@ -2131,6 +2187,7 @@ function clearOBSBoard() {
     const secretKey = currentOBSKey || (document.getElementById('obs-secret') ? document.getElementById('obs-secret').value : 'default');
     const payload = { type: 'update_spread', mode: currentMode, cards: [], key: secretKey, deck: currentDeck };
     obsChannel.postMessage(payload);
+    sendSupabaseRealtime(payload);
     fetch('/update', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }).catch(e => {});
 }
 

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>OBS Tarot Broadcast</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body {
             background: transparent !important;
@@ -47,8 +48,16 @@
     <script>
         const container = document.getElementById('obs-container');
         let lastStateStr = "";
-
         let currentBroadcastMode = 'spread';
+        let isLayoutReady = false;
+        let pendingRender = null;
+
+        // Supabase Client for Cloud Realtime Sync (Vercel & OBS Studio)
+        const SUPABASE_URL = 'https://aqgbwzayefinqxjoalzc.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_PG8molq9mMczlAxzP3rELw_ndrwY7sF';
+        const supabaseClient = (typeof window !== 'undefined' && window.supabase && window.supabase.createClient)
+            ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+            : null;
 
         // 화면 해상도에 맞춰 가장 예쁜 비율로 자동 확대/축소 (4K, 1440p, 1080p 모두 대응)
         function resizeLayout() {
@@ -99,8 +108,14 @@
                 mainBoards.querySelectorAll('section').forEach(sec => sec.classList.add('hidden'));
                 container.appendChild(mainBoards);
                 
+                isLayoutReady = true;
                 resizeLayout(); // 로드 직후 1회 실행
                 
+                if (pendingRender) {
+                    renderCards(pendingRender.mode, pendingRender.cards);
+                    pendingRender = null;
+                }
+
                 setInterval(pollServer, 1000);
                 pollServer();
             } catch (e) {
@@ -112,6 +127,7 @@
         const urlParams = new URLSearchParams(window.location.search);
         const secretKey = urlParams.get('key') || 'default';
 
+        // 1. BroadcastChannel (동일 브라우저 탭/창 실시간 연동)
         const obsChannel = new BroadcastChannel('tarot_obs_channel');
         obsChannel.onmessage = (event) => {
             if (event.data.type === 'update_spread') {
@@ -126,9 +142,42 @@
             }
         };
 
+        // 2. Supabase Realtime (OBS 브라우저 소스 / 외부 원격 웹소켓 통신)
+        if (supabaseClient) {
+            const channelName = 'obs_room_' + secretKey;
+            const realtimeChannel = supabaseClient.channel(channelName, {
+                config: { broadcast: { self: false } }
+            });
+            realtimeChannel.on('broadcast', { event: 'update_spread' }, (response) => {
+                const data = response.payload;
+                if (data && data.type === 'update_spread') {
+                    if (data.key && data.key !== secretKey && secretKey !== 'default') {
+                        return;
+                    }
+                    const stateStr = JSON.stringify(data);
+                    if (stateStr !== lastStateStr) {
+                        renderCards(data.mode, data.cards);
+                        lastStateStr = stateStr;
+                    }
+                }
+            }).subscribe((status) => {
+                if (status === 'SUBSCRIBED') {
+                    console.log(`[OBS] Supabase Realtime connected (${channelName})`);
+                    // 연결 즉시 메인 페이지에 현재 화면 상태 재전송 요청
+                    realtimeChannel.send({
+                        type: 'broadcast',
+                        event: 'request_sync',
+                        payload: { key: secretKey }
+                    }).catch(() => {});
+                }
+            });
+        }
+
+        // 3. 로컬 파이썬 서버 폴링 (로컬 실행 시 보조)
         async function pollServer() {
             try {
                 const response = await fetch('/state?key=' + encodeURIComponent(secretKey));
+                if (!response.ok) return;
                 const data = await response.json();
                 if (data && data.type === 'update_spread') {
                     const stateStr = JSON.stringify(data);
@@ -138,11 +187,15 @@
                     }
                 }
             } catch (e) {
-                // Ignore API errors if offline
+                // Ignore API errors if offline or running static
             }
         }
 
         function renderCards(mode, cards) {
+            if (!isLayoutReady) {
+                pendingRender = { mode, cards };
+                return;
+            }
             currentBroadcastMode = mode;
             resizeLayout(); // 배율 업데이트
 
