@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Tarot Broadcast</title>
-    <link rel="stylesheet" href="style.css?v=20261014_v27">
+    <link rel="stylesheet" href="style.css?v=20261014_v28">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         html, body {
@@ -48,18 +48,32 @@
             height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            padding-top: 4vh;
+            align-items: center; /* 방송 캔버스 정중앙 완벽 정렬 */
+            padding: 0;
+            margin: 0;
+            overflow: hidden !important;
+            box-sizing: border-box;
         }
         
         main { 
-            width: 1400px;
+            width: 1350px;
             margin: 0 auto;
-            transform-origin: top center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transform-origin: center center; /* 정중앙 기준 비율 스케일링 */
         }
         
         section {
             width: 100%;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 방송 화면에서 위아래 불필요한 공백 마진 최소화하여 화면 잘림 방지 */
+        .board-wrapper, .tree-container, .relation-container {
+            margin: 0 auto !important;
         }
     </style>
 </head>
@@ -867,30 +881,34 @@
             const mainEl = document.querySelector('main');
             if (!mainEl) return;
 
-            let refW = 1450;
-            let refH = 1350;
+            let refW = 1200;
+            let refH = 1000;
 
             if (currentBroadcastMode === 'spread1') {
-                refW = 800; refH = 700;
+                refW = 1100; refH = 650;
             } else if (currentBroadcastMode === 'choice') {
-                refW = 1100; refH = 850;
+                refW = 1150; refH = 920;
             } else if (currentBroadcastMode === 'spread' || currentBroadcastMode === 'spread3') {
-                refW = 1000; refH = 900;
+                refW = 1150; refH = 680;
             } else if (currentBroadcastMode === 'hexa') {
-                refW = 1100; refH = 1550;
+                refW = 1150; refH = 1150;
             } else if (currentBroadcastMode === 'celtic') {
-                refW = 1100; refH = 1500;
+                refW = 1150; refH = 1680;
             } else if (currentBroadcastMode === 'zodiac') {
-                refW = 1200; refH = 2000;
+                refW = 1150; refH = 1250;
             } else if (currentBroadcastMode === 'tree') {
-                refW = 1100; refH = 2300;
+                refW = 1150; refH = 2250;
             } else if (currentBroadcastMode === 'relation') {
-                refW = 1300; refH = 2500;
+                refW = 1250; refH = 2650;
             }
 
-            const scaleHeight = window.innerHeight / refH;
-            const scaleWidth = window.innerWidth / refW;
-            const finalScale = Math.min(scaleHeight, scaleWidth, 3.0);
+            // 상하좌우 안전 여백(Safe Margin) 8%를 확보하여 화면 경계에서 절대 잘리지 않도록 계산
+            const availableW = window.innerWidth * 0.92;
+            const availableH = window.innerHeight * 0.92;
+
+            const scaleHeight = availableH / refH;
+            const scaleWidth = availableW / refW;
+            const finalScale = Math.min(scaleHeight, scaleWidth, 2.5);
             mainEl.style.transform = `scale(${finalScale})`;
         }
 
