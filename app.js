@@ -491,6 +491,9 @@ function switchMode(mode) {
     requestAnimationFrame(() => {
         if (typeof syncAllLines === 'function') syncAllLines();
     });
+    setTimeout(() => {
+        if (typeof syncAllLines === 'function') syncAllLines();
+    }, 60);
 }
 
 function setInterpretationMode(mode) {
@@ -1875,6 +1878,7 @@ function getSlotCenter(id, mode) {
 
     const rect = slot.getBoundingClientRect();
     const svgRect = svgContainer.getBoundingClientRect();
+    if (!svgRect.width || !svgRect.height) return null;
     
     const x = (rect.left + rect.width / 2) - svgRect.left;
     const y = (rect.top + rect.height / 2) - svgRect.top;
@@ -1935,7 +1939,7 @@ function drawChoiceLines() {
     connections.forEach(([s, e]) => {
         const pt1 = getSlotCenter(`chslot-${s}`, 'choice');
         const pt2 = getSlotCenter(`chslot-${e}`, 'choice');
-        if (pt1 && pt2) html += `<line x1="${pt1.x}" y1="${pt1.y}" x2="${pt2.x}" y2="${pt2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#choice-star-glow)" />`;
+        if (pt1 && pt2) html += `<line x1="${pt1.x}" y1="${pt1.y}" x2="${pt2.x}" y2="${pt2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
     });
     for(let i=0; i<5; i++) {
         const p = getSlotCenter(`chslot-${i}`, 'choice');
@@ -2011,7 +2015,7 @@ function drawFourCardLines() {
     if (centers.length >= 4) {
         // Continuous timeline connecting line
         for (let i = 0; i < centers.length - 1; i++) {
-            html += `<line x1="${centers[i].x}" y1="${centers[i].y}" x2="${centers[i+1].x}" y2="${centers[i+1].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#standard-star-glow)" />`;
+            html += `<line x1="${centers[i].x}" y1="${centers[i].y}" x2="${centers[i+1].x}" y2="${centers[i+1].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
         }
     }
     container.innerHTML = html;
@@ -2032,7 +2036,7 @@ function drawThreeCardLines() {
     }
     if (centers.length >= 3) {
         for (let i = 0; i < centers.length - 1; i++) {
-            html += `<line x1="${centers[i].x}" y1="${centers[i].y}" x2="${centers[i+1].x}" y2="${centers[i+1].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#spread3-star-glow)" />`;
+            html += `<line x1="${centers[i].x}" y1="${centers[i].y}" x2="${centers[i+1].x}" y2="${centers[i+1].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
         }
     }
     container.innerHTML = html;
@@ -2085,14 +2089,14 @@ function drawCelticLines() {
     // Sacred Celtic concentric circle at center cross
     const pCenter = getSlotCenter('cslot-0', 'celtic');
     if (pCenter) {
-        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="160" fill="none" stroke="rgba(212,175,55,0.35)" stroke-width="1.5" stroke-dasharray="6,4" filter="url(#celtic-star-glow)" />`;
+        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="160" fill="none" stroke="rgba(212,175,55,0.35)" stroke-width="1.5" stroke-dasharray="6,4" />`;
         html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="110" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" />`;
     }
 
     connections.forEach(([s, e]) => {
         const p1 = getSlotCenter(`cslot-${s}`, 'celtic');
         const p2 = getSlotCenter(`cslot-${e}`, 'celtic');
-        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#celtic-star-glow)" />`;
+        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.9)" stroke-width="2" />`;
     });
     
     for(let i=0; i<10; i++) {
