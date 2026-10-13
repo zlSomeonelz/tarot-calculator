@@ -42,12 +42,14 @@ function generateRandomStreamKey() {
 let personalRealtimeChannel = null;
 let defaultRealtimeChannel = null;
 let currentSubscribedKey = null;
+let currentModalSlotIndex = null;
+let currentModalSlotMode = null;
 
 function setupSupabaseOBSChannel(key) {
     if (!supabaseClient) return;
     const roomKey = key || currentOBSKey || 'default';
 
-    // 1. 개인 고유키 채널 (roomKey) 설정
+    // 1. 활성 룸 채널 (roomKey) 설정
     if (!personalRealtimeChannel || currentSubscribedKey !== roomKey) {
         if (personalRealtimeChannel) {
             try { supabaseClient.removeChannel(personalRealtimeChannel); } catch (e) {}
@@ -59,33 +61,35 @@ function setupSupabaseOBSChannel(key) {
         });
         personalRealtimeChannel
             .on('broadcast', { event: 'request_sync' }, () => {
-                console.log('[Supabase Realtime] Sync requested from OBS on personal room:', roomKey);
+                console.log('[Supabase Realtime] Sync requested from OBS on room:', roomKey);
                 broadcastState();
             })
             .subscribe((status) => {
-                console.log(`[Supabase Realtime] Personal room obs_room_${roomKey} status:`, status);
+                console.log(`[Supabase Realtime] Room obs_room_${roomKey} status:`, status);
                 if (status === 'SUBSCRIBED') {
                     broadcastState();
                 }
             });
     }
 
-    // 2. 기본(default) 채널 항상 동시 연결 (OBS에서 ?key 없이 접속해도 100% 동기화 보장)
-    if (!defaultRealtimeChannel) {
-        defaultRealtimeChannel = supabaseClient.channel('obs_room_default', {
-            config: { broadcast: { self: false } }
-        });
-        defaultRealtimeChannel
-            .on('broadcast', { event: 'request_sync' }, () => {
-                console.log('[Supabase Realtime] Sync requested from OBS on default room');
-                broadcastState();
-            })
-            .subscribe((status) => {
-                console.log('[Supabase Realtime] Default room obs_room_default status:', status);
-                if (status === 'SUBSCRIBED') {
-                    broadcastState();
-                }
+    // 2. 고유키 사용 중일 때만, OBS default 접속 호환을 위해 obs_room_default 채널도 보조 수신
+    if (roomKey !== 'default') {
+        if (!defaultRealtimeChannel) {
+            defaultRealtimeChannel = supabaseClient.channel('obs_room_default', {
+                config: { broadcast: { self: false } }
             });
+            defaultRealtimeChannel
+                .on('broadcast', { event: 'request_sync' }, () => {
+                    broadcastState();
+                })
+                .subscribe();
+        }
+    } else {
+        // roomKey가 이미 'default'인 경우 중복 연결 제거
+        if (defaultRealtimeChannel) {
+            try { supabaseClient.removeChannel(defaultRealtimeChannel); } catch (e) {}
+            defaultRealtimeChannel = null;
+        }
     }
 }
 
@@ -685,6 +689,8 @@ function activateSlot(index, mode = currentMode) {
     
     // 만약 이미 카드가 놓여있다면 해석 모달을 띄웁니다.
     if (cards && cards[index]) {
+        currentModalSlotIndex = index;
+        currentModalSlotMode = mode;
         showInterpretation(cards[index]);
         return;
     }
@@ -1375,23 +1381,62 @@ function getSefirotColor(idx) {
 
 
 
-function clearBoard(count) {
+function clearAllBoards() {
+    placedCards1 = Array(1).fill(null);
+    placedCards3 = Array(3).fill(null);
+    placedCards4 = Array(4).fill(null);
+    placedCardsChoice = Array(5).fill(null);
+    placedCardsTree = Array(10).fill(null);
+    placedCardsRelation = Array(12).fill(null);
+    placedCardsCeltic = Array(10).fill(null);
+    placedCardsHexa = Array(7).fill(null);
+    placedCardsZodiac = Array(12).fill(null);
+
+    document.querySelectorAll('.slot').forEach(slot => {
+        let bgLayer = slot.querySelector('.slot-bg-layer');
+        if (bgLayer) {
+            bgLayer.style.backgroundImage = 'none';
+            bgLayer.style.transform = 'none';
+            bgLayer.style.opacity = '0';
+            delete bgLayer.dataset.img;
+            delete bgLayer.dataset.reversed;
+        }
+        slot.style.backgroundImage = 'none';
+        const content = slot.querySelector('.slot-content');
+        if (content) content.innerHTML = '선택';
+        slot.removeAttribute('data-active');
+        const tooltip = slot.querySelector('.slot-tooltip');
+        if (tooltip) tooltip.innerText = '';
+    });
+
+    currentModalSlotIndex = null;
+    currentModalSlotMode = null;
+    activateSlot(0, currentMode);
+    broadcastState();
+    showBroadcastToast("🧹 모든 스프레드 카드가 깨끗하게 초기화되었습니다.");
+}
+
+function clearCurrentBoard() {
+    clearAllBoards();
+}
+
+function clearBoard(count, targetMode = currentMode) {
     let cards, prefix, boardId;
-    if (count === 1 && currentMode === 'spread1') {
+    if (targetMode === 'spread1' || count === 1) {
         cards = placedCards1; prefix = 's1slot'; boardId = 'spread1-board';
-    } else if (count === 5 && currentMode === 'choice') {
+    } else if (targetMode === 'choice' || count === 5) {
         cards = placedCardsChoice; prefix = 'chslot'; boardId = 'choice-board';
-    } else if (count === 3 && currentMode === 'spread3') {
+    } else if (targetMode === 'spread3' || count === 3) {
         cards = placedCards3; prefix = 's3slot'; boardId = 'spread3-board';
-    } else if (count === 12 && currentMode === 'relation') {
+    } else if (targetMode === 'relation' || (count === 12 && targetMode === 'relation')) {
         cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board';
-    } else if (count === 10 && currentMode === 'tree') {
+    } else if (targetMode === 'tree' || (count === 10 && targetMode === 'tree')) {
         cards = placedCardsTree; prefix = 'tslot'; boardId = 'tree-board';
-    } else if (count === 10 && currentMode === 'celtic') {
+    } else if (targetMode === 'celtic' || (count === 10 && targetMode === 'celtic')) {
         cards = placedCardsCeltic; prefix = 'cslot'; boardId = 'celtic-board';
-    } else if (count === 7 && currentMode === 'hexa') {
+    } else if (targetMode === 'hexa' || count === 7) {
         cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board';
-    } else if (count === 12 && currentMode === 'zodiac') {
+    } else if (targetMode === 'zodiac' || (count === 12 && targetMode === 'zodiac')) {
         cards = placedCardsZodiac; prefix = 'zslot'; boardId = 'zodiac-board';
     } else {
         cards = placedCards4; prefix = 'slot'; boardId = 'spread-board';
@@ -1403,26 +1448,67 @@ function clearBoard(count) {
             bgLayer.style.backgroundImage = 'none';
             bgLayer.style.transform = 'none';
             bgLayer.style.opacity = '0';
+            delete bgLayer.dataset.img;
+            delete bgLayer.dataset.reversed;
         }
         slot.style.backgroundImage = 'none';
-        
-        slot.querySelector('.slot-content').innerHTML = '선택';
+        const content = slot.querySelector('.slot-content');
+        if (content) content.innerHTML = '선택';
         slot.removeAttribute('data-active');
+        const tooltip = slot.querySelector('.slot-tooltip');
+        if (tooltip) tooltip.innerText = '';
     });
-    activateSlot(0);
+    activateSlot(0, targetMode);
     broadcastState();
 }
 
-function clearCurrentBoard() {
-    if (currentMode === 'spread1') clearBoard(1);
-    else if (currentMode === 'choice') clearBoard(5);
-    else if (currentMode === 'spread3') clearBoard(3);
-    else if (currentMode === 'tree') clearBoard(10);
-    else if (currentMode === 'relation') clearBoard(12);
-    else if (currentMode === 'celtic') clearBoard(10);
-    else if (currentMode === 'hexa') clearBoard(7);
-    else if (currentMode === 'zodiac') clearBoard(12);
-    else clearBoard(4);
+function removeCardFromCurrentSlot() {
+    const slotIdx = (currentModalSlotIndex !== null) ? currentModalSlotIndex : activeSlotIndex;
+    const mode = currentModalSlotMode || currentMode;
+
+    let cards, prefix, boardId;
+    if (mode === 'spread1') { cards = placedCards1; prefix = 's1slot'; boardId = 'spread1-board'; }
+    else if (mode === 'choice') { cards = placedCardsChoice; prefix = 'chslot'; boardId = 'choice-board'; }
+    else if (mode === 'spread3') { cards = placedCards3; prefix = 's3slot'; boardId = 'spread3-board'; }
+    else if (mode === 'relation') { cards = placedCardsRelation; prefix = 'rslot'; boardId = 'relation-board'; }
+    else if (mode === 'tree') { cards = placedCardsTree; prefix = 'tslot'; boardId = 'tree-board'; }
+    else if (mode === 'celtic') { cards = placedCardsCeltic; prefix = 'cslot'; boardId = 'celtic-board'; }
+    else if (mode === 'hexa') { cards = placedCardsHexa; prefix = 'hslot'; boardId = 'hexa-board'; }
+    else if (mode === 'zodiac') { cards = placedCardsZodiac; prefix = 'zslot'; boardId = 'zodiac-board'; }
+    else { cards = placedCards4; prefix = 'slot'; boardId = 'spread-board'; }
+
+    if (cards && slotIdx !== null && slotIdx !== undefined && slotIdx < cards.length) {
+        cards[slotIdx] = null;
+        const slotEl = document.getElementById(`${prefix}-${slotIdx}`);
+        if (slotEl) {
+            let bgLayer = slotEl.querySelector('.slot-bg-layer');
+            if (bgLayer) {
+                bgLayer.style.backgroundImage = 'none';
+                bgLayer.style.transform = 'none';
+                bgLayer.style.opacity = '0';
+                delete bgLayer.dataset.img;
+                delete bgLayer.dataset.reversed;
+            }
+            slotEl.style.backgroundImage = 'none';
+            const content = slotEl.querySelector('.slot-content');
+            if (content) content.innerHTML = '선택';
+            slotEl.removeAttribute('data-active');
+            const tooltip = slotEl.querySelector('.slot-tooltip');
+            if (tooltip) tooltip.innerText = '';
+        }
+        closeInterpretation();
+        broadcastState();
+        showBroadcastToast(`🗑️ ${slotIdx + 1}번 슬롯 카드가 초기화되었습니다.`);
+    }
+}
+
+function replaceCardInCurrentSlot() {
+    const slotIdx = (currentModalSlotIndex !== null) ? currentModalSlotIndex : activeSlotIndex;
+    const mode = currentModalSlotMode || currentMode;
+    removeCardFromCurrentSlot();
+    setTimeout(() => {
+        activateSlot(slotIdx, mode);
+    }, 100);
 }
 
 function filterCards() {
@@ -1659,14 +1745,28 @@ function showInterpretation(card) {
         }
     }
 
+    const removeSlotBtn = document.getElementById('btn-remove-slot-card');
+    const replaceSlotBtn = document.getElementById('btn-replace-slot-card');
+    const isFromSlot = (currentMode !== 'search' && currentModalSlotIndex !== null);
+    if (removeSlotBtn) removeSlotBtn.style.display = isFromSlot ? 'inline-block' : 'none';
+    if (replaceSlotBtn) replaceSlotBtn.style.display = isFromSlot ? 'inline-block' : 'none';
+
     document.getElementById('modal-overlay').classList.remove('hidden');
     document.getElementById('full-analysis').classList.add('hidden');
     document.getElementById('interpretation').classList.remove('hidden');
 }
 
-function closeInterpretation() { document.getElementById('modal-overlay').classList.add('hidden'); }
+function closeInterpretation() {
+    document.getElementById('modal-overlay').classList.add('hidden');
+    currentModalSlotIndex = null;
+    currentModalSlotMode = null;
+}
 function closeFullAnalysis() { document.getElementById('modal-overlay').classList.add('hidden'); }
-function closeAllModals() { document.getElementById('modal-overlay').classList.add('hidden'); }
+function closeAllModals() {
+    document.getElementById('modal-overlay').classList.add('hidden');
+    currentModalSlotIndex = null;
+    currentModalSlotMode = null;
+}
 
 function showOBSGuide() {
     document.getElementById('obs-guide-modal').classList.remove('hidden');

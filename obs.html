@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Tarot Broadcast</title>
-    <link rel="stylesheet" href="style.css?v=20261014_v30">
+    <link rel="stylesheet" href="style.css?v=20261014_v31">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         html, body {
@@ -945,14 +945,12 @@
 
         function handleIncomingPayload(data) {
             if (!data || data.type !== 'update_spread') return;
-            // 키 검증: secretKey가 'default'이거나, data.key와 일치하거나, data.key가 'default'인 경우 수신 허용
-            if (secretKey !== 'default' && data.key && data.key !== secretKey && data.key !== 'default') {
-                return;
+            // 키 검증: secretKey가 지정된 경우(secretKey !== 'default'), data.key가 반드시 일치해야만 수신
+            // (다른 사람의 게스트/default 방송이 내 개인 방송을 덮어쓰는 것 원천 차단)
+            if (secretKey !== 'default') {
+                if (data.key && data.key !== secretKey) return;
             }
             hasReceivedInitialState = true;
-            try {
-                localStorage.setItem('obs_last_spread_' + secretKey, JSON.stringify(data));
-            } catch(e) {}
 
             const stateStr = JSON.stringify(data);
             if (stateStr === lastStateStr) {
@@ -987,20 +985,13 @@
                 return ch;
             }
 
-            // 본인 지정 방 연결
+            // 본인 지정 방 연결 (키 격리: 고유키 사용 시 default 방과 섞이지 않도록 단독 연결)
             const mainCh = connectRealtimeRoom(secretKey);
-
-            // secretKey가 default가 아닐 경우, default 방도 함께 청취하여 키 불일치 방지
-            let defCh = null;
-            if (secretKey !== 'default') {
-                defCh = connectRealtimeRoom('default');
-            }
 
             // 초기 상태가 도착할 때까지 2초마다 메인 페이지에 동기화 요청 (연결 안정화)
             const syncInterval = setInterval(() => {
                 if (!hasReceivedInitialState) {
                     if (mainCh) mainCh.send({ type: 'broadcast', event: 'request_sync', payload: { key: secretKey } }).catch(() => {});
-                    if (defCh) defCh.send({ type: 'broadcast', event: 'request_sync', payload: { key: 'default' } }).catch(() => {});
                 } else {
                     clearInterval(syncInterval);
                 }
@@ -1273,17 +1264,10 @@
             else if (currentBroadcastMode === 'hexa') drawHexaLines();
         }
 
-        // Initialize display from localStorage cache if available, or stay clean
+        // Clean any stale cached spread data to prevent ghost cards on startup
         try {
-            const cachedState = localStorage.getItem('obs_last_spread_' + secretKey);
-            if (cachedState) {
-                const parsed = JSON.parse(cachedState);
-                if (parsed && parsed.mode) {
-                    lastStateStr = cachedState;
-                    hasReceivedInitialState = true;
-                    renderCards(parsed.mode, parsed.cards);
-                }
-            }
+            localStorage.removeItem('obs_last_spread_' + secretKey);
+            localStorage.removeItem('obs_last_spread_default');
         } catch(e) {}
 
         resizeLayout();
