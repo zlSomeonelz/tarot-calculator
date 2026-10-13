@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261013_v18">
+    <link rel="stylesheet" href="style.css?v=20261013_v22">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -926,13 +926,14 @@
                 <div class="search-wrap">
                     <input type="text" id="universal-search" placeholder="영혼의 울림을 따라 검색하세요..." oninput="filterCards()">
                     <div id="search-filters" class="filter-tabs">
-                        <button class="tab-btn active" onclick="setFilter(this, 'all')">전체</button>
-                        <button class="tab-btn" onclick="setFilter(this, 'Major Arcana')">메이저</button>
-                        <button class="tab-btn" onclick="setFilter(this, 'Wands')">완드</button>
-                        <button class="tab-btn" onclick="setFilter(this, 'Cups')">컵</button>
-                        <button class="tab-btn" onclick="setFilter(this, 'Swords')">소드</button>
-                        <button class="tab-btn" onclick="setFilter(this, 'Pentacles')">펜타클</button>
+                        <button class="tab-btn suit-filter active" onclick="setFilter(this, 'all')">전체</button>
+                        <button class="tab-btn suit-filter" onclick="setFilter(this, 'Major Arcana')">메이저</button>
+                        <button class="tab-btn suit-filter" onclick="setFilter(this, 'Wands')">완드</button>
+                        <button class="tab-btn suit-filter" onclick="setFilter(this, 'Cups')">컵</button>
+                        <button class="tab-btn suit-filter" onclick="setFilter(this, 'Swords')">소드</button>
+                        <button class="tab-btn suit-filter" onclick="setFilter(this, 'Pentacles')">펜타클</button>
                         <button class="tab-btn rand-btn" onclick="drawRandom()">랜덤</button>
+                        <button id="toggle-card-view-btn" class="tab-btn card-view-btn" onclick="toggleCardImageView()" title="카드를 열 때 대역폭을 절약하기 위해 기본은 뒷면으로 뜨며, 누르면 일러스트가 로드됩니다.">🖼️ 카드 일러스트 보기</button>
                     </div>
                 </div>
                 <div id="cards-grid" class="cards-grid"></div>
@@ -1067,9 +1068,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v21"></script>
-    <script src="data_samla.js?v=20261013_v21"></script>
-    <script src="app.js?v=20261013_v21"></script>
+    <script src="data_ko.js?v=20261013_v22"></script>
+    <script src="data_samla.js?v=20261013_v22"></script>
+    <script src="app.js?v=20261013_v22"></script>
 </body>
 
 </html>

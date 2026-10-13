@@ -513,16 +513,113 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+let isCardImagesVisible = false;
+let cardGridObserver = null;
+
+function initCardGridObserver() {
+    if (!('IntersectionObserver' in window)) return null;
+    return new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const cardEl = entry.target;
+                const imgUrl = cardEl.dataset.img;
+                if (imgUrl && isCardImagesVisible) {
+                    cardEl.style.backgroundImage = `url('${imgUrl}')`;
+                    cardEl.classList.add('has-art');
+                }
+                observer.unobserve(cardEl);
+            }
+        });
+    }, { rootMargin: '200px 0px' });
+}
+
+function toggleCardImageView() {
+    isCardImagesVisible = !isCardImagesVisible;
+    const btn = document.getElementById('toggle-card-view-btn');
+    if (btn) {
+        if (isCardImagesVisible) {
+            btn.classList.add('active');
+            btn.innerHTML = '🃏 카드 뒷면으로 보기';
+            btn.title = '클릭하면 카드 뒷면으로 전환하여 리소스와 대역폭을 절약합니다.';
+        } else {
+            btn.classList.remove('active');
+            btn.innerHTML = '🖼️ 카드 일러스트 보기';
+            btn.title = '대역폭을 절약하기 위해 기본은 뒷면으로 뜨며, 누르면 일러스트가 로드됩니다.';
+        }
+    }
+    applyCardGridImages();
+}
+
+function applyCardGridImages() {
+    const gridCards = document.querySelectorAll('.cards-grid .grid-card');
+    if (cardGridObserver) {
+        cardGridObserver.disconnect();
+    }
+
+    if (isCardImagesVisible) {
+        if ('IntersectionObserver' in window) {
+            cardGridObserver = initCardGridObserver();
+            gridCards.forEach(cardEl => {
+                if (cardEl.dataset.img) {
+                    cardGridObserver.observe(cardEl);
+                }
+            });
+        } else {
+            gridCards.forEach(cardEl => {
+                if (cardEl.dataset.img) {
+                    cardEl.style.backgroundImage = `url('${cardEl.dataset.img}')`;
+                    cardEl.classList.add('has-art');
+                }
+            });
+        }
+    } else {
+        gridCards.forEach(cardEl => {
+            cardEl.style.backgroundImage = '';
+            cardEl.classList.remove('has-art');
+        });
+    }
+}
+
 function setupGrid(cards) {
     const grid = document.getElementById('cards-grid');
     grid.innerHTML = '';
 
+    if (cardGridObserver) {
+        cardGridObserver.disconnect();
+    }
+    if (isCardImagesVisible && 'IntersectionObserver' in window) {
+        cardGridObserver = initCardGridObserver();
+    }
+
     cards.forEach(card => {
-        const [korName, engName] = card.name.split(' (');
+        let korName = card.name;
+        let engName = '';
+        if (card.name && card.name.includes(' (')) {
+            const parts = card.name.split(' (');
+            korName = parts[0];
+            engName = parts[1].replace(')', '');
+        }
+
         const cardEl = document.createElement('div');
         cardEl.className = 'grid-card';
-        if (card.image) cardEl.style.backgroundImage = `url('${card.image}')`;
-        cardEl.innerHTML = `<div class="name">${korName}</div>`;
+        cardEl.dataset.img = card.image || '';
+
+        if (isCardImagesVisible) {
+            if (cardGridObserver && card.image) {
+                cardGridObserver.observe(cardEl);
+            } else if (card.image) {
+                cardEl.style.backgroundImage = `url('${card.image}')`;
+                cardEl.classList.add('has-art');
+            }
+        }
+
+        cardEl.innerHTML = `
+            <span class="card-back-ornament">✦</span>
+            <div class="name">
+                <span class="kor">${korName}</span>
+                ${engName ? `<span class="eng">${engName}</span>` : ''}
+            </div>
+        `;
 
         cardEl.onclick = () => {
             if (currentMode === 'search') {
@@ -1377,7 +1474,7 @@ function filterCards() {
 
 function setFilter(el, suit) {
     currentFilter = suit;
-    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('#search-filters .suit-filter').forEach(btn => btn.classList.remove('active'));
     el.classList.add('active');
     filterCards();
 }
