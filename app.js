@@ -278,10 +278,9 @@ async function fallbackGoogleOAuth() {
         googleBtnModal.style.opacity = '0.7';
     }
 
-    let redirectUrl = window.location.origin + window.location.pathname;
-    if (redirectUrl.endsWith('index.html')) {
-        redirectUrl = redirectUrl.replace(/index\.html$/, '');
-    }
+    let redirectUrl = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? window.location.origin + '/'
+        : 'https://tarot-calculator.onrender.com/';
 
     try {
         const { data, error } = await supabaseClient.auth.signInWithOAuth({
@@ -324,10 +323,10 @@ async function handleLogout() {
 
 function copyUserOBSUrl() {
     const key = currentOBSKey || 'default';
-    let base = window.location.href;
-    if (base.includes('index.html')) base = base.replace('index.html', '');
-    if (!base.endsWith('/')) base += '/';
-    const obsUrl = `${base}obs.html?key=${encodeURIComponent(key)}`;
+    const origin = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? window.location.origin + '/'
+        : 'https://tarot-calculator.onrender.com/';
+    const obsUrl = `${origin}obs.html?key=${encodeURIComponent(key)}`;
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(obsUrl).then(() => {
@@ -1524,16 +1523,10 @@ function copyOBSUrl() {
     const rawKey = (typeof currentOBSKey !== 'undefined' && currentOBSKey) ? currentOBSKey : (document.getElementById('obs-secret') ? document.getElementById('obs-secret').value.trim() : 'default');
     const secretKey = rawKey !== '' ? rawKey : 'default';
     
-    // Create the full absolute url for obs.html based on current environment
-    let basePath = window.location.href;
-    if (basePath.includes('index.html')) {
-        basePath = basePath.replace('index.html', '');
-    }
-    if (!basePath.endsWith('/')) {
-        basePath += '/';
-    }
-    
-    const obsUrl = `${window.location.protocol}//${window.location.host}${window.location.pathname.replace(/\/index\.html$/, '')}/obs.html?key=${encodeURIComponent(secretKey)}`;
+    const origin = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? window.location.origin + '/'
+        : 'https://tarot-calculator.onrender.com/';
+    const obsUrl = `${origin}obs.html?key=${encodeURIComponent(secretKey)}`;
     
     navigator.clipboard.writeText(obsUrl).then(() => {
         alert("OBS 브라우저 소스용 URL이 복사되었습니다!\nOBS에 붙여넣기 하세요.\n\n복사된 주소:\n" + obsUrl);
