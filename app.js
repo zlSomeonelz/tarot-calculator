@@ -43,6 +43,15 @@ async function initAuthSession() {
         const { data: { session } } = await supabaseClient.auth.getSession();
         updateAuthUI(session ? session.user : null);
 
+        // OAuth 로그인 리다이렉트 후 URL의 access_token 등 해시 정리
+        if (window.location.hash && (window.location.hash.includes('access_token') || window.location.hash.includes('error'))) {
+            setTimeout(() => {
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+                }
+            }, 400);
+        }
+
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
             updateAuthUI(session ? session.user : null);
         });
@@ -203,6 +212,57 @@ async function submitAuthForm() {
         if (submitBtn) {
             submitBtn.disabled = false;
             submitBtn.textContent = authCurrentTab === 'login' ? '로그인' : '회원가입';
+        }
+    }
+}
+
+async function signInWithGoogle() {
+    if (!supabaseClient) {
+        alert("Supabase 인증 클라이언트가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.");
+        return;
+    }
+
+    const googleBtnModal = document.getElementById('btn-google-login');
+    if (googleBtnModal) {
+        googleBtnModal.disabled = true;
+        googleBtnModal.style.opacity = '0.7';
+    }
+
+    // 현재 접속 환경에 따른 리다이렉트 URL 생성
+    let redirectUrl = window.location.origin + window.location.pathname;
+    if (redirectUrl.endsWith('index.html')) {
+        redirectUrl = redirectUrl.replace(/index\.html$/, '');
+    }
+
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+                redirectTo: redirectUrl,
+                queryParams: {
+                    access_type: 'offline',
+                    prompt: 'consent'
+                }
+            }
+        });
+        if (error) throw error;
+    } catch (err) {
+        console.error("Google sign in error:", err);
+        const errEl = document.getElementById('auth-error-msg');
+        let msg = err.message || "구글 로그인 중 오류가 발생했습니다.";
+        if (msg.includes("provider is not enabled") || msg.includes("Unsupported provider")) {
+            msg = "Supabase 대시보드(Authentication -> Providers)에서 Google 로그인을 활성화해 주세요.";
+        }
+        if (errEl) {
+            errEl.textContent = msg;
+            errEl.classList.remove('hidden');
+        } else {
+            alert(msg);
+        }
+    } finally {
+        if (googleBtnModal) {
+            googleBtnModal.disabled = false;
+            googleBtnModal.style.opacity = '1';
         }
     }
 }
