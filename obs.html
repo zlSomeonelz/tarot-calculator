@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Tarot Broadcast</title>
-    <link rel="stylesheet" href="style.css?v=20261014_v28">
+    <link rel="stylesheet" href="style.css?v=20261014_v29">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         html, body {
@@ -72,7 +72,7 @@
         }
 
         /* 방송 화면에서 위아래 불필요한 공백 마진 최소화하여 화면 잘림 방지 */
-        .board-wrapper, .tree-container, .relation-container {
+        .board-wrapper, .tree-container, .relation-container, .celtic-container, .choice-container, .hexa-container, .zodiac-container {
             margin: 0 auto !important;
         }
     </style>
@@ -163,7 +163,7 @@
             </section>
 
             <!-- 2. 포 카드 -->
-            <section id="spread-board">
+            <section id="spread-board" class="hidden">
                 <div class="board-wrapper">
                     <div class="spread-world-guide">
                         FOUR CARD SPREAD
@@ -515,7 +515,7 @@
                     <div class="celtic-container">
                         <!-- Decorative SVG Background -->
                         <div class="celtic-bg-overlay">
-                        <svg viewBox="0 0 1000 1400" width="1000" height="1400"
+                        <svg viewBox="0 0 1000 1500" width="1000" height="1500"
                                 style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
                             <defs>
                                 <filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -893,7 +893,7 @@
             } else if (currentBroadcastMode === 'hexa') {
                 refW = 1150; refH = 1150;
             } else if (currentBroadcastMode === 'celtic') {
-                refW = 1150; refH = 1680;
+                refW = 1150; refH = 1950;
             } else if (currentBroadcastMode === 'zodiac') {
                 refW = 1150; refH = 1250;
             } else if (currentBroadcastMode === 'tree') {
@@ -902,9 +902,9 @@
                 refW = 1250; refH = 2650;
             }
 
-            // 상하좌우 안전 여백(Safe Margin) 8%를 확보하여 화면 경계에서 절대 잘리지 않도록 계산
-            const availableW = window.innerWidth * 0.92;
-            const availableH = window.innerHeight * 0.92;
+            // 상하좌우 안전 여백(Safe Margin) 10%를 확보하여 화면 경계에서 절대 잘리지 않도록 계산
+            const availableW = window.innerWidth * 0.90;
+            const availableH = window.innerHeight * 0.90;
 
             const scaleHeight = availableH / refH;
             const scaleWidth = availableW / refW;
@@ -925,6 +925,9 @@
                 return;
             }
             hasReceivedInitialState = true;
+            try {
+                localStorage.setItem('obs_last_spread_' + secretKey, JSON.stringify(data));
+            } catch(e) {}
 
             const stateStr = JSON.stringify(data);
             if (stateStr === lastStateStr) {
@@ -1023,33 +1026,9 @@
                 }
             });
 
-            if (!cards || cards.length === 0) {
-                // 전체 초기화 수신 시 활성 보드의 모든 슬롯 비우기
-                const slots = document.querySelectorAll(`#${boardId} .slot`);
-                slots.forEach(slotEl => {
-                    slotEl.style.backgroundImage = 'none';
-                    let bgLayer = slotEl.querySelector('.slot-bg-layer');
-                    if (bgLayer) {
-                        bgLayer.style.backgroundImage = 'none';
-                        delete bgLayer.dataset.img;
-                        delete bgLayer.dataset.reversed;
-                        bgLayer.style.transform = 'none';
-                        bgLayer.style.opacity = '0';
-                    }
-                    const contentEl = slotEl.querySelector('.slot-content');
-                    if (contentEl && contentEl.innerHTML !== '선택') {
-                        contentEl.innerHTML = '선택';
-                    }
-                    slotEl.removeAttribute('data-active');
-                });
-                if (modeChanged) requestAnimationFrame(syncAllLines);
-                return;
-            }
-
-            cards.forEach((card, index) => {
-                const slotEl = document.getElementById(`${prefix}-${index}`);
-                if (!slotEl) return;
-                
+            const allBoardSlots = document.querySelectorAll(`#${boardId} .slot`);
+            allBoardSlots.forEach((slotEl, index) => {
+                const card = (cards && index < cards.length) ? cards[index] : null;
                 let bgLayer = slotEl.querySelector('.slot-bg-layer');
                 if (!bgLayer) {
                     bgLayer = document.createElement('div');
@@ -1269,7 +1248,19 @@
             else if (currentBroadcastMode === 'hexa') drawHexaLines();
         }
 
-        // Initialize display immediately on startup!
+        // Initialize display from localStorage cache if available, or stay clean
+        try {
+            const cachedState = localStorage.getItem('obs_last_spread_' + secretKey);
+            if (cachedState) {
+                const parsed = JSON.parse(cachedState);
+                if (parsed && parsed.mode) {
+                    lastStateStr = cachedState;
+                    hasReceivedInitialState = true;
+                    renderCards(parsed.mode, parsed.cards);
+                }
+            }
+        } catch(e) {}
+
         resizeLayout();
         setTimeout(syncAllLines, 100);
     </script>

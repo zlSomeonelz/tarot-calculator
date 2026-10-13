@@ -493,7 +493,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initGoogleAuth();
     setTimeout(initGoogleAuth, 800);
     setupGrid(getActiveDeckCards());
-    switchMode('spread');
+    const savedMode = localStorage.getItem('tarot_active_mode') || 'spread';
+    switchMode(savedMode);
     updateSpreadGuide(currentMode);
     requestAnimationFrame(syncAllLines);
 
@@ -574,6 +575,9 @@ function setupGrid(cards) {
 
 function switchMode(mode) {
     currentMode = mode;
+    if (mode !== 'search') {
+        try { localStorage.setItem('tarot_active_mode', mode); } catch(e) {}
+    }
     const isSearch = (mode === 'search');
 
     const boardSpread1 = document.getElementById('spread1-board');
