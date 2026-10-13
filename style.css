@@ -369,15 +369,17 @@ section {
 
 .slot-hint {
     position: absolute;
-    bottom: 15px;
+    bottom: 12px;
     left: 0;
     width: 100%;
     z-index: 8;
-    font-size: 0.6rem;
-    color: rgba(255, 255, 255, 0.4);
-    text-shadow: 0 0 5px #000;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: rgba(241, 196, 15, 0.85);
+    text-shadow: 0 0 8px rgba(0, 0, 0, 0.95), 0 2px 4px rgba(0, 0, 0, 0.9);
     pointer-events: none;
     text-align: center;
+    letter-spacing: 0.5px;
 }
 
 .icon { display: none !important; } /* Hide emojis as requested */
@@ -459,13 +461,22 @@ section {
 
 /* --- Relation Spread (Cup of Relationship) --- */
 .relation-container {
-    padding: 3rem 0 5rem;
+    padding: 3.5rem 1.5rem 5rem;
     position: relative;
     width: 100%;
+    max-width: 1140px;
+    margin: 2rem auto;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background: radial-gradient(circle at 50% 10%, rgba(212, 175, 55, 0.05), transparent 80%);
+    background: radial-gradient(ellipse at 50% 20%, rgba(25, 20, 36, 0.88) 0%, rgba(13, 11, 20, 0.94) 50%, rgba(6, 6, 12, 0.98) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.32);
+    border-radius: 24px;
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85),
+                inset 0 0 80px rgba(0, 0, 0, 0.85),
+                inset 0 0 30px rgba(212, 175, 55, 0.05),
+                0 0 35px rgba(212, 175, 55, 0.08);
+    backdrop-filter: blur(16px);
     overflow: visible; 
 }
 
@@ -658,44 +669,340 @@ section {
 #hexa-board .side-label { display: none; }
 #zodiac-board .side-label { display: none; }
 .board-wrapper {
-    background: rgba(0, 0, 0, 0.65);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3rem;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: radial-gradient(ellipse at 50% 20%, rgba(25, 20, 36, 0.88) 0%, rgba(13, 11, 20, 0.94) 50%, rgba(6, 6, 12, 0.98) 100%);
+    border: 1px solid rgba(212, 175, 55, 0.32);
+    border-radius: 24px;
+    padding: 3.5rem 2.5rem;
+    backdrop-filter: blur(16px);
+    box-shadow: 0 25px 70px rgba(0, 0, 0, 0.85),
+                inset 0 0 80px rgba(0, 0, 0, 0.85),
+                inset 0 0 30px rgba(212, 175, 55, 0.05),
+                0 0 35px rgba(212, 175, 55, 0.08);
     position: relative; /* For overlays */
     margin: 2rem auto;
-    max-width: 1100px; /* Wider for 880px spread + labels */
+    max-width: 1140px;
+    overflow: hidden;
+}
+
+/* Golden esoteric inner filigree frame */
+.board-wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 10px;
+    border: 1px solid rgba(212, 175, 55, 0.14);
+    border-radius: 18px;
+    pointer-events: none;
+    z-index: 1;
+    background: radial-gradient(circle at 50% 50%, rgba(212, 175, 55, 0.02) 0%, transparent 70%);
+}
+
+/* Subtle corner flourish accents */
+.board-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 650px; height: 650px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.04) 0%, rgba(212, 175, 55, 0.01) 45%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* --- Common Spread Guide Headers --- */
+.spread-world-guide {
+    text-align: center;
+    pointer-events: none;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.4rem;
+    position: relative;
+    z-index: 10;
+    color: var(--accent-gold);
+    font-weight: 300;
+    letter-spacing: 0.35rem;
+    font-size: 1.2rem;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.45);
+    margin-bottom: 2rem;
+}
+.spread-world-guide small {
+    font-size: 0.8rem;
+    letter-spacing: 0.08rem;
+    color: var(--accent-gold) !important;
+    opacity: 0.7;
+    font-weight: 400;
+    text-transform: none;
+}
+
+/* --- Common Spread Pillars Guide --- */
+.spread-pillars-guide {
+    width: 100%;
+    margin: 0 auto 1.5rem auto;
+    display: grid;
+    pointer-events: none;
+    opacity: 0.45;
+    z-index: 5;
+    position: relative;
+}
+.spread-pillars-guide.three-pillars {
+    max-width: 650px;
+    grid-template-columns: repeat(3, 1fr);
+}
+.spread-pillars-guide.four-pillars {
+    max-width: 850px;
+    grid-template-columns: repeat(4, 1fr);
+}
+.spread-pillars-guide .guide-pillar {
+    border-right: 1px dashed rgba(255, 215, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    padding: 6px 0;
+}
+.spread-pillars-guide .guide-pillar:last-child {
+    border-right: none;
+}
+.spread-pillars-guide .guide-pillar small {
+    color: #d4af37;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    text-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+}
+
+/* --- Choice Spread Branch Labels --- */
+.choice-branch-label {
+    position: absolute;
+    pointer-events: none;
+    color: var(--accent-gold);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.choice-branch-label small {
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    opacity: 0.7;
+    color: #d4af37;
+    text-transform: none;
+    margin-top: 2px;
+}
+.label-path-a {
+    left: 160px;
+    top: -10px;
+    width: 140px;
+}
+.label-crossroad {
+    left: 360px;
+    top: 145px;
+    width: 140px;
+}
+.label-path-b {
+    left: 560px;
+    top: -10px;
+    width: 140px;
+}
+
+/* --- Relation Spread Sidebar Labels --- */
+.relation-sidebar {
+    position: absolute;
+    top: 3.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1040px;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+.relation-side-label {
+    position: absolute;
+    color: var(--accent-gold);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 200px;
+}
+.relation-side-label small {
+    font-size: 0.72rem;
+    letter-spacing: 0.8px;
+    opacity: 0.7;
+    color: #d4af37;
+    text-transform: none;
+    margin-top: 3px;
+}
+.side-me {
+    left: 20px;
+    top: 280px;
+}
+.side-chalice {
+    left: 50%;
+    transform: translateX(-50%);
+    top: 15px;
+}
+.side-you {
+    right: 20px;
+    top: 280px;
+}
+
+/* --- Celtic Cross Zone Labels --- */
+.celtic-zone-label {
+    position: absolute;
+    color: var(--accent-gold);
+    font-weight: 300;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    pointer-events: none;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.celtic-zone-label small {
+    font-size: 0.72rem;
+    letter-spacing: 0.8px;
+    opacity: 0.7;
+    color: #d4af37;
+    text-transform: none;
+    margin-top: 3px;
+}
+.zone-cross {
+    left: 170px;
+    top: -15px;
+    width: 360px;
+}
+.zone-staff {
+    left: 700px;
+    top: -15px;
+    width: 360px;
+}
+
+/* --- Hexagram Zone Labels --- */
+.hexa-zone-label {
+    position: absolute;
+    color: var(--accent-gold);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    pointer-events: none;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.hexa-zone-label small {
+    font-size: 0.72rem;
+    letter-spacing: 0.8px;
+    opacity: 0.7;
+    color: #d4af37;
+    text-transform: none;
+    margin-top: 3px;
+}
+.zone-fire {
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.zone-water {
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+.zone-nucleus {
+    top: 450px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0.75;
+}
+
+/* --- Zodiac Quadrant Labels --- */
+.zodiac-quadrant-label {
+    position: absolute;
+    color: var(--accent-gold);
+    font-weight: 300;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+    pointer-events: none;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.zodiac-quadrant-label small {
+    font-size: 0.72rem;
+    letter-spacing: 0.8px;
+    opacity: 0.7;
+    color: #d4af37;
+    text-transform: none;
+    margin-top: 3px;
+}
+.quad-spring {
+    top: 30px;
+    right: 40px;
+}
+.quad-summer {
+    bottom: 30px;
+    right: 40px;
+}
+.quad-autumn {
+    bottom: 30px;
+    left: 40px;
+}
+.quad-winter {
+    top: 30px;
+    left: 40px;
 }
 
 /* --- Four Card Spread Golden Overlay --- */
+.spread1-bg-overlay {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 400px;
+    pointer-events: none;
+    z-index: 1;
+    opacity: 0.85;
+}
 .spread-bg-overlay {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 656px; height: 260px;
+    width: 656px; height: 280px;
     pointer-events: none;
     z-index: 1;
-    opacity: 0.6;
+    opacity: 0.75;
 }
 .spread3-bg-overlay {
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
-    width: 484px; height: 260px;
+    width: 484px; height: 280px;
     pointer-events: none;
     z-index: 1;
-    opacity: 0.6;
+    opacity: 0.75;
 }
 
 .board-slots-4, .board-slots-3 {
     position: relative;
     display: flex;
     justify-content: center;
-    gap: 2rem;
+    gap: 2.2rem;
     flex-wrap: wrap;
     margin-bottom: 2rem;
+    z-index: 5;
 }
 
 .board-actions {

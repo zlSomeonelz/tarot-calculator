@@ -1847,7 +1847,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- DYNAMIC SVG LINE SYSTEM ---
 function syncAllLines() {
-    if (currentMode === 'tree') drawTreeLines();
+    if (currentMode === 'spread1') drawOneCardLines();
+    else if (currentMode === 'tree') drawTreeLines();
     else if (currentMode === 'relation') drawRelationLines();
     else if (currentMode === 'spread') drawFourCardLines();
     else if (currentMode === 'spread3') drawThreeCardLines();
@@ -1861,7 +1862,8 @@ function getSlotCenter(id, mode) {
     if (!slot) return null;
     
     let svgContainer;
-    if (mode === 'tree') svgContainer = document.querySelector('#tree-board .tree-bg-overlay svg');
+    if (mode === 'spread1') svgContainer = document.querySelector('#spread1-board .spread1-bg-overlay svg');
+    else if (mode === 'tree') svgContainer = document.querySelector('#tree-board .tree-bg-overlay svg');
     else if (mode === 'relation') svgContainer = document.querySelector('#relation-board .relation-bg-overlay svg');
     else if (mode === 'choice') svgContainer = document.querySelector('#choice-board .choice-bg-overlay svg');
     else if (mode === 'spread') svgContainer = document.querySelector('#spread-board .spread-bg-overlay svg');
@@ -1887,19 +1889,60 @@ function getSlotCenter(id, mode) {
     return { x, y };
 }
 
+function drawOneCardLines() {
+    const container = document.querySelector('#spread1-board .spread1-bg-overlay svg');
+    if (!container) return;
+    const p = getSlotCenter('s1slot-0', 'spread1') || { x: 300, y: 200 };
+    let html = `<defs>
+        <filter id="spread1-star-glow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3.5" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+    </defs>
+    <!-- Celestial Oracle Compass -->
+    <circle cx="${p.x}" cy="${p.y}" r="170" fill="none" stroke="rgba(212,175,55,0.2)" stroke-width="1.2" stroke-dasharray="6,4" />
+    <circle cx="${p.x}" cy="${p.y}" r="130" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1.2" />
+    <circle cx="${p.x}" cy="${p.y}" r="75" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1.5" stroke-dasharray="4,4" filter="url(#spread1-star-glow)" />
+    <!-- Crosshairs & Cardinal Rays -->
+    <line x1="${p.x - 190}" y1="${p.y}" x2="${p.x + 190}" y2="${p.y}" stroke="rgba(212,175,55,0.25)" stroke-width="1" />
+    <line x1="${p.x}" y1="${p.y - 180}" x2="${p.x}" y2="${p.y + 180}" stroke="rgba(212,175,55,0.25)" stroke-width="1" />
+    <circle cx="${p.x}" cy="${p.y}" r="6" fill="#f1c40f" filter="url(#spread1-star-glow)" />
+    <circle cx="${p.x - 130}" cy="${p.y}" r="3" fill="#d4af37" filter="url(#spread1-star-glow)" />
+    <circle cx="${p.x + 130}" cy="${p.y}" r="3" fill="#d4af37" filter="url(#spread1-star-glow)" />
+    <circle cx="${p.x}" cy="${p.y - 130}" r="3" fill="#d4af37" filter="url(#spread1-star-glow)" />
+    <circle cx="${p.x}" cy="${p.y + 130}" r="3" fill="#d4af37" filter="url(#spread1-star-glow)" />`;
+    container.innerHTML = html;
+}
+
 function drawChoiceLines() {
     const container = document.querySelector('#choice-board .choice-bg-overlay svg');
     if (!container) return;
     const connections = [[0, 1], [1, 2], [0, 3], [3, 4]];
     let html = `<defs><filter id="choice-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
+    
+    // Balance arcs between Path A and Path B
+    const p1 = getSlotCenter('chslot-1', 'choice');
+    const p3 = getSlotCenter('chslot-3', 'choice');
+    if (p1 && p3) {
+        html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p3.x}" y2="${p3.y}" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" stroke-dasharray="4,4" />`;
+    }
+    const p2 = getSlotCenter('chslot-2', 'choice');
+    const p4 = getSlotCenter('chslot-4', 'choice');
+    if (p2 && p4) {
+        html += `<line x1="${p2.x}" y1="${p2.y}" x2="${p4.x}" y2="${p4.y}" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" stroke-dasharray="4,4" />`;
+    }
+
     connections.forEach(([s, e]) => {
-        const p1 = getSlotCenter(`chslot-${s}`, 'choice');
-        const p2 = getSlotCenter(`chslot-${e}`, 'choice');
-        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+        const pt1 = getSlotCenter(`chslot-${s}`, 'choice');
+        const pt2 = getSlotCenter(`chslot-${e}`, 'choice');
+        if (pt1 && pt2) html += `<line x1="${pt1.x}" y1="${pt1.y}" x2="${pt2.x}" y2="${pt2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#choice-star-glow)" />`;
     });
     for(let i=0; i<5; i++) {
         const p = getSlotCenter(`chslot-${i}`, 'choice');
-        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#choice-star-glow)" />`;
+        if (p) {
+            html += `<circle cx="${p.x}" cy="${p.y}" r="26" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1" stroke-dasharray="3,3" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#f1c40f" filter="url(#choice-star-glow)" />`;
+        }
     }
     container.innerHTML = html;
 }
@@ -1916,7 +1959,10 @@ function drawTreeLines() {
     });
     for(let i=0; i<10; i++) {
         const p = getSlotCenter(`tslot-${i}`, 'tree');
-        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#tree-star-glow)" />`;
+        if (p) {
+            html += `<circle cx="${p.x}" cy="${p.y}" r="24" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1" stroke-dasharray="3,3" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#f1c40f" filter="url(#tree-star-glow)" />`;
+        }
     }
     container.innerHTML = html;
 }
@@ -1925,8 +1971,6 @@ function drawRelationLines() {
     const container = document.querySelector('#relation-board .relation-bg-overlay svg');
     if (!container) return;
     
-    // Core logic mapping based on screenshot:
-    // 1(ID 0), 2(ID 1), 3(ID 2), 4(ID 3), 5(ID 4), 6(ID 5), 7(ID 6), 8(ID 7), 9(ID 8), 10(ID 9), 11(ID 10), 12(ID 11)
     const connections = [
         [0, 2], [1, 2],                            // Base to Reason (1, 2 -> 3)
         [2, 3], [3, 5], [5, 4], [4, 10], [10, 11], // Spine: 3-4-6-5-11-12
@@ -1943,7 +1987,10 @@ function drawRelationLines() {
     });
     for(let i=0; i<12; i++) {
         const p = getSlotCenter(`rslot-${i}`, 'relation');
-        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#star-glow)" />`;
+        if (p) {
+            html += `<circle cx="${p.x}" cy="${p.y}" r="24" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1" stroke-dasharray="3,3" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#f1c40f" filter="url(#star-glow)" />`;
+        }
     }
     container.innerHTML = html;
 }
@@ -1957,10 +2004,16 @@ function drawFourCardLines() {
         const p = getSlotCenter(`slot-${i}`, 'spread');
         if (p) {
             centers.push(p);
-            html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#standard-star-glow)" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="24" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1" stroke-dasharray="3,3" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#f1c40f" filter="url(#standard-star-glow)" />`;
         }
     }
-    if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#standard-star-glow)" />`;
+    if (centers.length >= 4) {
+        // Continuous timeline connecting line
+        for (let i = 0; i < centers.length - 1; i++) {
+            html += `<line x1="${centers[i].x}" y1="${centers[i].y}" x2="${centers[i+1].x}" y2="${centers[i+1].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#standard-star-glow)" />`;
+        }
+    }
     container.innerHTML = html;
 }
 
@@ -1973,10 +2026,15 @@ function drawThreeCardLines() {
         const p = getSlotCenter(`s3slot-${i}`, 'spread3');
         if (p) {
             centers.push(p);
-            html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#spread3-star-glow)" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="24" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1" stroke-dasharray="3,3" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#f1c40f" filter="url(#spread3-star-glow)" />`;
         }
     }
-    if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#spread3-star-glow)" />`;
+    if (centers.length >= 3) {
+        for (let i = 0; i < centers.length - 1; i++) {
+            html += `<line x1="${centers[i].x}" y1="${centers[i].y}" x2="${centers[i+1].x}" y2="${centers[i+1].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#spread3-star-glow)" />`;
+        }
+    }
     container.innerHTML = html;
 }
 
@@ -2004,7 +2062,10 @@ function drawZodiacLines() {
 
     for(let i=0; i<12; i++) {
         const p = getSlotCenter(`zslot-${i}`, 'zodiac');
-        if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#zodiac-star-glow)" />`;
+        if (p) {
+            html += `<circle cx="${p.x}" cy="${p.y}" r="22" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1" stroke-dasharray="3,3" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#f1c40f" filter="url(#zodiac-star-glow)" />`;
+        }
     }
     container.innerHTML = html;
 }
@@ -2021,21 +2082,25 @@ function drawCelticLines() {
     
     let html = `<defs><filter id="celtic-star-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3" result="blur" /><feComposite in="SourceGraphic" in2="blur" operator="over" /></filter></defs>`;
     
-    // Circle at center
+    // Sacred Celtic concentric circle at center cross
     const pCenter = getSlotCenter('cslot-0', 'celtic');
     if (pCenter) {
-        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="150" fill="none" stroke="rgba(212,175,55,0.4)" stroke-width="1.5" filter="url(#celtic-star-glow)" />`;
+        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="160" fill="none" stroke="rgba(212,175,55,0.35)" stroke-width="1.5" stroke-dasharray="6,4" filter="url(#celtic-star-glow)" />`;
+        html += `<circle cx="${pCenter.x}" cy="${pCenter.y}" r="110" fill="none" stroke="rgba(212,175,55,0.25)" stroke-width="1.2" />`;
     }
 
     connections.forEach(([s, e]) => {
         const p1 = getSlotCenter(`cslot-${s}`, 'celtic');
         const p2 = getSlotCenter(`cslot-${e}`, 'celtic');
-        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" />`;
+        if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#celtic-star-glow)" />`;
     });
     
     for(let i=0; i<10; i++) {
         const p = getSlotCenter(`cslot-${i}`, 'celtic');
-        if(p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#celtic-star-glow)" />`;
+        if(p) {
+            html += `<circle cx="${p.x}" cy="${p.y}" r="24" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1" stroke-dasharray="3,3" />`;
+            html += `<circle cx="${p.x}" cy="${p.y}" r="4.5" fill="#f1c40f" filter="url(#celtic-star-glow)" />`;
+        }
     }
     
     container.innerHTML = html;
