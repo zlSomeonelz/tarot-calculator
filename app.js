@@ -3,7 +3,7 @@
 // ============================================================
 const SUPABASE_URL = 'https://aqgbwzayefinqxjoalzc.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_PG8molq9mMczlAxzP3rELw_ndrwY7sF';
-const supabase = (typeof window !== 'undefined' && window.supabase?.createClient)
+const supabaseClient = (typeof window !== 'undefined' && window.supabase && window.supabase.createClient)
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
     : null;
 
@@ -38,12 +38,12 @@ function generateRandomStreamKey() {
 }
 
 async function initAuthSession() {
-    if (!supabase) return;
+    if (!supabaseClient) return;
     try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session } } = await supabaseClient.auth.getSession();
         updateAuthUI(session ? session.user : null);
 
-        supabase.auth.onAuthStateChange(async (event, session) => {
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
             updateAuthUI(session ? session.user : null);
         });
     } catch (e) {
@@ -76,7 +76,7 @@ async function updateAuthUI(user) {
         let userKey = user.user_metadata?.obs_key;
         if (!userKey) {
             userKey = generateRandomStreamKey();
-            await supabase.auth.updateUser({ data: { obs_key: userKey } });
+            await supabaseClient.auth.updateUser({ data: { obs_key: userKey } });
         }
         currentOBSKey = userKey;
         localStorage.setItem('obs_user_key', userKey);
@@ -149,7 +149,7 @@ function clearAuthMessages() {
 }
 
 async function submitAuthForm() {
-    if (!supabase) {
+    if (!supabaseClient) {
         alert("Supabase 클라이언트가 초기화되지 않았습니다.");
         return;
     }
@@ -169,12 +169,12 @@ async function submitAuthForm() {
 
     try {
         if (authCurrentTab === 'login') {
-            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             if (error) throw error;
             closeAuthModal();
         } else {
             const initKey = generateRandomStreamKey();
-            const { data, error } = await supabase.auth.signUp({
+            const { data, error } = await supabaseClient.auth.signUp({
                 email,
                 password,
                 options: { data: { obs_key: initKey } }
@@ -208,8 +208,8 @@ async function submitAuthForm() {
 }
 
 async function handleLogout() {
-    if (!supabase) return;
-    await supabase.auth.signOut();
+    if (!supabaseClient) return;
+    await supabaseClient.auth.signOut();
     updateAuthUI(null);
 }
 
@@ -230,14 +230,14 @@ function copyUserOBSUrl() {
 }
 
 async function regenerateUserOBSKey() {
-    if (!currentUser || !supabase) {
+    if (!currentUser || !supabaseClient) {
         alert("로그인 후 이용할 수 있습니다.");
         return;
     }
     if (!confirm("OBS 송출키를 새로 발급하시겠습니까?\n발급 후 OBS 브라우저 소스의 URL 주소도 변경하셔야 합니다.")) return;
 
     const newKey = generateRandomStreamKey();
-    const { error } = await supabase.auth.updateUser({ data: { obs_key: newKey } });
+    const { error } = await supabaseClient.auth.updateUser({ data: { obs_key: newKey } });
     if (error) {
         alert("키 재발급 실패: " + error.message);
         return;

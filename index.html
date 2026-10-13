@@ -10,7 +10,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261013_v11">
+    <link rel="stylesheet" href="style.css?v=20261013_v12">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
@@ -21,27 +21,7 @@
 
     <div id="app-container">
         <header>
-            <div class="header-top-row">
-                <div class="logo">SOMEONE'S TAROT CALCULATOR</div>
-                
-                <!-- 사용자 계정 / OBS 개인 고유 송출키 컨트롤 바 -->
-                <div class="auth-bar" id="auth-bar">
-                    <!-- 비로그인 상태 UI -->
-                    <div id="auth-logged-out" class="auth-group">
-                        <button class="btn-auth" onclick="openAuthModal('login')">🔑 로그인 / 회원가입</button>
-                    </div>
-                    <!-- 로그인 상태 UI -->
-                    <div id="auth-logged-in" class="auth-group hidden">
-                        <div class="user-badge">
-                            <span class="user-icon">👤</span>
-                            <span id="user-email-display" class="user-email"></span>
-                        </div>
-                        <button class="btn-auth-gold" onclick="copyUserOBSUrl()" title="방송 브라우저 소스에 붙여넣을 내 전용 OBS 주소 복사">📡 내 OBS 주소 복사</button>
-                        <button class="btn-auth-icon" onclick="regenerateUserOBSKey()" title="OBS 송출키 재발급">🔄</button>
-                        <button class="btn-auth-sub" onclick="handleLogout()">로그아웃</button>
-                    </div>
-                </div>
-            </div>
+            <div class="logo">SOMEONE'S TAROT CALCULATOR</div>
 
             <!-- whtjss1230@gmail.com 계정 전용 히든 삼라만상 언락 배너/버튼 -->
             <div id="samla-hidden-badge-wrap" class="samla-hidden-badge-wrap hidden">
@@ -989,9 +969,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v11"></script>
-    <script src="data_samla.js?v=20261013_v11"></script>
-    <script src="app.js?v=20261013_v11"></script>
+    <script src="data_ko.js?v=20261013_v12"></script>
+    <script src="data_samla.js?v=20261013_v12"></script>
+    <script src="app.js?v=20261013_v12"></script>
 </body>
 
 </html>
