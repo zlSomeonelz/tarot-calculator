@@ -10,8 +10,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Outfit:wght@200;300;400;600&family=Noto+Sans+KR:wght@300;400;700;900&display=swap"
         rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261013_v13">
+    <link rel="stylesheet" href="style.css?v=20261013_v14">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 
 <body>
@@ -959,6 +960,15 @@
                 <button class="close-icon" onclick="closeAuthModal()">✕</button>
             </div>
             <div class="auth-modal-body">
+                <!-- Google Identity Services Client Tag -->
+                <div id="g_id_onload"
+                     data-client_id="803800683773-is6iet2nejlpah86ntb6i281f3ppoo3k.apps.googleusercontent.com"
+                     data-context="signin"
+                     data-ux_mode="popup"
+                     data-callback="handleGoogleCredentialResponse"
+                     data-auto_prompt="false">
+                </div>
+
                 <!-- 구글 간편 로그인 버튼 -->
                 <button id="btn-google-login" class="btn-google-auth" onclick="signInWithGoogle()">
                     <svg class="google-icon" viewBox="0 0 48 48" width="22" height="22">
@@ -994,9 +1004,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v13"></script>
-    <script src="data_samla.js?v=20261013_v13"></script>
-    <script src="app.js?v=20261013_v13"></script>
+    <script src="data_ko.js?v=20261013_v14"></script>
+    <script src="data_samla.js?v=20261013_v14"></script>
+    <script src="app.js?v=20261013_v14"></script>
 </body>
 
 </html>

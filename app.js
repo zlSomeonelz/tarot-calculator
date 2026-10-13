@@ -7,6 +7,7 @@ const supabaseClient = (typeof window !== 'undefined' && window.supabase && wind
     ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
     : null;
 
+const GOOGLE_CLIENT_ID = '803800683773-is6iet2nejlpah86ntb6i281f3ppoo3k.apps.googleusercontent.com';
 const MASTER_EMAIL = 'whtjss1230@gmail.com';
 let currentUser = null;
 let currentOBSKey = localStorage.getItem('obs_user_key') || 'default';
@@ -216,7 +217,56 @@ async function submitAuthForm() {
     }
 }
 
+function initGoogleAuth() {
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+        return;
+    }
+    try {
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: handleGoogleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+            ux_mode: 'popup'
+        });
+    } catch (e) {
+        console.warn("Google GIS init warn:", e);
+    }
+}
+
+window.handleGoogleCredentialResponse = async function(response) {
+    if (!response || !response.credential) return;
+
+    try {
+        const { data, error } = await supabaseClient.auth.signInWithIdToken({
+            provider: 'google',
+            token: response.credential
+        });
+        if (error) throw error;
+
+        closeAuthModal();
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        updateAuthUI(session ? session.user : null);
+    } catch (err) {
+        console.error("Google signInWithIdToken error:", err);
+        fallbackGoogleOAuth();
+    }
+};
+
 async function signInWithGoogle() {
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+        initGoogleAuth();
+        google.accounts.id.prompt((notification) => {
+            if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
+                fallbackGoogleOAuth();
+            }
+        });
+    } else {
+        fallbackGoogleOAuth();
+    }
+}
+
+async function fallbackGoogleOAuth() {
     if (!supabaseClient) {
         alert("Supabase 인증 클라이언트가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요.");
         return;
@@ -228,7 +278,6 @@ async function signInWithGoogle() {
         googleBtnModal.style.opacity = '0.7';
     }
 
-    // 현재 접속 환경에 따른 리다이렉트 URL 생성
     let redirectUrl = window.location.origin + window.location.pathname;
     if (redirectUrl.endsWith('index.html')) {
         redirectUrl = redirectUrl.replace(/index\.html$/, '');
@@ -247,7 +296,7 @@ async function signInWithGoogle() {
         });
         if (error) throw error;
     } catch (err) {
-        console.error("Google sign in error:", err);
+        console.error("Google sign in fallback error:", err);
         const errEl = document.getElementById('auth-error-msg');
         let msg = err.message || "구글 로그인 중 오류가 발생했습니다.";
         if (msg.includes("provider is not enabled") || msg.includes("Unsupported provider")) {
@@ -356,6 +405,8 @@ function setDeckMode(mode) {
 
 document.addEventListener('DOMContentLoaded', () => {
     initAuthSession();
+    initGoogleAuth();
+    setTimeout(initGoogleAuth, 800);
     setupGrid(getActiveDeckCards());
     switchMode('spread');
     updateSpreadGuide(currentMode);
