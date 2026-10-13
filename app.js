@@ -1410,7 +1410,7 @@ function closeOBSGuide() {
 }
 
 function copyOBSUrl() {
-    const rawKey = document.getElementById('obs-secret') ? document.getElementById('obs-secret').value.trim() : '';
+    const rawKey = (typeof currentOBSKey !== 'undefined' && currentOBSKey) ? currentOBSKey : (document.getElementById('obs-secret') ? document.getElementById('obs-secret').value.trim() : 'default');
     const secretKey = rawKey !== '' ? rawKey : 'default';
     
     // Create the full absolute url for obs.html based on current environment
