@@ -4,21 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OBS Tarot Broadcast</title>
-    <link rel="stylesheet" href="style.css?v=20261013_v25">
+    <link rel="stylesheet" href="style.css?v=20261013_v26">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body {
+        html, body {
             background: transparent !important;
+            background-color: transparent !important;
             margin: 0;
             padding: 0;
-            overflow: hidden;
+            overflow: hidden !important;
             width: 100vw;
             height: 100vh;
         }
 
+        /* 1. OBS CEF transparency glitch prevention: Disable backdrop-filter everywhere */
+        *, *::before, *::after {
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
+        }
+
+        /* 2. Prevent any flicker, entrance fade, or layout jump in OBS */
+        section, main, .board-wrapper, .slot, .slot-bg-layer, header, svg,
+        .celtic-container, .tree-container, .relation-container, .hexa-container, .zodiac-container, .choice-container {
+            animation: none !important;
+            transition: none !important;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform-style: flat;
+        }
+
         /* Hide unwanted elements in OBS broadcast */
-        .board-actions, header, footer, .search-wrap, .btn-save-img, .btn-copy-img { display: none !important; }
-        .slot-hint { display: none !important; }
+        .board-actions, header, footer, .search-wrap, .btn-save-img, .btn-copy-img, .slot-hint { 
+            display: none !important; 
+        }
+
+        /* Hide status pill on stream broadcast so viewers see a clean feed */
+        .obs-status-pill {
+            display: none !important;
+        }
         
         #obs-container {
             width: 100vw;
@@ -37,36 +60,6 @@
         
         section {
             width: 100%;
-        }
-
-        /* Live status pill to give streamer immediate visual confirmation */
-        .obs-status-pill {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: rgba(10, 10, 16, 0.88);
-            border: 1px solid rgba(212, 175, 55, 0.5);
-            color: #d4af37;
-            font-size: 0.82rem;
-            font-weight: 700;
-            padding: 0.4rem 0.9rem;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            z-index: 99999;
-            pointer-events: none;
-            transition: opacity 0.8s ease, transform 0.5s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-            font-family: 'Noto Sans KR', sans-serif;
-            letter-spacing: 0.5px;
-        }
-        .obs-status-pill.connected {
-            border-color: #2ecc71;
-            color: #2ecc71;
-            box-shadow: 0 0 15px rgba(46, 204, 113, 0.4);
-        }
-        .obs-status-pill.fade-out {
-            opacity: 0;
-            transform: translateY(-8px);
         }
     </style>
 </head>
@@ -914,13 +907,13 @@
                 return;
             }
             hasReceivedInitialState = true;
-            setStatusPill('🟢 타로 방송 실시간 연동됨', true);
 
             const stateStr = JSON.stringify(data);
-            if (stateStr !== lastStateStr) {
-                renderCards(data.mode, data.cards);
-                lastStateStr = stateStr;
+            if (stateStr === lastStateStr) {
+                return; // 상태 변화 없음 -> 불필요한 DOM 재렌더링 방지 (깜빡임 완전 차단)
             }
+            lastStateStr = stateStr;
+            renderCards(data.mode, data.cards);
         }
 
         // 1. BroadcastChannel (동일 브라우저 탭/창 실시간 연동)
@@ -941,14 +934,8 @@
                 ch.on('broadcast', { event: 'update_spread' }, (response) => {
                     handleIncomingPayload(response.payload);
                 }).subscribe((status) => {
-                    console.log(`[OBS] Supabase Realtime (${channelName}) status:`, status);
                     if (status === 'SUBSCRIBED') {
-                        setStatusPill('🟢 타로 방송 실시간 연동됨', true);
                         ch.send({ type: 'broadcast', event: 'request_sync', payload: { key: roomKey } }).catch(() => {});
-                    } else if (status === 'CLOSED' || status === 'CHANNEL_ERROR') {
-                        if (!hasReceivedInitialState) {
-                            setStatusPill('🟡 클라우드 재연결 중...', false);
-                        }
                     }
                 });
                 return ch;
@@ -974,26 +961,27 @@
             }, 2000);
         }
 
-        // 3. 로컬 파이썬 서버 폴링 (로컬 실행 시 보조)
-        async function pollServer() {
-            try {
-                const response = await fetch('/state?key=' + encodeURIComponent(secretKey));
-                if (!response.ok) return;
-                const data = await response.json();
-                if (data && data.type === 'update_spread') {
-                    handleIncomingPayload(data);
-                }
-            } catch (e) {}
+        // 3. 로컬 파이썬 서버 폴링 (로컬 실행 환경에서만 보조 동작)
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+            async function pollServer() {
+                try {
+                    const response = await fetch('/state?key=' + encodeURIComponent(secretKey));
+                    if (!response.ok) return;
+                    const data = await response.json();
+                    if (data && data.type === 'update_spread') {
+                        handleIncomingPayload(data);
+                    }
+                } catch (e) {}
+            }
+            setInterval(pollServer, 1500);
         }
-        setInterval(pollServer, 1500);
 
         function renderCards(mode, cards) {
+            const modeChanged = (currentBroadcastMode !== mode);
             currentBroadcastMode = mode;
-            resizeLayout();
 
-            if (!cards || cards.length === 0) {
-                // If cards is empty array, keep the active board structure visible but clear slots
-                return;
+            if (modeChanged) {
+                resizeLayout();
             }
 
             let boardId, prefix;
@@ -1007,16 +995,42 @@
             else if (mode === 'zodiac') { boardId = 'zodiac-board'; prefix = 'zslot'; }
             else { boardId = 'spread-board'; prefix = 'slot'; }
 
-            // Hide all sections and show active
-            document.querySelectorAll('#obs-container main section').forEach(sec => sec.classList.add('hidden'));
-            const activeSec = document.getElementById(boardId);
-            if (activeSec) activeSec.classList.remove('hidden');
+            // 현재 활성 보드가 이미 열려있다면 DOM을 건드리지 않고, 다른 보드만 숨김 (CSS 재실행 및 깜빡임 방지)
+            const sections = document.querySelectorAll('#obs-container main section');
+            sections.forEach(sec => {
+                if (sec.id === boardId) {
+                    if (sec.classList.contains('hidden')) sec.classList.remove('hidden');
+                } else {
+                    if (!sec.classList.contains('hidden')) sec.classList.add('hidden');
+                }
+            });
+
+            if (!cards || cards.length === 0) {
+                // 전체 초기화 수신 시 활성 보드의 모든 슬롯 비우기
+                const slots = document.querySelectorAll(`#${boardId} .slot`);
+                slots.forEach(slotEl => {
+                    let bgLayer = slotEl.querySelector('.slot-bg-layer');
+                    if (bgLayer && bgLayer.dataset.img) {
+                        bgLayer.style.backgroundImage = 'none';
+                        delete bgLayer.dataset.img;
+                        delete bgLayer.dataset.reversed;
+                        bgLayer.style.transform = 'none';
+                        bgLayer.style.opacity = '0';
+                    }
+                    const contentEl = slotEl.querySelector('.slot-content');
+                    if (contentEl && contentEl.innerHTML !== '선택') {
+                        contentEl.innerHTML = '선택';
+                    }
+                    slotEl.removeAttribute('data-active');
+                });
+                if (modeChanged) requestAnimationFrame(syncAllLines);
+                return;
+            }
 
             cards.forEach((card, index) => {
                 const slotEl = document.getElementById(`${prefix}-${index}`);
                 if (!slotEl) return;
                 
-                slotEl.style.backgroundImage = 'none';
                 let bgLayer = slotEl.querySelector('.slot-bg-layer');
                 if (!bgLayer) {
                     bgLayer = document.createElement('div');
@@ -1026,27 +1040,52 @@
 
                 if (card) {
                     const finalImg = card.image || `images/tarot_${card.id}.webp`;
-                    bgLayer.style.backgroundImage = `url('${finalImg}')`;
-                    bgLayer.style.transform = card.isReversed ? 'rotate(180deg)' : 'none';
-                    bgLayer.style.opacity = '1';
+                    const targetTransform = card.isReversed ? 'rotate(180deg)' : 'none';
+
+                    // 이미지가 같으면 backgroundImage 재할당하지 않음 (디코딩 리셋에 의한 깜빡임 방지)
+                    if (bgLayer.dataset.img !== finalImg) {
+                        bgLayer.style.backgroundImage = `url('${finalImg}')`;
+                        bgLayer.dataset.img = finalImg;
+                    }
+                    if (bgLayer.dataset.reversed !== (card.isReversed ? 'true' : 'false')) {
+                        bgLayer.style.transform = targetTransform;
+                        bgLayer.dataset.reversed = card.isReversed ? 'true' : 'false';
+                    }
+                    if (bgLayer.style.opacity !== '1') {
+                        bgLayer.style.opacity = '1';
+                    }
 
                     const korNameOrigin = card.name.split(' (')[0];
                     const displayKorName = card.isReversed ? `${korNameOrigin} [역]` : korNameOrigin;
                     const contentEl = slotEl.querySelector('.slot-content');
-                    if (contentEl) contentEl.innerHTML = displayKorName;
-                    slotEl.setAttribute('data-active', 'true');
+                    if (contentEl && contentEl.innerHTML !== displayKorName) {
+                        contentEl.innerHTML = displayKorName;
+                    }
+                    if (slotEl.getAttribute('data-active') !== 'true') {
+                        slotEl.setAttribute('data-active', 'true');
+                    }
                 } else {
-                    bgLayer.style.backgroundImage = 'none';
-                    bgLayer.style.transform = 'none';
-                    bgLayer.style.opacity = '0';
+                    if (bgLayer.dataset.img) {
+                        bgLayer.style.backgroundImage = 'none';
+                        delete bgLayer.dataset.img;
+                        delete bgLayer.dataset.reversed;
+                        bgLayer.style.transform = 'none';
+                        bgLayer.style.opacity = '0';
+                    }
                     const contentEl = slotEl.querySelector('.slot-content');
-                    if (contentEl) contentEl.innerHTML = '선택';
-                    slotEl.removeAttribute('data-active');
+                    if (contentEl && contentEl.innerHTML !== '선택') {
+                        contentEl.innerHTML = '선택';
+                    }
+                    if (slotEl.hasAttribute('data-active')) {
+                        slotEl.removeAttribute('data-active');
+                    }
                 }
             });
 
-            // Sync dynamic lines after rendering cards
-            requestAnimationFrame(syncAllLines);
+            // 모드가 변경되었거나 최초 렌더일 때만 선 재계산
+            if (modeChanged) {
+                requestAnimationFrame(syncAllLines);
+            }
         }
 
         // Shared Drawing Logic
@@ -1088,7 +1127,7 @@
                 const p = getSlotCenter(`chslot-${i}`, 'choice');
                 if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#choice-star-glow)" />`;
             }
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function drawTreeLines() {
@@ -1105,7 +1144,7 @@
                 const p = getSlotCenter(`tslot-${i}`, 'tree');
                 if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#tree-star-glow)" />`;
             }
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function drawRelationLines() {
@@ -1128,7 +1167,7 @@
                 const p = getSlotCenter(`rslot-${i}`, 'relation');
                 if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#star-glow)" />`;
             }
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function drawFourCardLines() {
@@ -1138,7 +1177,7 @@
             let centers = [];
             for(let i=0; i<4; i++) { const p = getSlotCenter(`slot-${i}`, 'spread'); if(p) centers.push(p); }
             if (centers.length >= 4) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[3].x}" y2="${centers[3].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#standard-star-glow)" />`;
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function drawThreeCardLines() {
@@ -1148,7 +1187,7 @@
             let centers = [];
             for(let i=0; i<3; i++) { const p = getSlotCenter(`s3slot-${i}`, 'spread3'); if(p) centers.push(p); }
             if (centers.length >= 3) html += `<line x1="${centers[0].x}" y1="${centers[0].y}" x2="${centers[2].x}" y2="${centers[2].y}" stroke="rgba(212,175,55,0.85)" stroke-width="1.8" filter="url(#spread3-star-glow)" />`;
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function drawZodiacLines() {
@@ -1160,7 +1199,7 @@
                 const p2 = getSlotCenter(`zslot-${(i+1)%12}`, 'zodiac');
                 if (p1 && p2) html += `<line x1="${p1.x}" y1="${p1.y}" x2="${p2.x}" y2="${p2.y}" stroke="rgba(212,175,55,0.4)" stroke-width="1.2" />`;
             }
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function drawCelticLines() {
@@ -1179,7 +1218,7 @@
                 const p = getSlotCenter(`cslot-${i}`, 'celtic');
                 if(p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#celtic-star-glow)" />`;
             }
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function drawHexaLines() {
@@ -1196,7 +1235,7 @@
                 const p = getSlotCenter(`hslot-${i}`, 'hexa');
                 if (p) html += `<circle cx="${p.x}" cy="${p.y}" r="4" fill="#d4af37" filter="url(#hexa-star-glow)" />`;
             }
-            container.innerHTML = html;
+            if (container.innerHTML !== html) container.innerHTML = html;
         }
 
         function syncAllLines() {

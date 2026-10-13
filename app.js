@@ -123,12 +123,6 @@ function sendSupabaseRealtime(payload) {
 // Initial Realtime setup
 if (typeof window !== 'undefined') {
     setupSupabaseOBSChannel(currentOBSKey);
-    // OBS 화면이 나중에 켜져도 언제든 자동 복원되도록 3초 주기 자동 동기화
-    setInterval(() => {
-        if (personalRealtimeChannel || defaultRealtimeChannel) {
-            broadcastState();
-        }
-    }, 3000);
 }
 
 async function initAuthSession() {
