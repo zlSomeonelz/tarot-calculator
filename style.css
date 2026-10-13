@@ -168,7 +168,7 @@ section {
 /* --- Tree of Life Map (Expanded) --- */
 /* --- Tree of Life 3-Pillar Refined (Centered & Spaced) --- */
 .tree-container {
-    padding: 3.5rem 1.5rem 5rem;
+    padding: 3rem 1rem 5rem;
     position: relative;
     width: 100%;
     max-width: 1140px;
@@ -201,14 +201,14 @@ section {
 
 .tree-pillars-guide {
     position: absolute;
-    top: -25px; left: 50%; 
-    width: 680px; 
-    height: 1100px;
+    top: 25px; left: 50%; 
+    width: 690px; 
+    height: 1850px;
     transform: translateX(-50%);
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     pointer-events: none;
-    opacity: 0.3;
+    opacity: 0.35;
     z-index: 5;
 }
 

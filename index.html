@@ -464,12 +464,13 @@
 
             <!-- 2. 세피로트의 나무 (Project Moon 스타일) -->
             <section id="tree-board" class="hidden">
-                <div class="tree-container">
+                <div class="board-wrapper">
                     <div class="spread-world-guide">
                         THE TREE OF LIFE
                         <small>10개의 세피라와 3개의 기둥: 영혼의 순례와 현실적 발현을 조망하는 카발라 스프레드</small>
                     </div>
-                    <div class="tree-bg-overlay">
+                    <div class="tree-container">
+                        <div class="tree-bg-overlay">
                         <svg viewBox="0 0 680 1900" width="680" height="1900"
                                 style="stroke:rgba(212,175,55,0.7); stroke-width:1.5; filter: drop-shadow(0 0 10px rgba(212,175,55,0.4));">
                             <defs>
@@ -571,12 +572,13 @@
                             <div class="slot-hint">똑바로 설 수 있는 의지</div>
                         </div>
                     </div>
-                    <div class="board-actions">
-                        <button class="btn-main-gold" onclick="analyzeFullSpread(10)">전체 분석 리포트</button>
-                        <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
-                    </div>
                 </div>
-            </section>
+                <div class="board-actions">
+                    <button class="btn-main-gold" onclick="analyzeFullSpread(10)">전체 분석 리포트</button>
+                    <button class="btn-outline" onclick="clearBoard(10)">초기화</button>
+                </div>
+            </div>
+        </section>
 
             <!-- 4. 켈틱 크로스 (10카드) -->
             <section id="celtic-board" class="hidden">
@@ -1065,9 +1067,9 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="data_ko.js?v=20261013_v20"></script>
-    <script src="data_samla.js?v=20261013_v20"></script>
-    <script src="app.js?v=20261013_v20"></script>
+    <script src="data_ko.js?v=20261013_v21"></script>
+    <script src="data_samla.js?v=20261013_v21"></script>
+    <script src="app.js?v=20261013_v21"></script>
 </body>
 
 </html>
